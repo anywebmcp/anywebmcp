@@ -19,7 +19,7 @@ The main-world entry can access `document.modelContext` and the website's page s
 - Page context and selectors.
 - UI, official API, or internal API adapters.
 
-The initial X package lives at `packages/sites/x`.
+The initial X package lives at `packages/sites/x`. It captures X's GraphQL responses for structured reads and can publish through the signed-in web client's `CreateTweet` mutation without interacting with X's DOM.
 
 ### Common package
 

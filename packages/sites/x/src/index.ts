@@ -1,4 +1,12 @@
 import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import { installClientCapture } from "./api/client";
+import { installNetworkCapture } from "./api/network";
+import { createPostTool } from "./tools/create-post";
+import { getApiStatusTool } from "./tools/get-api-status";
+import { readPostsTool } from "./tools/read-posts";
+
+installClientCapture();
+installNetworkCapture();
 
 export const manifest: SiteManifest = {
   id: "x",
@@ -9,5 +17,5 @@ export const manifest: SiteManifest = {
 
 export default defineSite({
   ...manifest,
-  tools: []
+  tools: [getApiStatusTool, readPostsTool, createPostTool]
 });

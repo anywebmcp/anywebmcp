@@ -3,12 +3,13 @@ export type ToolAnnotations = {
   untrustedContentHint?: boolean;
 };
 
-export type WebMcpTool = {
+export type WebMcpTool<TInput extends object = Record<string, unknown>> = {
   name: string;
+  title?: string;
   description: string;
-  inputSchema?: object;
+  inputSchema?: Record<string, unknown>;
   annotations?: ToolAnnotations;
-  execute(input: object, options: { signal: AbortSignal }): unknown;
+  execute(input: TInput): unknown | Promise<unknown>;
 };
 
 export type SiteManifest = {
@@ -19,11 +20,11 @@ export type SiteManifest = {
 };
 
 export type SitePackage = SiteManifest & {
-  tools: WebMcpTool[];
+  tools: WebMcpTool<any>[];
 };
 
 type ModelContext = {
-  registerTool(tool: WebMcpTool, options?: { signal?: AbortSignal }): Promise<void>;
+  registerTool(tool: WebMcpTool<any>, options?: { signal?: AbortSignal }): Promise<void>;
 };
 
 declare global {
@@ -42,11 +43,10 @@ export function mountSite(site: SitePackage) {
   const controller = new AbortController();
 
   for (const tool of site.tools) {
-    void document.modelContext.registerTool(tool, {
-      signal: controller.signal
-    });
+    void document.modelContext
+      .registerTool(tool, { signal: controller.signal })
+      .catch(error => console.warn(`Failed to register WebMCP tool ${tool.name}`, error));
   }
 
   window.addEventListener("pagehide", () => controller.abort(), { once: true });
 }
-
