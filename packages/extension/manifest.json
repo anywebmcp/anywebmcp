@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "OpenWebMCP",
+  "version": "0.1.0",
+  "description": "Adds packaged WebMCP tools to supported websites.",
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": ["bridge.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://x.com/*",
+        "https://twitter.com/*"
+      ],
+      "js": ["sites/x.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}
+

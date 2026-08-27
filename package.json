@@ -1,0 +1,16 @@
+{
+  "name": "openwebmcp",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "packages/sites/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0",
+    "typescript": "^5.9.0"
+  }
+}

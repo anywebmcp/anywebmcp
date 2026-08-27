@@ -1,0 +1,13 @@
+{
+  "name": "@openwebmcp/extension",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*",
+    "@openwebmcp/site-x": "*"
+  }
+}
+
