@@ -2,9 +2,9 @@
 set -eu
 
 source_app=__SOURCE_APP__
-extension_dir=__EXTENSION_DIR__
 launcher_dir="${0:A:h}"
 resources_dir="${launcher_dir:h}/Resources"
+extension_dir=__EXTENSION_DIR__
 data_dir="$HOME/Library/Application Support/Codex-WebMCP"
 profile_dir="$data_dir/Profile"
 runtime_dir="$data_dir/Runtime"

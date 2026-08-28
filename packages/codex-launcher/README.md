@@ -28,7 +28,22 @@ Generate a self-contained launcher with the extension copied into the app bundle
 npm run codex:build
 ```
 
-The command writes `Codex WebMCP.app` and a transfer-safe `Codex WebMCP.zip` to `packages/codex-launcher/dist`. Send the ZIP so the executable bit and app bundle are preserved. The recipient does not need Node.js to run it, but does need macOS and Codex installed. Because the generated app is ad-hoc signed rather than Developer ID signed and notarized, macOS may require an explicit first-open approval when it is transferred to another machine.
+The command writes `Codex WebMCP.app` and a transfer-safe `Codex WebMCP.zip` to `packages/codex-launcher/dist`. Send the ZIP so the executable bit and app bundle are preserved. The recipient does not need Node.js to run it, but does need macOS and Codex installed.
+
+The generated app is ad-hoc signed, not Developer ID signed or notarized. Browsers and messengers such as Telegram add macOS quarantine metadata, so Gatekeeper will reject a transferred build. After verifying that the ZIP came from a trusted source, the recipient can remove quarantine and open it:
+
+```sh
+xattr -dr com.apple.quarantine "/path/to/Codex WebMCP.app"
+open "/path/to/Codex WebMCP.app"
+```
+
+If any file inside the bundle was edited after generation, sign the app again before opening it:
+
+```sh
+codesign --force --sign - "/path/to/Codex WebMCP.app"
+```
+
+Frictionless distribution requires signing with an Apple Developer ID certificate and notarizing the app.
 
 ## Custom extension directory
 
