@@ -1,0 +1,16 @@
+{
+  "name": "@openwebmcp/codex-launcher",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "openwebmcp-codex": "bin/openwebmcp-codex.mjs"
+  },
+  "scripts": {
+    "generate": "node bin/openwebmcp-codex.mjs build --archive",
+    "install:app": "node bin/openwebmcp-codex.mjs install --mode=dev",
+    "doctor": "node bin/openwebmcp-codex.mjs doctor"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

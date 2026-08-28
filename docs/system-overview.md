@@ -25,6 +25,12 @@ The initial X package lives at `packages/sites/x`. It captures X's GraphQL respo
 
 `packages/common` contains shared TypeScript contracts and the small browser-side helpers that register packaged site tools with `document.modelContext` and manage their lifecycle.
 
+### Codex launcher package
+
+`packages/codex-launcher` generates a macOS launcher that starts a locally installed Codex runtime with WebMCP testing enabled. Development launchers reference an external unpacked extension directory. Distributable launchers copy the extension into the generated app bundle and do not require Node.js at runtime.
+
+The generated launcher never contains a committed Codex binary. On the recipient's machine it creates a signed local runtime copy from `/Applications/ChatGPT.app` and uses a separate browser profile.
+
 ## Loading flow
 
 1. Chrome opens a supported domain.
@@ -51,6 +57,7 @@ This leaves three viable ways to add or update integrations:
 
 ```text
 packages/
+  codex-launcher/ macOS development and distribution launcher generator
   extension/    Chrome extension
   common/       Shared types and registration helpers
   sites/        Per-domain packages

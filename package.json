@@ -2,12 +2,20 @@
   "name": "openwebmcp",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "workspaces": [
     "packages/*",
     "packages/sites/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present"
+    "build": "npm run build --workspaces --if-present",
+    "codex:build": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs build --mode=bundle --archive",
+    "codex:install": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev",
+    "codex:dev": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev --open",
+    "codex:open": "node packages/codex-launcher/bin/openwebmcp-codex.mjs open",
+    "codex:doctor": "node packages/codex-launcher/bin/openwebmcp-codex.mjs doctor"
   },
   "devDependencies": {
     "esbuild": "^0.25.0",
