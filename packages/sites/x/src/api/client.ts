@@ -30,7 +30,10 @@ export function installClientCapture() {
 }
 
 function mainBundleUrl() {
-  return performance
+  return [...document.scripts]
+    .map(script => script.src)
+    .find(url => /\/responsive-web\/client-web\/main\.[\w-]+\.js$/.test(url))
+    ?? performance
     .getEntriesByType("resource")
     .map(entry => entry.name)
     .find(url => /\/responsive-web\/client-web\/main\.[\w-]+\.js$/.test(url));
