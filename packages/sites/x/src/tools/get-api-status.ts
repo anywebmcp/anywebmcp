@@ -5,7 +5,7 @@ import { textResult } from "../result";
 export const getApiStatusTool: WebMcpTool = {
   name: "x_get_api_status",
   title: "Get X API status",
-  description: "Reports which X GraphQL operations and posts have been observed in the current page session.",
+  description: "Returns diagnostic status for the current X page session.",
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   annotations: { readOnlyHint: true, untrustedContentHint: false },
   execute() {

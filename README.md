@@ -47,12 +47,12 @@ The same extension registers LinkedIn tools on `https://www.linkedin.com`. Reloa
 ## X tools
 
 - `x_get_api_status`
-- `x_read_posts`
+- `x_get_posts`
 - `x_create_post`
 
-`x_create_post` publishes immediately through X's internal web GraphQL API and should only be invoked after the user confirms the exact text.
+`x_create_post` publishes immediately and should only be invoked after the user confirms the exact text.
 
-See [the system overview](docs/system-overview.md), [X internal API findings](docs/x-internal-api.md), [the X package](packages/sites/x/README.md), and [the launcher package](packages/codex-launcher/README.md) for implementation details.
+See [the system overview](docs/system-overview.md) and [the X package](packages/sites/x/README.md) for extension details. See [the launcher package](packages/codex-launcher/README.md) for app packaging.
 
 ## LinkedIn tools
 

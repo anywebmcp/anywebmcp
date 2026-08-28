@@ -9,3 +9,7 @@ For each operation in a new or existing website integration, choose the implemen
 3. **Internal API:** If the UI approach is not practical, inspect the requests made by the website and use its internal endpoints with the existing session.
 
 Prefer the earliest viable option. Keep authentication inside the user's current login, and document any selectors, internal endpoints, or other site-specific assumptions that may change. Benchmark completed tools using [Benchmarking site tools](benchmarking-site-tools.md).
+
+## Tool descriptions
+
+Describe the tool's behavior, inputs, output, scope, and side effects. Do not mention implementation choices such as DOM queries, APIs, selectors, endpoints, or GraphQL. Put those details in the site package README or a technical document.

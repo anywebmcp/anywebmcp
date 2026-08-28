@@ -3,7 +3,7 @@ import { installClientCapture } from "./api/client";
 import { installNetworkCapture } from "./api/network";
 import { createPostTool } from "./tools/create-post";
 import { getApiStatusTool } from "./tools/get-api-status";
-import { readPostsTool } from "./tools/read-posts";
+import { getPostsTool } from "./tools/get-posts";
 
 installClientCapture();
 installNetworkCapture();
@@ -17,5 +17,5 @@ export const manifest: SiteManifest = {
 
 export default defineSite({
   ...manifest,
-  tools: [getApiStatusTool, readPostsTool, createPostTool]
+  tools: [getApiStatusTool, getPostsTool, createPostTool]
 });

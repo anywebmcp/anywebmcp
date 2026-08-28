@@ -9,7 +9,7 @@ type CreatePostInput = {
 export const createPostTool: WebMcpTool<CreatePostInput> = {
   name: "x_create_post",
   title: "Create an X post",
-  description: "Publishes a post immediately through X's signed-in web GraphQL API. Invoke only after the user explicitly confirms the exact text.",
+  description: "Publishes a post immediately. Invoke only after the user explicitly confirms the exact text.",
   inputSchema: {
     type: "object",
     properties: {
