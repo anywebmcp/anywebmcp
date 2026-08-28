@@ -20,6 +20,8 @@ npm run codex:dev
 
 Quit Codex WebMCP before reopening it when extension code changes.
 
+Development mode keeps its browser data isolated at `~/Library/Application Support/Codex-WebMCP/Profile`, so it can run alongside the standard Codex app.
+
 ## Distributable launcher
 
 Generate a self-contained launcher with the extension copied into the app bundle:
@@ -29,6 +31,8 @@ npm run codex:build
 ```
 
 The command writes `Codex WebMCP.app` and a transfer-safe `Codex WebMCP.zip` to `packages/codex-launcher/dist`. Send the ZIP so the executable bit and app bundle are preserved. The recipient does not need Node.js to run it, but does need macOS and Codex installed.
+
+The distributable launcher uses the standard Codex user-data directory at `~/Library/Application Support/Codex`, including its login, cookies, and preferences. Quit the standard Codex app before opening Codex WebMCP; two processes must not use this profile concurrently.
 
 The generated app is ad-hoc signed, not Developer ID signed or notarized. Browsers and messengers such as Telegram add macOS quarantine metadata, so Gatekeeper will reject a transferred build. After verifying that the ZIP came from a trusted source, the recipient can remove quarantine and open it:
 
@@ -57,4 +61,4 @@ Run diagnostics with:
 npm run codex:doctor
 ```
 
-The launcher never modifies `/Applications/ChatGPT.app`. It keeps a versioned local runtime copy and a separate browser profile under `~/Library/Application Support/Codex-WebMCP`.
+The launcher never modifies `/Applications/ChatGPT.app`. Both modes keep versioned runtime copies under `~/Library/Application Support/Codex-WebMCP/Runtime`; only development mode creates a separate browser profile there.

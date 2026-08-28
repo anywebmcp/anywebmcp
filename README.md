@@ -33,7 +33,7 @@ To generate a distributable launcher with the extension embedded:
 npm run codex:build
 ```
 
-The generated app and a transfer-safe ZIP are written to `packages/codex-launcher/dist`. Node.js is required to build them, but not to run the app. The receiving Mac still needs Codex installed. Ad-hoc builds transferred through a browser or messenger require quarantine removal by the recipient; frictionless distribution requires Developer ID signing and notarization. See [the launcher package](packages/codex-launcher/README.md) for details.
+The generated app and a transfer-safe ZIP are written to `packages/codex-launcher/dist`. Production builds use the standard Codex profile, so normal Codex must be closed before launching them. Node.js is required to build the artifacts, but not to run the app. The receiving Mac still needs Codex installed. Ad-hoc builds transferred through a browser or messenger require quarantine removal by the recipient; frictionless distribution requires Developer ID signing and notarization. See [the launcher package](packages/codex-launcher/README.md) for details.
 
 ## Load in Chrome
 

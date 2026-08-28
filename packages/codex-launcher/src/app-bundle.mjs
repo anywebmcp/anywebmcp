@@ -58,6 +58,7 @@ async function writeTemplates(options, appPath, extensionValue) {
   });
   const launcher = applyTemplate(await readFile(resolve(templateDir, "launcher.zsh"), "utf8"), {
     EXTENSION_DIR: extensionValue,
+    PROFILE_DIR: profileValue(options.mode),
     SOURCE_APP: shellQuote(options.sourceApp)
   });
 
@@ -89,4 +90,9 @@ function applyTemplate(template, values) {
 
 function shellQuote(value) {
   return `'${value.replaceAll("'", `'\\''`)}'`;
+}
+
+function profileValue(mode) {
+  const directory = mode === "dev" ? "Codex-WebMCP/Profile" : "Codex";
+  return `"$HOME/Library/Application Support/${directory}"`;
 }

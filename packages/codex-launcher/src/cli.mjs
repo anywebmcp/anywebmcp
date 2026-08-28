@@ -36,6 +36,7 @@ async function build(options, targetPath) {
   const appPath = await buildApp(options, targetPath);
   console.log(`Generated ${appPath}`);
   console.log(options.mode === "bundle" ? "Extension mode: bundled" : `Extension mode: development (${options.extensionDir})`);
+  console.log(options.mode === "bundle" ? "User data: standard Codex profile" : "User data: isolated development profile");
   if (options.archive) console.log(`Archived ${await archiveApp(appPath)}`);
 }
 
