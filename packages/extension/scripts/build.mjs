@@ -11,6 +11,7 @@ await build({
   entryPoints: {
     background: "src/background.ts",
     bridge: "src/bridge.ts",
+    "sites/linkedin": "src/sites/linkedin.ts",
     "sites/x": "src/sites/x.ts"
   },
   format: "esm",
@@ -20,4 +21,3 @@ await build({
 });
 
 await cp("manifest.json", `${outdir}/manifest.json`);
-

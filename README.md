@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. The first adapter targets X.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for X and LinkedIn.
 
 ## Build
 
@@ -42,6 +42,8 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 3. Choose **Load unpacked** and select `packages/extension/dist`.
 4. Open or reload `https://x.com`.
 
+The same extension registers LinkedIn tools on `https://www.linkedin.com`. Reload an existing LinkedIn tab after installing or rebuilding the extension.
+
 ## X tools
 
 - `x_get_api_status`
@@ -51,3 +53,13 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 `x_create_post` publishes immediately through X's internal web GraphQL API and should only be invoked after the user confirms the exact text.
 
 See [the system overview](docs/system-overview.md), [X internal API findings](docs/x-internal-api.md), [the X package](packages/sites/x/README.md), and [the launcher package](packages/codex-launcher/README.md) for implementation details.
+
+## LinkedIn tools
+
+- `linkedin_list_loaded_posts`
+- `linkedin_collect_feed_posts`
+- `linkedin_read_post`
+- `linkedin_ensure_post`
+- `linkedin_prepare_comment_draft`
+
+The LinkedIn adapter reads the current feed through the page DOM. Collection and recovery scrolling are bounded. Comment drafting only inserts and verifies text in the visible editor; it never submits the comment. See [the LinkedIn package](packages/sites/linkedin/README.md) for details.
