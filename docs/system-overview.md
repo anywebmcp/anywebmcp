@@ -19,7 +19,9 @@ The main-world entry can access `document.modelContext` and the website's page s
 - Page context and selectors.
 - UI, official API, or internal API adapters.
 
-The initial X package lives at `packages/sites/x`. It captures X's GraphQL responses for structured reads and can publish through the signed-in web client's `CreateTweet` mutation without interacting with X's DOM.
+The X package lives at `packages/sites/x`. It captures X's GraphQL responses for structured reads and can publish through the signed-in web client's `CreateTweet` mutation without interacting with X's DOM.
+
+The LinkedIn package lives at `packages/sites/linkedin`. It reads the virtualized feed through bounded DOM scans and scrolling, keeps stable references to recently observed posts, and can insert a verified comment draft for manual review without submitting it.
 
 ### Common package
 

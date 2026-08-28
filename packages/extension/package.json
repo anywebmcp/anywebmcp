@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@openwebmcp/common": "*",
+    "@openwebmcp/site-linkedin": "*",
     "@openwebmcp/site-x": "*"
   }
 }
-

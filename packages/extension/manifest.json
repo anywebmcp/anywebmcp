@@ -10,11 +10,20 @@
   "content_scripts": [
     {
       "matches": [
+        "https://www.linkedin.com/*",
         "https://x.com/*",
         "https://twitter.com/*"
       ],
       "js": ["bridge.js"],
       "run_at": "document_start"
+    },
+    {
+      "matches": [
+        "https://www.linkedin.com/*"
+      ],
+      "js": ["sites/linkedin.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
     },
     {
       "matches": [
@@ -27,4 +36,3 @@
     }
   ]
 }
-
