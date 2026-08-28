@@ -5,9 +5,8 @@ source_app=__SOURCE_APP__
 launcher_dir="${0:A:h}"
 resources_dir="${launcher_dir:h}/Resources"
 extension_dir=__EXTENSION_DIR__
-data_dir="$HOME/Library/Application Support/Codex-WebMCP"
-profile_dir="$data_dir/Profile"
-runtime_dir="$data_dir/Runtime"
+profile_dir=__PROFILE_DIR__
+runtime_dir="$HOME/Library/Application Support/Codex-WebMCP/Runtime"
 
 fail() {
   /usr/bin/osascript \
