@@ -1,15 +1,23 @@
+import { wrapTool } from "./tool";
+import type { WorkflowResult } from "./result";
+
+export { completed, failed, navigationRequired, ToolError, type WorkflowResult } from "./result";
+export { wrapTool } from "./tool";
+
 export type ToolAnnotations = {
   readOnlyHint?: boolean;
   untrustedContentHint?: boolean;
 };
 
-export type WebMcpTool<TInput extends object = Record<string, unknown>> = {
+export type ToolExecutionOptions = { signal: AbortSignal };
+
+export type WebMcpTool<TInput extends object = Record<string, unknown>, TOutput = unknown> = {
   name: string;
   title?: string;
   description: string;
   inputSchema?: Record<string, unknown>;
   annotations?: ToolAnnotations;
-  execute(input: TInput): unknown | Promise<unknown>;
+  execute(input: TInput, options?: ToolExecutionOptions): WorkflowResult<TOutput> | Promise<WorkflowResult<TOutput>>;
 };
 
 export type SiteManifest = {
@@ -24,7 +32,7 @@ export type SitePackage = SiteManifest & {
 };
 
 type ModelContext = {
-  registerTool(tool: WebMcpTool<any>, options?: { signal?: AbortSignal }): Promise<void>;
+  registerTool(tool: ReturnType<typeof wrapTool>, options?: { signal?: AbortSignal }): Promise<void>;
 };
 
 declare global {
@@ -60,7 +68,7 @@ async function registerSiteTools(site: SitePackage, controller: AbortController,
 
   for (const tool of site.tools) {
     try {
-      await document.modelContext.registerTool(tool, { signal: controller.signal });
+      await document.modelContext.registerTool(wrapTool(tool), { signal: controller.signal });
     } catch (error) {
       console.warn(`Failed to register WebMCP tool ${tool.name}`, error);
     }

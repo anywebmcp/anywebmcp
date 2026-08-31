@@ -1,6 +1,5 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@openwebmcp/common";
 import { getNetworkStatus } from "../api/network";
-import { textResult } from "../result";
 
 export const getApiStatusTool: WebMcpTool = {
   name: "x_get_api_status",
@@ -9,6 +8,6 @@ export const getApiStatusTool: WebMcpTool = {
   inputSchema: { type: "object", properties: {}, additionalProperties: false },
   annotations: { readOnlyHint: true, untrustedContentHint: false },
   execute() {
-    return textResult(getNetworkStatus());
+    return completed(getNetworkStatus());
   }
 };

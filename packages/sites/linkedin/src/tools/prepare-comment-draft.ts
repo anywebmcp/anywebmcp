@@ -1,6 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
 import { prepareCommentDraft } from "../api/dom";
-import { textResult } from "../result";
+import { fromLinkedInResult } from "../result";
 
 type PrepareCommentDraftInput = { postId: string; text: string };
 
@@ -28,6 +28,6 @@ export const prepareCommentDraftTool: WebMcpTool<PrepareCommentDraftInput> = {
   },
   annotations: { readOnlyHint: false, untrustedContentHint: false },
   async execute({ postId, text }) {
-    return textResult(await prepareCommentDraft(postId, text));
+    return fromLinkedInResult(await prepareCommentDraft(postId, text));
   }
 };

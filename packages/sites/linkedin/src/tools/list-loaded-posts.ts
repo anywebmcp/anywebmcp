@@ -1,6 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
 import { listLoadedPosts, type ListLoadedPostsInput } from "../api/dom";
-import { textResult } from "../result";
+import { fromLinkedInResult } from "../result";
 
 export const listLoadedPostsTool: WebMcpTool<ListLoadedPostsInput> = {
   name: "linkedin_list_loaded_posts",
@@ -26,6 +26,6 @@ export const listLoadedPostsTool: WebMcpTool<ListLoadedPostsInput> = {
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
   execute(input) {
-    return textResult(listLoadedPosts(input));
+    return fromLinkedInResult(listLoadedPosts(input));
   }
 };

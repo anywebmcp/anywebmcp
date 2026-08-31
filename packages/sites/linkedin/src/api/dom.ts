@@ -488,7 +488,7 @@ export function listLoadedPosts({ offset = 0, limit = DEFAULT_PAGE_SIZE }: ListL
     const safeOffset = Math.max(0, Math.trunc(offset));
     const safeLimit = Math.min(MAX_PAGE_SIZE, Math.max(1, Math.trunc(limit)));
     return {
-      ok: true,
+      ok: true as const,
       posts: posts.slice(safeOffset, safeOffset + safeLimit).map(post => publicPost(post)),
       totalLoaded: posts.length,
       nextOffset: safeOffset + safeLimit < posts.length ? safeOffset + safeLimit : null,
@@ -562,7 +562,7 @@ export async function collectFeedPosts({
       });
 
     return {
-      ok: true,
+      ok: true as const,
       posts,
       totalCollected: fingerprints.size,
       requestedLimit: safeLimit,
@@ -581,7 +581,7 @@ export async function readPost(postId: string) {
     const ensured = await ensurePostInternal(postId, { maxScrolls: 6, focus: false });
     if (!ensured.ok) return ensured;
     return {
-      ok: true,
+      ok: true as const,
       post: publicPost(ensured.post, true),
       recovered: ensured.recovered,
       scrollsPerformed: ensured.scrollsPerformed
@@ -596,7 +596,7 @@ export async function ensurePost(postId: string, maxScrolls = 6) {
     const ensured = await ensurePostInternal(postId, { maxScrolls, focus: true });
     if (!ensured.ok) return ensured;
     return {
-      ok: true,
+      ok: true as const,
       ensured: true,
       mounted: ensured.mounted,
       visible: ensured.visible,
@@ -788,7 +788,7 @@ export async function prepareCommentDraft(postId: string, text: string) {
 
     const refreshed = resolvePost(postId).current || ensured.post;
     return {
-      ok: true,
+      ok: true as const,
       prepared: true,
       submitted: false,
       editorOpen: true,

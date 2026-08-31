@@ -1,6 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
 import { collectFeedPosts, type CollectFeedPostsInput } from "../api/dom";
-import { textResult } from "../result";
+import { fromLinkedInResult } from "../result";
 
 export const collectFeedPostsTool: WebMcpTool<CollectFeedPostsInput> = {
   name: "linkedin_collect_feed_posts",
@@ -33,6 +33,6 @@ export const collectFeedPostsTool: WebMcpTool<CollectFeedPostsInput> = {
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
   async execute(input) {
-    return textResult(await collectFeedPosts(input));
+    return fromLinkedInResult(await collectFeedPosts(input));
   }
 };

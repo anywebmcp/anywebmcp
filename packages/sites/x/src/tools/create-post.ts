@@ -1,6 +1,5 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@openwebmcp/common";
 import { createPost } from "../api/client";
-import { textResult } from "../result";
 
 type CreatePostInput = {
   text: string;
@@ -20,6 +19,6 @@ export const createPostTool: WebMcpTool<CreatePostInput> = {
   },
   annotations: { readOnlyHint: false, untrustedContentHint: false },
   async execute({ text }) {
-    return textResult(await createPost(text));
+    return completed(await createPost(text));
   }
 };

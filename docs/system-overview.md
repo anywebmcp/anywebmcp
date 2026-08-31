@@ -2,6 +2,8 @@
 
 AnyWeb MCP adds WebMCP tools to supported websites through a Chromium extension. This repository contains everything needed to run AnyWeb MCP with Codex.
 
+For tool authoring, read [Developing site tools](developing-site-tools.md) and the [tool result contract](tool-result-contract.md).
+
 ## Layers
 
 - [Chrome extension](layers/chrome-extension.md) — loads the appropriate site integration on supported domains.

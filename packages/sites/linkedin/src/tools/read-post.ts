@@ -1,6 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
 import { readPost } from "../api/dom";
-import { textResult } from "../result";
+import { fromLinkedInResult } from "../result";
 
 type ReadPostInput = { postId: string };
 
@@ -22,6 +22,6 @@ export const readPostTool: WebMcpTool<ReadPostInput> = {
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
   async execute({ postId }) {
-    return textResult(await readPost(postId));
+    return fromLinkedInResult(await readPost(postId));
   }
 };

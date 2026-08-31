@@ -1,5 +1,7 @@
 # Developing site tools
 
+Follow the [tool result contract](tool-result-contract.md) for completion, failure, and navigation outcomes. Return shared result helpers from `execute()`; the common registration wrapper handles formatting and unexpected errors.
+
 For each operation in a new or existing website integration, choose the implementation in this order:
 
 1. **Official API:** Use it when it works with the user's existing website session. Do not require the user to create an API token, OAuth app, or separate credentials.

@@ -1,6 +1,5 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@openwebmcp/common";
 import { getVisiblePosts } from "../dom/posts";
-import { textResult } from "../result";
 
 export const getPostsTool: WebMcpTool = {
   name: "x_get_posts",
@@ -10,6 +9,6 @@ export const getPostsTool: WebMcpTool = {
   annotations: { readOnlyHint: true, untrustedContentHint: true },
   execute() {
     const posts = getVisiblePosts();
-    return textResult({ count: posts.length, posts });
+    return completed({ count: posts.length, posts });
   }
 };

@@ -8,6 +8,8 @@ This package exposes DOM-backed WebMCP tools on `www.linkedin.com`:
 - `linkedin_ensure_post` makes a bounded attempt to remount and focus a virtualized post.
 - `linkedin_prepare_comment_draft` opens a comment editor, inserts text, and verifies the visible draft without submitting it.
 
+Tools follow the [shared result contract](../../../docs/tool-result-contract.md). Successful calls return `status: "completed"` with their payload under `data`. The site result adapter removes the internal `ok` flag and converts failures to `status: "failed"`, keeping error codes, recovery instructions, and post URLs in `message`. The common wrapper handles response formatting. These tools do not request navigation or persist continuations.
+
 LinkedIn virtualizes its feed, so the adapter maintains a bounded in-page registry of recently observed posts. It prefers LinkedIn activity URNs and canonical URLs, with a deterministic author-and-text fingerprint as a fallback. Later tools can use any returned `postId` while the current page session remains alive.
 
 The adapter never publishes a comment. Draft preparation changes the visible LinkedIn UI, reads the editor text back, and returns `submitted: false`; the user must review the field and click LinkedIn's Comment button manually.

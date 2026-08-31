@@ -1,3 +1,4 @@
+import { ToolError } from "@openwebmcp/common";
 import { getLastTransactionId } from "./network";
 
 type Operation = {
@@ -42,7 +43,7 @@ function mainBundleUrl() {
 function loadMainBundle() {
   if (!mainBundle) {
     const url = mainBundleUrl();
-    if (!url) throw new Error("X's main JavaScript bundle was not observed. Reload X and try again.");
+    if (!url) throw new ToolError("X's main JavaScript bundle was not observed. Reload X and try again.");
     mainBundle = fetch(url).then(response => response.text());
   }
   return mainBundle;
@@ -58,13 +59,13 @@ async function findOperation(operationName: string): Promise<Operation> {
   const markerIndex = source.indexOf(marker);
   const start = source.lastIndexOf('queryId:"', markerIndex);
   if (markerIndex < 0 || start < 0 || markerIndex - start > 200) {
-    throw new Error(`X operation ${operationName} was not found in the current client bundle.`);
+    throw new ToolError(`X operation ${operationName} was not found in the current client bundle.`);
   }
 
   const definition = source.slice(start, markerIndex + 8000);
   const queryId = definition.match(/^queryId:"([^"]+)"/)?.[1];
   const featureSource = definition.match(/featureSwitches:\[([^\]]*)\]/)?.[1] ?? "";
-  if (!queryId) throw new Error(`X operation ${operationName} has no query ID.`);
+  if (!queryId) throw new ToolError(`X operation ${operationName} has no query ID.`);
 
   return {
     queryId,
@@ -115,7 +116,7 @@ async function createTransactionId(path: string) {
 
 function bearerToken(source: string) {
   const token = source.match(/Bearer A{10,}[A-Za-z0-9%_-]+/)?.[0];
-  if (!token) throw new Error("X's public web bearer token was not found.");
+  if (!token) throw new ToolError("X's public web bearer token was not found.");
   return token;
 }
 
@@ -125,12 +126,12 @@ function postId(body: any) {
 }
 
 export async function createPost(text: string) {
-  if (!text.trim()) throw new Error("Post text cannot be empty.");
+  if (!text.trim()) throw new ToolError("Post text cannot be empty.");
 
   const operation = await findOperation("CreateTweet");
   const path = `/i/api/graphql/${operation.queryId}/${operation.operationName}`;
   const csrf = cookie("ct0");
-  if (!csrf) throw new Error("No signed-in X session was found.");
+  if (!csrf) throw new ToolError("No signed-in X session was found.");
 
   const transactionId = await createTransactionId(path);
   const headers: Record<string, string> = {
@@ -161,9 +162,12 @@ export async function createPost(text: string) {
   });
   const body = await response.json();
   const id = postId(body);
-  if (!response.ok || !id) {
+  if (!response.ok) {
     const message = body?.errors?.map((error: any) => error.message).join("; ") || response.statusText;
-    throw new Error(`X rejected the post: ${message}`);
+    throw new ToolError(`X rejected the post: ${message}`);
+  }
+  if (!id) {
+    throw new ToolError("X did not return a post ID. Check whether the post was published before retrying.");
   }
 
   return {

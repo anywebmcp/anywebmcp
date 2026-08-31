@@ -6,6 +6,10 @@ This package exposes WebMCP tools on `x.com` and `twitter.com`:
 - `x_get_posts` returns the posts shown on the current page.
 - `x_create_post` publishes a text post.
 
+## Results
+
+Tools follow the [shared result contract](../../../docs/tool-result-contract.md). Successful calls return `status: "completed"` with their payload under `data`; failures return `status: "failed"` with a message. The common wrapper handles formatting and exceptions. These tools do not request navigation.
+
 ## Reading posts
 
 `x_get_posts` queries `article[data-testid="tweet"]` cards and extracts each post's permalink, author, text, timestamp, engagement metrics, media, link previews, quoted post, and repost attribution. It does not scroll, so it returns the timeline window X keeps in the DOM.

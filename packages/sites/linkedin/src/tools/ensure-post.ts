@@ -1,6 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
 import { ensurePost } from "../api/dom";
-import { textResult } from "../result";
+import { fromLinkedInResult } from "../result";
 
 type EnsurePostInput = { postId: string; maxScrolls?: number };
 
@@ -29,6 +29,6 @@ export const ensurePostTool: WebMcpTool<EnsurePostInput> = {
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
   async execute({ postId, maxScrolls = 6 }) {
-    return textResult(await ensurePost(postId, maxScrolls));
+    return fromLinkedInResult(await ensurePost(postId, maxScrolls));
   }
 };
