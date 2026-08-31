@@ -20,6 +20,8 @@ type WorkflowResult<T> =
 
 Return this payload from `execute()`. The common wrapper serializes the result and checks the status and required fields before returning WebMCP text content. It returns `failed` for malformed results, serialization errors, and unexpected exceptions. It forwards execution options and preserves caller cancellation. The wrapper does not navigate or retry actions.
 
+Execution options and their `signal` are both optional: native callers may supply an empty options object. Only check or subscribe to cancellation when a signal is present.
+
 - `completed`: Verify the requested outcome before returning its data. A successful read may return an empty collection.
 - `navigation_required`: The operation needs another page before it can finish. Return the destination and the next invocation instructions. Treat this as an intermediate outcome.
 - `failed`: Describe why the operation could not complete. A failure after a write attempt does not prove that the write had no effect; verify before retrying.

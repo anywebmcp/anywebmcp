@@ -65,6 +65,11 @@ function isRendered(post: Element) {
   return rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden";
 }
 
+export function isInViewport(element: Element) {
+  const rect = element.getBoundingClientRect();
+  return rect.bottom > 0 && rect.top < innerHeight && rect.right > 0 && rect.left < innerWidth;
+}
+
 function quotedRoot(post: Element) {
   return elements<HTMLElement>(post, '[role="link"][tabindex="0"]')
     .find(root => root.querySelector('[data-testid="User-Name"]')) ?? null;
@@ -191,9 +196,33 @@ function parsePost(post: Element, quoted = false): Post | null {
   };
 }
 
-export function getVisiblePosts() {
-  return [...document.querySelectorAll('article[data-testid="tweet"]')]
-    .filter(isRendered)
-    .map(post => parsePost(post))
-    .filter((post): post is Post => Boolean(post));
+function replyingTo(post: Element) {
+  const clone = post.cloneNode(true) as Element;
+  quotedRoot(clone)?.remove();
+  clone.querySelectorAll('[data-testid="tweetText"], [data-testid="User-Name"], [role="group"]').forEach(node => node.remove());
+  const label = [...clone.querySelectorAll("div")]
+    .find(node => /^Replying to\b/.test(node.textContent?.trim() ?? ""));
+  return [...new Set(label?.textContent?.match(/@[A-Za-z0-9_]+/g) ?? [])];
 }
+
+export function postColumn() {
+  return document.querySelector<HTMLElement>('[data-testid="primaryColumn"]')
+    ?? document.querySelector<HTMLElement>("main");
+}
+
+export function getRenderedPosts() {
+  return [...(postColumn()?.querySelectorAll<HTMLElement>('article[data-testid="tweet"]') ?? [])]
+    .filter(isRendered)
+    .flatMap(element => {
+      const post = parsePost(element);
+      return post?.id && post.url
+        ? [{ element, post: { ...post, id: post.id, url: post.url }, replyingTo: replyingTo(element) }]
+        : [];
+    });
+}
+
+export function getVisiblePosts() {
+  return getRenderedPosts().filter(item => isInViewport(item.element)).map(item => item.post);
+}
+
+export type RenderedPost = ReturnType<typeof getRenderedPosts>[number];

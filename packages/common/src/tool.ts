@@ -16,13 +16,14 @@ export function wrapTool<TInput extends object, TOutput>(tool: WebMcpTool<TInput
     ...tool,
     description: `${tool.description} ${RESULT_DESCRIPTION}`,
     async execute(input: TInput, options?: ToolExecutionOptions) {
+      const signal = options?.signal;
       try {
-        options?.signal.throwIfAborted();
+        signal?.throwIfAborted();
         const result = await tool.execute(input, options);
-        options?.signal.throwIfAborted();
+        signal?.throwIfAborted();
         return textResult(result);
       } catch (error) {
-        if (options?.signal.aborted) throw options.signal.reason;
+        if (signal?.aborted) throw signal.reason;
         return textResult(failed(error instanceof ToolError
           ? error.message
           : "Tool execution failed. Verify the outcome before retrying an action that could change data."));

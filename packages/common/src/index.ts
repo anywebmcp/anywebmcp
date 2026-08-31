@@ -9,7 +9,7 @@ export type ToolAnnotations = {
   untrustedContentHint?: boolean;
 };
 
-export type ToolExecutionOptions = { signal: AbortSignal };
+export type ToolExecutionOptions = { signal?: AbortSignal };
 
 export type WebMcpTool<TInput extends object = Record<string, unknown>, TOutput = unknown> = {
   name: string;
