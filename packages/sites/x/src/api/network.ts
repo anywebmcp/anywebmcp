@@ -109,7 +109,3 @@ export function getNetworkStatus() {
     hasTransactionId: Boolean(state.transactionId)
   };
 }
-
-export function getLastTransactionId() {
-  return state.transactionId || null;
-}

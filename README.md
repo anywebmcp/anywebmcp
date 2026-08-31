@@ -49,8 +49,9 @@ The same extension registers LinkedIn tools on `https://www.linkedin.com`. Reloa
 - `x_get_api_status`
 - `x_get_posts`
 - `x_create_post`
+- `x_reply_to_post`
 
-`x_create_post` publishes immediately and should only be invoked after the user confirms the exact text.
+`x_create_post` and `x_reply_to_post` return prefilled intent URLs. The caller opens the URL, and the user reviews and submits the post or reply manually in X. Neither tool publishes or clicks a submit button.
 
 See [the system overview](docs/system-overview.md) and [the X package](packages/sites/x/README.md) for extension details. See [the launcher package](packages/codex-launcher/README.md) for app packaging.
 

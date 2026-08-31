@@ -4,11 +4,12 @@ This package exposes WebMCP tools on `x.com` and `twitter.com`:
 
 - `x_get_api_status` reports captured GraphQL operations and readiness.
 - `x_get_posts` reads visible posts, a bounded batch, or the next batch on the current page.
-- `x_create_post` publishes a text post.
+- `x_create_post` returns a prefilled posting intent for manual review and submission.
+- `x_reply_to_post` returns a prefilled reply intent for manual review and submission.
 
 ## Results
 
-Tools follow the [shared result contract](../../../docs/tool-result-contract.md). Successful calls return `status: "completed"` with their payload under `data`; failures return `status: "failed"` with a message. The common wrapper handles formatting and exceptions. These tools do not request navigation.
+Tools follow the [shared result contract](../../../docs/tool-result-contract.md). Successful reads return `status: "completed"` with their payload under `data`; failures return `status: "failed"` with a message. The common wrapper handles formatting and exceptions. Posting and reply tools return `navigation_required` with the prefilled intent URL and instructions for manual submission; they never report a published post.
 
 ## Reading posts
 
@@ -48,59 +49,24 @@ Top-level and quoted posts use the same recursive content shape; only top-level 
 
 The package patches `fetch` at `document_start` to observe X's GraphQL operations and transaction IDs. `x_get_api_status` exposes this diagnostic state.
 
-## Posting
+## Posting and replies
 
-The adapter was inspected on 2026-08-27 against X client bundle `main.dd01e8d41baf20e2a.js`.
-
-X's in-page `sendTweet` function calls this persisted GraphQL mutation:
-
-```text
-POST /i/api/graphql/{queryId}/CreateTweet
+```js
+x_create_post({ text: "Hello twttr" });
+x_reply_to_post({ postId: "<target post ID>", text: "Reply text" });
 ```
 
-The inspected bundle declares query ID `WXTdKnLddrQOunD6MhWi3g`. The adapter extracts the current value from the active `main.*.js` bundle because X can rotate it.
+Both tools only build a URL and return `navigation_required`. The posting URL is `https://x.com/intent/tweet?text=…`; replies add `in_reply_to=<postId>`. `URLSearchParams` preserves the supplied text, including line breaks and special characters. Blank text and invalid reply IDs fail without producing a URL.
 
-The text-only request body has this shape:
+The caller opens the returned URL, then stops for user confirmation. The user checks the signed-in account, draft text, and reply target and clicks Post or Reply manually in X. The instruction includes the exact text for review. No second tool invocation is needed: calling either tool again just returns the same URL, even when the intent is already open.
 
-```json
-{
-  "variables": {
-    "tweet_text": "...",
-    "media": {
-      "media_entities": [],
-      "possibly_sensitive": false
-    },
-    "semantic_annotation_ids": [],
-    "disallowed_reply_options": null
-  },
-  "features": {},
-  "queryId": "..."
-}
-```
+There is no composer inspection, button clicking, submission tracking, storage access, API request, or publication detection. The tools are read-only URL builders and never return `completed` for publication. This also means they do not verify that X loaded or accepted the draft.
 
-The request uses these headers:
-
-- X's public web bearer token from the active bundle.
-- `x-csrf-token` from the signed-in session's `ct0` cookie.
-- `x-twitter-auth-type: OAuth2Session`.
-- `x-twitter-active-user: yes`.
-- `x-client-transaction-id` from X's transaction-ID module.
-
-The request attaches cookies with `fetch(..., { credentials: "include" })`. Tools do not return authentication cookies.
-
-### Internal modules
-
-The inspected bundle uses these modules:
-
-- Module `949428` contains `sendTweet` and its `CreateTweet` variable builder.
-- Module `795387` contains the `CreateTweet` operation descriptor.
-- Module `991160` loads X's transaction-ID generator.
-
-Webpack module numbers and persisted query IDs can rotate. The extension finds the operation and transaction module from bundle signatures.
+The intent flow uses the existing X login and needs no API credentials. X controls authentication, account permissions, and text limits, and currently redirects `/intent/tweet` to `/intent/post`. Media, polls, quotes, threads, and scheduling are outside the tools' scope.
 
 ## Support and account risk
 
-X does not support this web-client API. X's [automation rules](https://help.x.com/en/rules-and-policies/x-automation) prohibit non-API website scripting and warn that it may result in account suspension. The [official X API](https://docs.x.com/x-api/getting-started/about-x-api) supports production integrations through application OAuth.
+Automating the composer is website scripting. X's [automation rules](https://help.x.com/en/rules-and-policies/x-automation) prohibit non-API website scripting and warn that it may result in account suspension. The [official X API](https://docs.x.com/x-api/getting-started/about-x-api) supports production integrations through application OAuth.
 
 ## Local testing
 

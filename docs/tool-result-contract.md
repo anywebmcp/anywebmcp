@@ -43,6 +43,8 @@ Use `failed(message)` for expected failures. Lower-level helpers can use `throw 
 
 For navigation, return `navigationRequired(url, instruction, continuationToken?)`. Creating this result does not save state or navigate.
 
+For tools that only prepare an intent URL for manual submission, the navigation instruction hands off to the user instead of requesting another tool call. The user reviews and submits the draft in the website. Reinvoking such a tool only returns the URL again; it never confirms or publishes the draft.
+
 ## Navigation and continuation
 
 Keep steps within one `execute()` call when the document survives, including supported SPA route changes. For a full page load:

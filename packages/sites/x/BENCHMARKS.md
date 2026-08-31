@@ -25,3 +25,13 @@ The live X conversation layout was inspected without posting or reacting. Two pu
 We ran `x_get_posts({ mode: "batch", limit: 10 })` through native WebMCP in the signed-in in-app Browser after fixing optional cancellation-signal handling and restarting the app. This live smoke check returned 10 unique posts in 1,070 ms, with `status: "completed"`, `stopReason: "limit"`, and four downward scrolls. The last post matched `lastPostId`; six posts included nested quotes. Some text was truncated, and the quoted posts had null IDs and URLs.
 
 `npm run build`, an X-package strict TypeScript check, and `git diff --check` passed. A live WebMCP-versus-browser benchmark remains pending. The single-call duration above excludes navigation and measures no token savings. Run at least three alternating, equivalent-start runs per approach under the [benchmarking process](../../../docs/benchmarking-site-tools.md) before publishing a new comparison.
+
+## Posting and reply intents — 2026-08-31
+
+`x_create_post` and `x_reply_to_post` now only return prefilled intent URLs and require manual user submission. The former publishing implementation, including button clicking, submission tracking, and success-toast detection, was removed.
+
+Earlier browser inspection verified the `/intent/tweet` to `/intent/post` redirect and prefilled text with blank lines and special characters. A live publishing attempt was blocked by Browser's automatic safety review before submission; no post was published through the tool.
+
+Local checks invoked both current tools through the common wrapper without browser globals. They returned `navigation_required`, preserved multiline text and special characters, encoded the reply target, included manual-submission instructions, and returned the same result on repeated calls. Blank text and invalid reply IDs were rejected. Build, TypeScript, and whitespace checks passed. No test files were added.
+
+No WebMCP-versus-browser benchmark is claimed for the current URL builders. The representative operation is now preparing a post or reply draft for review, stopping before submission. Follow the [benchmarking process](../../../docs/benchmarking-site-tools.md): use the same model and instruction, alternate browser-only and WebMCP runs at least three times each, and record individual timings, token usage, and medians. Publication is outside these tools' scope.
