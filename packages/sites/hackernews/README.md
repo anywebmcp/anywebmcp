@@ -21,7 +21,7 @@ All returned story and comment text is untrusted web content and includes source
 Run deterministic logic tests with:
 
 ```sh
-npm test -w @openwebmcp/site-hackernews
+npm test -w @anywebmcp/site-hackernews
 ```
 
 The offline suite also mounts the package through the shared WebMCP contract harness and uses deterministic API fixtures for successful reads, HTTP failures, malformed responses, and missing items.
@@ -29,7 +29,7 @@ The offline suite also mounts the package through the shared WebMCP contract har
 Run the JavaScript WebMCP live smoke harness with:
 
 ```sh
-npm run test:live -w @openwebmcp/site-hackernews
+npm run test:live -w @anywebmcp/site-hackernews
 ```
 
 The live harness executes the extension's real Hacker News entrypoint, captures tools registered through `document.modelContext.registerTool`, invokes every registered tool through its public `execute` contract, validates the JSON result shapes, and reads current data from the public Hacker News APIs.

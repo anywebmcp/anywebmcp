@@ -1,5 +1,5 @@
 {
-  "name": "@openwebmcp/site-producthunt",
+  "name": "@anywebmcp/site-producthunt",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,6 +9,6 @@
     "test": "node ../../../scripts/run-package-tests.mjs"
   },
   "dependencies": {
-    "@openwebmcp/common": "*"
+    "@anywebmcp/common": "*"
   }
 }

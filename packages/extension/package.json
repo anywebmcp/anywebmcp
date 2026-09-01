@@ -1,19 +1,19 @@
 {
-  "name": "@openwebmcp/extension",
+  "name": "@anywebmcp/extension",
   "private": true,
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs"
   },
   "dependencies": {
-    "@openwebmcp/common": "*",
-    "@openwebmcp/site-amazon": "*",
-    "@openwebmcp/site-ebay": "*",
-    "@openwebmcp/site-hackernews": "*",
-    "@openwebmcp/site-linkedin": "*",
-    "@openwebmcp/site-producthunt": "*",
-    "@openwebmcp/site-temu": "*",
-    "@openwebmcp/site-reddit": "*",
-    "@openwebmcp/site-x": "*"
+    "@anywebmcp/common": "*",
+    "@anywebmcp/site-amazon": "*",
+    "@anywebmcp/site-ebay": "*",
+    "@anywebmcp/site-hackernews": "*",
+    "@anywebmcp/site-linkedin": "*",
+    "@anywebmcp/site-producthunt": "*",
+    "@anywebmcp/site-temu": "*",
+    "@anywebmcp/site-reddit": "*",
+    "@anywebmcp/site-x": "*"
   }
 }

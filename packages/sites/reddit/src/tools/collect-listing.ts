@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { collectListing, type CollectListingInput } from "../api/dom";
 import { fromRedditResult } from "../result";
 

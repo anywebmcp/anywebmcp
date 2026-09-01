@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { assertSiteContract, importAndMountSite } from "@openwebmcp/common/test";
+import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
 
 test("registers wrapped read and manual-navigation tools", async t => {
   let fetchCalls = 0;

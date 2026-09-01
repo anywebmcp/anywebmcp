@@ -20,15 +20,15 @@ function configFor(id = "alpha") {
 }
 
 async function makeSite({ id = "alpha", config = configFor(id), toolName = `${id}_read`, parent } = {}) {
-  const root = parent ?? await mkdtemp(path.join(os.tmpdir(), "openwebmcp-minimal-metadata-"));
+  const root = parent ?? await mkdtemp(path.join(os.tmpdir(), "anywebmcp-minimal-metadata-"));
   if (!parent) temporaryRoots.push(root);
   const siteDir = path.join(root, id);
   await mkdir(path.join(siteDir, "src/tools"), { recursive: true });
   await writeFile(path.join(siteDir, "site.config.json"), `${JSON.stringify(config, null, 2)}\n`);
-  await writeFile(path.join(siteDir, "package.json"), JSON.stringify({ name: `@openwebmcp/site-${id}` }));
+  await writeFile(path.join(siteDir, "package.json"), JSON.stringify({ name: `@anywebmcp/site-${id}` }));
   await writeFile(path.join(siteDir, "README.md"), `# ${id}\n`);
   await writeFile(path.join(siteDir, "src/index.ts"), `
-import { defineSite } from "@openwebmcp/common";
+import { defineSite } from "@anywebmcp/common";
 import siteConfig from "../site.config.json" with { type: "json" };
 import { readTool } from "./tools/read";
 export const manifest = {
@@ -101,7 +101,7 @@ test("directory, package name, README, and config-backed manifest are required",
   await writeFile(path.join(siteDir, "src/index.ts"), "export default {};\n");
   const result = output(await errorsFor(siteDir));
   assert.match(result, /must match directory/);
-  assert.match(result, /@openwebmcp\/site-beta/);
+  assert.match(result, /@anywebmcp\/site-beta/);
   assert.match(result, /README is required/);
   assert.match(result, /must derive id, title, version, and matches/);
   assert.match(result, /default defineSite export/);
@@ -111,7 +111,7 @@ test("registered tool names are unique and use the derived site prefix", async (
   const wrongPrefix = await makeSite({ toolName: "wrong_read" });
   assert.match(output(await errorsFor(wrongPrefix)), /must use prefix "alpha_"/);
 
-  const root = await mkdtemp(path.join(os.tmpdir(), "openwebmcp-minimal-duplicates-"));
+  const root = await mkdtemp(path.join(os.tmpdir(), "anywebmcp-minimal-duplicates-"));
   temporaryRoots.push(root);
   const firstParent = path.join(root, "one");
   const secondParent = path.join(root, "two");
@@ -125,7 +125,7 @@ test("registered tool names are unique and use the derived site prefix", async (
 });
 
 test("manual extension wiring drift is detected", async () => {
-  const root = await mkdtemp(path.join(os.tmpdir(), "openwebmcp-minimal-extension-"));
+  const root = await mkdtemp(path.join(os.tmpdir(), "anywebmcp-minimal-extension-"));
   temporaryRoots.push(root);
   await mkdir(path.join(root, "packages/extension/scripts"), { recursive: true });
   await mkdir(path.join(root, "packages/extension/src/sites"), { recursive: true });
@@ -142,7 +142,7 @@ test("manual extension wiring drift is detected", async () => {
   assert.match(result, /matches drifted/);
   assert.match(result, /run_at must be/);
   assert.match(result, /missing "sites\/alpha"/);
-  assert.match(result, /missing @openwebmcp\/site-alpha/);
+  assert.match(result, /missing @anywebmcp\/site-alpha/);
   assert.match(result, /must import and mount/);
   assert.match(result, /bridge matches drifted/);
 });

@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { compareProducts } from "../api/compare-products";
 import type { CompareProductsInput } from "../api/types";
 import { fromTemuResult } from "../result";

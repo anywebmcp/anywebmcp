@@ -40,7 +40,7 @@ npm run codex:release
 
 The command signs the app with hardened runtime and a secure timestamp, submits a temporary ZIP to Apple, waits for acceptance, staples Apple's ticket to the app, and checks both its signature and Gatekeeper acceptance. It then creates the final `Codex WebMCP.zip` from the stapled app. The app and ZIP are written to `packages/codex-launcher/dist`; send the ZIP to recipients. The launcher's bundle version is read from the embedded extension manifest. No Codex executable is uploaded or included in the release.
 
-The release fails if signing or notarization fails; it never falls back to an ad-hoc signature. Existing output is kept until the new app passes notarization and verification. Apple submissions can take time; the command prints the submission ID and waits up to 30 minutes. If it times out, Apple continues processing. Inspect that submission with `xcrun notarytool info <id> --keychain-profile openwebmcp` and retrieve its log with `xcrun notarytool log <id> --keychain-profile openwebmcp`. A timed-out build does not produce a new release ZIP; rerun the release command after resolving the issue.
+The release fails if signing or notarization fails; it never falls back to an ad-hoc signature. Existing output is kept until the new app passes notarization and verification. Apple submissions can take time; the command prints the submission ID and waits up to 30 minutes. If it times out, Apple continues processing. Inspect that submission with `xcrun notarytool info <id> --keychain-profile anywebmcp` and retrieve its log with `xcrun notarytool log <id> --keychain-profile anywebmcp`. A timed-out build does not produce a new release ZIP; rerun the release command after resolving the issue.
 
 Recipients should not need **System Settings → Privacy & Security → Open Anyway** or quarantine removal. macOS can still display its normal first-open confirmation for an app downloaded from the internet. Do not edit the app after signing; rebuild and notarize it again instead.
 
@@ -62,7 +62,7 @@ You need an active Apple Developer Program membership, a **Developer ID Applicat
 3. Create an app-specific password at [Apple Account → Sign-In and Security → App-Specific Passwords](https://account.apple.com). Store notarization credentials through the interactive terminal prompts:
 
    ```sh
-   xcrun notarytool store-credentials "openwebmcp"
+   xcrun notarytool store-credentials "anywebmcp"
    ```
 
    Use your Apple Account email, Developer Team ID (from your membership details), and the app-specific password. The command validates and saves them in Keychain. Do not put passwords, private keys, or exported certificates in the repository or chat. A stored App Store Connect API key profile also works.
@@ -71,7 +71,7 @@ If exactly one Developer ID Application identity is installed, the build selects
 
 ```sh
 APPLE_SIGNING_IDENTITY="Developer ID Application: Your Name (TEAMID)" \
-APPLE_NOTARY_PROFILE="openwebmcp" \
+APPLE_NOTARY_PROFILE="anywebmcp" \
 npm run codex:release
 ```
 

@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { readItem } from "../api/item";
 import type { ReadItemInput } from "../api/types";
 import { fromEbayResult } from "../result";

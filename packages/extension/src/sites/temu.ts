@@ -1,4 +1,4 @@
-import { mountSite } from "@openwebmcp/common";
-import temuSite from "@openwebmcp/site-temu";
+import { mountSite } from "@anywebmcp/common";
+import temuSite from "@anywebmcp/site-temu";
 
 mountSite(temuSite);

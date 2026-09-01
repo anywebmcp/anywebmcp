@@ -1,5 +1,5 @@
 {
-  "name": "@openwebmcp/site-reddit",
+  "name": "@anywebmcp/site-reddit",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,6 +9,6 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@openwebmcp/common": "*"
+    "@anywebmcp/common": "*"
   }
 }

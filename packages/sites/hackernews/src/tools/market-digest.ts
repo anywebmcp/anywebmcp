@@ -1,4 +1,4 @@
-import { completed, type WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@anywebmcp/common";
 import { marketDigest, type MarketDigestInput } from "../api/market";
 
 export const marketDigestTool: WebMcpTool<MarketDigestInput> = {

@@ -86,7 +86,7 @@ async function exists(path) {
 }
 
 function printHelp() {
-  console.log(`Usage: openwebmcp-codex <command> [options]
+  console.log(`Usage: anywebmcp-codex <command> [options]
 
 Commands:
   build      Generate a launcher app in packages/codex-launcher/dist
@@ -107,7 +107,7 @@ Options:
   --signing-identity=<name or SHA-1>
                           Select a certificate (or APPLE_SIGNING_IDENTITY)
   --notarize              Sign, notarize, staple, and archive a bundled app
-  --notary-profile=<name>  Keychain credentials (APPLE_NOTARY_PROFILE or openwebmcp)
+  --notary-profile=<name>  Keychain credentials (APPLE_NOTARY_PROFILE or anywebmcp)
   --open                  Open the launcher after install
 `);
 }

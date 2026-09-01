@@ -1,4 +1,4 @@
-import { completed, failed, navigationRequired } from "@openwebmcp/common";
+import { completed, failed, navigationRequired } from "@anywebmcp/common";
 
 type TemuFailure = {
   ok: false;

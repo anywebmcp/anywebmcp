@@ -1,4 +1,4 @@
-import { completed, failed } from "@openwebmcp/common";
+import { completed, failed } from "@anywebmcp/common";
 import { EbayError } from "./api/shared";
 
 export async function fromEbayResult<T>(operation: () => T | Promise<T>) {

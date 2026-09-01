@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "OpenWebMCP",
+  "name": "AnyWeb MCP",
   "version": "0.1.0",
   "description": "Adds packaged WebMCP tools to supported websites.",
   "background": {

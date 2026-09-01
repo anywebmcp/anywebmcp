@@ -1,16 +1,16 @@
 {
-  "name": "@openwebmcp/codex-launcher",
+  "name": "@anywebmcp/codex-launcher",
   "private": true,
   "type": "module",
   "bin": {
-    "openwebmcp-codex": "bin/openwebmcp-codex.mjs"
+    "anywebmcp-codex": "bin/anywebmcp-codex.mjs"
   },
   "scripts": {
-    "generate": "node bin/openwebmcp-codex.mjs build --archive",
-    "release": "node bin/openwebmcp-codex.mjs build --mode=bundle --notarize",
-    "install:app": "node bin/openwebmcp-codex.mjs install --mode=dev",
-    "install:standard": "node bin/openwebmcp-codex.mjs install --mode=dev --profile=standard",
-    "doctor": "node bin/openwebmcp-codex.mjs doctor"
+    "generate": "node bin/anywebmcp-codex.mjs build --archive",
+    "release": "node bin/anywebmcp-codex.mjs build --mode=bundle --notarize",
+    "install:app": "node bin/anywebmcp-codex.mjs install --mode=dev",
+    "install:standard": "node bin/anywebmcp-codex.mjs install --mode=dev --profile=standard",
+    "doctor": "node bin/anywebmcp-codex.mjs doctor"
   },
   "engines": {
     "node": ">=20"

@@ -1,4 +1,4 @@
-import { completed, type WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@anywebmcp/common";
 import { researchTopic, type ResearchTopicInput } from "../api/research";
 
 export const researchTopicTool: WebMcpTool<ResearchTopicInput> = {

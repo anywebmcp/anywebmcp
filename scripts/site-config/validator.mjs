@@ -186,7 +186,7 @@ async function validateSite({ rootDir, siteDir, siteIds, toolNames }) {
 
   const packageFile = path.join(siteDir, "package.json");
   const packageJson = await readJson(rootDir, packageFile, errors);
-  const expectedPackageName = `@openwebmcp/site-${config.id}`;
+  const expectedPackageName = `@anywebmcp/site-${config.id}`;
   if (packageJson && packageJson.name !== expectedPackageName) {
     errors.push(diagnostic(rootDir, packageFile, "name", `must be ${JSON.stringify(expectedPackageName)}`));
   }
@@ -255,8 +255,8 @@ async function validateExtension(rootDir, results) {
     if (!buildSource.includes(buildEntry)) {
       errors.push(diagnostic(rootDir, buildFile, "entryPoints", `missing ${buildEntry}`));
     }
-    if (!extensionPackage?.dependencies?.[`@openwebmcp/site-${config.id}`]) {
-      errors.push(diagnostic(rootDir, extensionPackageFile, "dependencies", `missing @openwebmcp/site-${config.id}`));
+    if (!extensionPackage?.dependencies?.[`@anywebmcp/site-${config.id}`]) {
+      errors.push(diagnostic(rootDir, extensionPackageFile, "dependencies", `missing @anywebmcp/site-${config.id}`));
     }
 
     const entryFile = path.join(rootDir, `packages/extension/src/sites/${config.id}.ts`);
@@ -264,8 +264,8 @@ async function validateExtension(rootDir, results) {
       errors.push(diagnostic(rootDir, entryFile, "", "extension site entry is required"));
     } else {
       const entrySource = await readFile(entryFile, "utf8");
-      if (!entrySource.includes(`from \"@openwebmcp/site-${config.id}\"`) || !entrySource.includes("mountSite(")) {
-        errors.push(diagnostic(rootDir, entryFile, "", `must import and mount @openwebmcp/site-${config.id}`));
+      if (!entrySource.includes(`from \"@anywebmcp/site-${config.id}\"`) || !entrySource.includes("mountSite(")) {
+        errors.push(diagnostic(rootDir, entryFile, "", `must import and mount @anywebmcp/site-${config.id}`));
       }
     }
   }

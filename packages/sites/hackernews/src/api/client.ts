@@ -1,4 +1,4 @@
-import { ToolError } from "@openwebmcp/common";
+import { ToolError } from "@anywebmcp/common";
 import type {
   AlgoliaItem,
   AlgoliaSearchResponse,

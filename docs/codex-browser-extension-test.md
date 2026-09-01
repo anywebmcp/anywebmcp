@@ -29,7 +29,7 @@ The launcher:
 - reads the installed Codex version from `/Applications/ChatGPT.app`;
 - creates an unchanged, signed APFS runtime copy at `/Users/vladimir/Library/Application Support/Codex-WebMCP/Runtime/ChatGPT-<version>-<build>.app` when that version is first launched;
 - keeps browser state in `/Users/vladimir/Library/Application Support/Codex-WebMCP/Profile`;
-- loads `/Users/vladimir/views/openwebmcp/packages/extension/dist`;
+- loads `packages/extension/dist`;
 - enables `WebMCPTesting`;
 - does not enable a remote-debugging port.
 
@@ -69,4 +69,4 @@ The profile was not signed in to X, so the empty status is expected. No login wa
 - Before the reusable launcher package was added, this document was the only repository change made by the original launch test.
 - The launcher app and its application-support folder are user-level filesystem additions outside the repository. To uninstall them, quit Codex WebMCP and move `/Users/vladimir/Applications/Codex WebMCP.app` and `/Users/vladimir/Library/Application Support/Codex-WebMCP` to Trash.
 - Browser data created by an earlier launcher smoke test was moved to Trash as `Codex-WebMCP-initial-profile-20260828` and remains recoverable until Trash is emptied.
-- After verification, the temporary artifacts were moved to Trash and remain recoverable as `OpenWebMCP-Codex-Test-20260828.app` and `openwebmcp-codex-profile-20260828` until Trash is emptied.
+- After verification, the temporary artifacts were moved to Trash and remain recoverable as `AnyWebMCP-Codex-Test-20260828.app` and `anywebmcp-codex-profile-20260828` until Trash is emptied.

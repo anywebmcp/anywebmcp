@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { assertSiteContract, importAndMountSite } from "@openwebmcp/common/test";
+import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
 import { DOMParser, parseHTML } from "linkedom";
 
 async function fixture(name: string) {

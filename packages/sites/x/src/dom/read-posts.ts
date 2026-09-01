@@ -1,4 +1,4 @@
-import { ToolError } from "@openwebmcp/common";
+import { ToolError } from "@anywebmcp/common";
 import { getRenderedPosts, isInViewport, postColumn } from "./posts";
 import { pageContext, pageKey, withPostContext, type ContextualPost, type PostContext, type PostPage } from "./post-context";
 

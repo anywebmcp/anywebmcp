@@ -1,6 +1,6 @@
-# OpenWebMCP
+# AnyWeb MCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Product Hunt, Reddit, Temu, and X.
+AnyWeb MCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Product Hunt, Reddit, Temu, and X.
 
 ## Build
 
@@ -22,8 +22,8 @@ npm run release
 The command prompts for a patch, minor, major, or exact version. For a non-interactive release, pass `--bump=patch|minor|major` or `--version=x.y.z`. Production releases require a clean worktree and the Apple setup described below. Artifacts are written to `dist/releases/<version>`:
 
 ```text
-openwebmcp-extension-<version>.zip
-openwebmcp-chrome-web-store-<version>.zip
+anywebmcp-extension-<version>.zip
+anywebmcp-chrome-web-store-<version>.zip
 codex-webmcp-macos-universal-<version>.zip
 ```
 

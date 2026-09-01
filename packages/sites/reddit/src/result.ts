@@ -1,4 +1,4 @@
-import { completed, failed } from "@openwebmcp/common";
+import { completed, failed } from "@anywebmcp/common";
 
 type RedditFailure = {
   ok: false;

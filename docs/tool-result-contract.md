@@ -32,7 +32,7 @@ The wrapper appends result and navigation guidance to tool descriptions. Add any
 
 ## Writing handlers
 
-Import `completed`, `failed`, and `navigationRequired` from `@openwebmcp/common`. Keep the tool's existing metadata and input schema; return outcomes from its handler:
+Import `completed`, `failed`, and `navigationRequired` from `@anywebmcp/common`. Keep the tool's existing metadata and input schema; return outcomes from its handler:
 
 ```ts
 execute() {

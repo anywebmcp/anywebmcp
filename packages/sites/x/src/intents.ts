@@ -1,4 +1,4 @@
-import { failed, navigationRequired } from "@openwebmcp/common";
+import { failed, navigationRequired } from "@anywebmcp/common";
 
 export function postIntent(text: string, postId?: string) {
   if (!text.trim()) return failed("Post text cannot be empty.");

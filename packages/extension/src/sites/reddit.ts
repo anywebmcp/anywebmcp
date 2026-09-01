@@ -1,4 +1,4 @@
-import { mountSite } from "@openwebmcp/common";
-import redditSite from "@openwebmcp/site-reddit";
+import { mountSite } from "@anywebmcp/common";
+import redditSite from "@anywebmcp/site-reddit";
 
 mountSite(redditSite);

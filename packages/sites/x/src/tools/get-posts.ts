@@ -1,4 +1,4 @@
-import { completed, type WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@anywebmcp/common";
 import { readPosts, type GetPostsInput } from "../dom/read-posts";
 
 export const getPostsTool: WebMcpTool<GetPostsInput> = {

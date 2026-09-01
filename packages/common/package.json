@@ -1,5 +1,5 @@
 {
-  "name": "@openwebmcp/common",
+  "name": "@anywebmcp/common",
   "private": true,
   "type": "module",
   "exports": {

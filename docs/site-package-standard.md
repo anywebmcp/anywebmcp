@@ -76,7 +76,7 @@ Keep ordinary tests in `test/`. Site packages use this script:
 "test": "node ../../../scripts/run-package-tests.mjs"
 ```
 
-Contract tests can import `assertSiteContract` and `importAndMountSite` from `@openwebmcp/common/test`. The helper installs a fake `document.modelContext`, mounts the site, captures wrapped tools, checks their registration metadata, and parses their workflow result envelopes. Site-specific DOM, response, and mutation fixtures remain in the site package.
+Contract tests can import `assertSiteContract` and `importAndMountSite` from `@anywebmcp/common/test`. The helper installs a fake `document.modelContext`, mounts the site, captures wrapped tools, checks their registration metadata, and parses their workflow result envelopes. Site-specific DOM, response, and mutation fixtures remain in the site package.
 
 ## Package README
 

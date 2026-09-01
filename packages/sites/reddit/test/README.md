@@ -3,7 +3,7 @@
 The deterministic automated suite is the primary fixture workflow:
 
 ```sh
-npm test -w @openwebmcp/site-reddit
+npm test -w @anywebmcp/site-reddit
 ```
 
 It runs offline with `linkedom` and covers modern and legacy listings, threads, rules, access states, bounded expansion, target IDs, and non-submitting reply editors. It also mounts the site through the common test harness and executes all four wrapped tools.

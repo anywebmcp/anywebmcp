@@ -1,4 +1,4 @@
-import { completed, type WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@anywebmcp/common";
 import { getNetworkStatus } from "../api/network";
 
 export const getApiStatusTool: WebMcpTool = {

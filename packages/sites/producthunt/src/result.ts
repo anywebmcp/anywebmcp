@@ -1,4 +1,4 @@
-import { completed, failed } from "@openwebmcp/common";
+import { completed, failed } from "@anywebmcp/common";
 
 const MALFORMED_RESULT_MESSAGE = "Product Hunt returned a malformed result.";
 

@@ -1,4 +1,4 @@
-import { mountSite } from "@openwebmcp/common";
-import linkedinSite from "@openwebmcp/site-linkedin";
+import { mountSite } from "@anywebmcp/common";
+import linkedinSite from "@anywebmcp/site-linkedin";
 
 mountSite(linkedinSite);

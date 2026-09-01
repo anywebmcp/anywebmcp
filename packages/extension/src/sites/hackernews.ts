@@ -1,4 +1,4 @@
-import { mountSite } from "@openwebmcp/common";
-import hackerNewsSite from "@openwebmcp/site-hackernews";
+import { mountSite } from "@anywebmcp/common";
+import hackerNewsSite from "@anywebmcp/site-hackernews";
 
 mountSite(hackerNewsSite);

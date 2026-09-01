@@ -1,4 +1,4 @@
-import { mountSite } from "@openwebmcp/common";
-import ebaySite from "@openwebmcp/site-ebay";
+import { mountSite } from "@anywebmcp/common";
+import ebaySite from "@anywebmcp/site-ebay";
 
 mountSite(ebaySite);

@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { searchProducts } from "../api/search-products";
 import type { SearchProductsInput } from "../api/types";
 import { fromTemuResult } from "../result";

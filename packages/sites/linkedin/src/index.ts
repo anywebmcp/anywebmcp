@@ -1,4 +1,4 @@
-import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import { defineSite, type SiteManifest } from "@anywebmcp/common";
 import siteConfig from "../site.config.json" with { type: "json" };
 import { collectFeedPostsTool } from "./tools/collect-feed-posts";
 import { ensurePostTool } from "./tools/ensure-post";

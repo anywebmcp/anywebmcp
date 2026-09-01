@@ -1,4 +1,4 @@
-import { completed, failed } from "@openwebmcp/common";
+import { completed, failed } from "@anywebmcp/common";
 import type { AmazonFailure } from "./api/shared";
 
 export function fromAmazonResult<T extends { ok: true }>(result: T | AmazonFailure) {

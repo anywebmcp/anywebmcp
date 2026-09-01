@@ -19,7 +19,7 @@ Requests use the marketplace of the current Amazon tab. Existing browser cookies
 
 ## Implementation and selectors
 
-Amazon's Product Advertising API requires separate credentials and therefore does not fit OpenWebMCP's current-session requirement. These tools request Amazon's normal same-origin browser pages and parse returned HTML with `DOMParser`:
+Amazon's Product Advertising API requires separate credentials and therefore does not fit AnyWeb MCP's current-session requirement. These tools request Amazon's normal same-origin browser pages and parse returned HTML with `DOMParser`:
 
 - Search uses `/s?k=...` and product cards matching `[data-component-type="s-search-result"][data-asin]`.
 - Product details use `/dp/<ASIN>`, with stable IDs such as `#productTitle`, `#feature-bullets`, `#availability`, the buy-box delivery and seller feature blocks, product detail tables, and `data-asin` variation controls.
@@ -66,7 +66,7 @@ If Amazon returns a CAPTCHA or robot-check page, the tool returns a `bot_check` 
 Run the Amazon package's offline contract and sanitized fixture tests from the repository root:
 
 ```sh
-npm test -w @openwebmcp/site-amazon
+npm test -w @anywebmcp/site-amazon
 ```
 
 The root `npm test` command also includes this package. No Amazon credentials or live requests are used.

@@ -19,7 +19,7 @@ Selectors and embedded-data keys are deliberately broad because Temu's generated
 Run the offline package tests with:
 
 ```sh
-npm test -w @openwebmcp/site-temu
+npm test -w @anywebmcp/site-temu
 ```
 
 The suite covers parsing and result adaptation, all three mounted tool contracts, and sanitized search-results and product-detail fixtures. Run `npm test`, `npm run typecheck`, and `npm run validate:sites` from the repository root before submitting changes. Because this refactor does not materially change tool behavior, it does not require benchmark backfill.

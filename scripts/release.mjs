@@ -10,7 +10,7 @@ import { promisify } from "node:util";
 const exec = promisify(execFile);
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const manifestPath = resolve(repoRoot, "packages/extension/manifest.json");
-const launcherCli = resolve(repoRoot, "packages/codex-launcher/bin/openwebmcp-codex.mjs");
+const launcherCli = resolve(repoRoot, "packages/codex-launcher/bin/anywebmcp-codex.mjs");
 const releasesDir = resolve(repoRoot, "dist/releases");
 
 main().catch(error => {
@@ -67,11 +67,11 @@ async function buildArtifacts(stagingDir, version, local) {
   const extensionDir = resolve(workDir, "extension");
   await mkdir(workDir, { recursive: true });
 
-  await run("npm", ["run", "build", "-w", "@openwebmcp/extension", "--", `--outdir=${extensionDir}`]);
+  await run("npm", ["run", "build", "-w", "@anywebmcp/extension", "--", `--outdir=${extensionDir}`]);
   await validateExtension(extensionDir, version);
 
-  const manualZip = resolve(stagingDir, `openwebmcp-extension-${version}.zip`);
-  const storeZip = resolve(stagingDir, `openwebmcp-chrome-web-store-${version}.zip`);
+  const manualZip = resolve(stagingDir, `anywebmcp-extension-${version}.zip`);
+  const storeZip = resolve(stagingDir, `anywebmcp-chrome-web-store-${version}.zip`);
   const launcherZip = resolve(stagingDir, `codex-webmcp-macos-universal-${version}${local ? "-local" : ""}.zip`);
 
   await packageManualExtension(workDir, extensionDir, manualZip, version);
@@ -82,7 +82,7 @@ async function buildArtifacts(stagingDir, version, local) {
 
 async function packageManualExtension(workDir, extensionDir, output, version) {
   const parent = resolve(workDir, "manual");
-  const directoryName = `OpenWebMCP-${version}`;
+  const directoryName = `AnyWebMCP-${version}`;
   await mkdir(parent, { recursive: true });
   await cp(extensionDir, resolve(parent, directoryName), { recursive: true });
   await createZip(parent, directoryName, output);
@@ -124,13 +124,13 @@ async function validateArtifacts([manualZip, storeZip, launcherZip], version) {
   for (const path of [manualZip, storeZip, launcherZip]) await run("/usr/bin/unzip", ["-tqq", path]);
 
   const manualEntries = await zipEntries(manualZip);
-  if (!manualEntries.includes(`OpenWebMCP-${version}/manifest.json`)) {
+  if (!manualEntries.includes(`AnyWebMCP-${version}/manifest.json`)) {
     throw new Error("The manual extension ZIP does not contain its versioned extension directory.");
   }
 
   const storeEntries = await zipEntries(storeZip);
   if (!storeEntries.includes("manifest.json")) throw new Error("The Chrome Web Store ZIP must contain manifest.json at its root.");
-  if (storeEntries.some(path => path.startsWith(`OpenWebMCP-${version}/`))) {
+  if (storeEntries.some(path => path.startsWith(`AnyWebMCP-${version}/`))) {
     throw new Error("The Chrome Web Store ZIP must not contain a parent directory.");
   }
 

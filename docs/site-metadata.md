@@ -1,6 +1,6 @@
 # Site metadata
 
-This document owns the minimal canonical metadata format and repository validation for site packages. Cross-package behavior and safety invariants remain owned by the [site package standard](site-package-standard.md). Extension generation and lifecycle mechanics remain owned by [#16](https://github.com/lugovsky/openwebmcp/issues/16).
+This document owns the minimal canonical metadata format and repository validation for site packages. Cross-package behavior and safety invariants remain owned by the [site package standard](site-package-standard.md). Extension generation and lifecycle mechanics remain owned by [#16](https://github.com/anywebmcp/anywebmcp/issues/16).
 
 ## Canonical source
 
@@ -16,7 +16,7 @@ Every package under `packages/sites/*` MUST contain a `site.config.json` with ex
 }
 ```
 
-- `id` is the stable lowercase site ID. It MUST match the directory and the `@openwebmcp/site-<id>` package name.
+- `id` is the stable lowercase site ID. It MUST match the directory and the `@anywebmcp/site-<id>` package name.
 - `title` is the human-readable site title.
 - `version` is the site's semantic compatibility or release version.
 - `matches` contains unique HTTPS extension match patterns for supported hosts. Broad host patterns are forbidden.

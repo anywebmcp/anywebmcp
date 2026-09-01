@@ -34,7 +34,7 @@ For local native WebMCP testing, enable `chrome://flags/#enable-webmcp-testing` 
 Run the package's deterministic offline fixture and wrapped-contract tests with:
 
 ```sh
-npm test -w @openwebmcp/site-reddit
+npm test -w @anywebmcp/site-reddit
 ```
 
 The package also participates in the root `npm test` workspace run. Fixtures cover modern and old Reddit listings and threads, rule surfaces, access states, stable and fallback IDs, bounded comment expansion, and draft insertion without submission. No Reddit credentials or network access are required.

@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { listLaunches, type ListLaunchesInput } from "../api/dom";
 import { fromProductHuntResult } from "../result";
 

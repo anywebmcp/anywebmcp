@@ -1,4 +1,4 @@
-import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import { defineSite, type SiteManifest } from "@anywebmcp/common";
 import siteConfig from "../site.config.json" with { type: "json" };
 import { compareProductsTool } from "./tools/compare-products";
 import { readProductTool } from "./tools/read-product";

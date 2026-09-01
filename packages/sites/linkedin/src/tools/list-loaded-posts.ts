@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { listLoadedPosts, type ListLoadedPostsInput } from "../api/dom";
 import { fromLinkedInResult } from "../result";
 

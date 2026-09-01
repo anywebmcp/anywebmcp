@@ -16,7 +16,7 @@ if (!entries.length) {
   console.error(`No test/*.test.{ts,js,mjs,cjs} files found in ${packageDirectory}.`);
   process.exitCode = 1;
 } else {
-  const outputDirectory = await mkdtemp(path.join(tmpdir(), "openwebmcp-tests-"));
+  const outputDirectory = await mkdtemp(path.join(tmpdir(), "anywebmcp-tests-"));
   try {
     await build({
       bundle: true,

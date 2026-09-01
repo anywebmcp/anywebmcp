@@ -70,6 +70,6 @@ Automating the composer is website scripting. X's [automation rules](https://hel
 
 ## Local testing
 
-Run `npm test -w @openwebmcp/site-x` for the package's offline contract, capture, DOM, reader, and intent tests.
+Run `npm test -w @anywebmcp/site-x` for the package's offline contract, capture, DOM, reader, and intent tests.
 
 Enable `chrome://flags/#enable-webmcp-testing`, relaunch Chrome, and load `packages/extension/dist` as an unpacked extension.

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { assertSiteContract, importAndMountSite } from "@openwebmcp/common/test";
+import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
 import { fixture, linkedInDom } from "./support";
 
 test("registers and wraps all five LinkedIn tools without submitting a comment", async t => {

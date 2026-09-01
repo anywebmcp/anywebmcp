@@ -1,5 +1,5 @@
 {
-  "name": "@openwebmcp/site-amazon",
+  "name": "@anywebmcp/site-amazon",
   "private": true,
   "type": "module",
   "exports": {
@@ -9,6 +9,6 @@
     "test": "node ../../../scripts/run-package-tests.mjs"
   },
   "dependencies": {
-    "@openwebmcp/common": "*"
+    "@anywebmcp/common": "*"
   }
 }

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { assertSiteContract, importAndMountSite } from "@openwebmcp/common/test";
+import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
 import { DOMParser } from "linkedom";
 import { fixture, fixtureDocument, htmlResponse, origin } from "./support";
 

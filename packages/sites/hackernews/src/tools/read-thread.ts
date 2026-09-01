@@ -1,4 +1,4 @@
-import { completed, type WebMcpTool } from "@openwebmcp/common";
+import { completed, type WebMcpTool } from "@anywebmcp/common";
 import { readThread, type ReadThreadInput } from "../api/thread";
 
 export const readThreadTool: WebMcpTool<ReadThreadInput> = {

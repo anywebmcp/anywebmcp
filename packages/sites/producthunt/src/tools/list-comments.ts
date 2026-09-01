@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { listComments, type ListCommentsInput } from "../api/comments";
 import { fromProductHuntResult } from "../result";
 

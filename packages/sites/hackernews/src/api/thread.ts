@@ -1,4 +1,4 @@
-import { ToolError } from "@openwebmcp/common";
+import { ToolError } from "@anywebmcp/common";
 import { getAlgoliaItem } from "./client";
 import { flattenComments } from "./logic";
 import { publicStoryFromAlgoliaItem } from "./normalize";

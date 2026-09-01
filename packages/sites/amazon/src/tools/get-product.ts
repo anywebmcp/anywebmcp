@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import { getProduct, type ProductInput } from "../api/product";
 import { fromAmazonResult } from "../result";
 

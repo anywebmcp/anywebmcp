@@ -1,4 +1,4 @@
-import { failed, type WebMcpTool } from "@openwebmcp/common";
+import { failed, type WebMcpTool } from "@anywebmcp/common";
 import { postIntent } from "../intents";
 
 type ReplyToPostInput = { postId: string; text: string };

@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseToolResult } from "@openwebmcp/common/test";
+import { parseToolResult } from "@anywebmcp/common/test";
 import { postIntent } from "../src/intents";
 import { createPostTool } from "../src/tools/create-post";
 import { replyToPostTool } from "../src/tools/reply-to-post";
-import { wrapTool } from "@openwebmcp/common";
+import { wrapTool } from "@anywebmcp/common";
 import { intentFixture } from "./fixtures/x-pages";
 
 test("intent URLs preserve special characters and are repeatable", () => {

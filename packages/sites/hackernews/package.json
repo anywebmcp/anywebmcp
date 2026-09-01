@@ -1,5 +1,5 @@
 {
-  "name": "@openwebmcp/site-hackernews",
+  "name": "@anywebmcp/site-hackernews",
   "private": true,
   "type": "module",
   "exports": {
@@ -7,9 +7,9 @@
   },
   "scripts": {
     "test": "node ../../../scripts/run-package-tests.mjs",
-    "test:live": "esbuild test/live-smoke.ts --bundle --platform=node --format=esm --outfile=/tmp/openwebmcp-hackernews-live-smoke.mjs && node /tmp/openwebmcp-hackernews-live-smoke.mjs"
+    "test:live": "esbuild test/live-smoke.ts --bundle --platform=node --format=esm --outfile=/tmp/anywebmcp-hackernews-live-smoke.mjs && node /tmp/anywebmcp-hackernews-live-smoke.mjs"
   },
   "dependencies": {
-    "@openwebmcp/common": "*"
+    "@anywebmcp/common": "*"
   }
 }

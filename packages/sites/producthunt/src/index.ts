@@ -1,4 +1,4 @@
-import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import { defineSite, type SiteManifest } from "@anywebmcp/common";
 import siteConfig from "../site.config.json" with { type: "json" };
 import { listCommentsTool } from "./tools/list-comments";
 import { listLaunchesTool } from "./tools/list-launches";

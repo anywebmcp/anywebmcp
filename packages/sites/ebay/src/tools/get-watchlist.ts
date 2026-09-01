@@ -1,4 +1,4 @@
-import type { WebMcpTool } from "@openwebmcp/common";
+import type { WebMcpTool } from "@anywebmcp/common";
 import type { GetWatchlistInput } from "../api/types";
 import { getWatchlist } from "../api/watchlist";
 import { fromEbayResult } from "../result";

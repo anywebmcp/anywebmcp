@@ -33,9 +33,9 @@ Returned post text is marked as untrusted content. Captured text is capped at 10
 Expected DOM, registry, editor, and failure outcomes are covered by sanitized offline fixtures. Run the package tests with:
 
 ```sh
-npm test -w @openwebmcp/site-linkedin
+npm test -w @anywebmcp/site-linkedin
 ```
 
 The root `npm test` command includes this package.
 
-The implementation was adapted from [`KostyaDanovsky/linkedin-webmcp-bridge`](https://github.com/KostyaDanovsky/linkedin-webmcp-bridge) to OpenWebMCP's site-package structure.
+The implementation was adapted from [`KostyaDanovsky/linkedin-webmcp-bridge`](https://github.com/KostyaDanovsky/linkedin-webmcp-bridge) to AnyWeb MCP's site-package structure.
