@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { getWatchlist, type GetWatchlistInput } from "../api/dom";
+import type { GetWatchlistInput } from "../api/types";
+import { getWatchlist } from "../api/watchlist";
 import { fromEbayResult } from "../result";
 
 export const getWatchlistTool: WebMcpTool<GetWatchlistInput> = {

@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { setWatchState, type SetWatchStateInput } from "../api/dom";
+import type { SetWatchStateInput } from "../api/types";
+import { setWatchState } from "../api/watch-control";
 import { fromEbayResult } from "../result";
 
 export const setWatchStateTool: WebMcpTool<SetWatchStateInput> = {
