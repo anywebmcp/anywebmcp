@@ -9,7 +9,7 @@
   <key>CFBundleExecutable</key>
   <string>__EXECUTABLE_NAME__</string>
   <key>CFBundleIconFile</key>
-  <string>CodexWebMCP</string>
+  <string>AnyWebMCPCodexLauncher</string>
   <key>CFBundleIdentifier</key>
   <string>__BUNDLE_ID__</string>
   <key>CFBundleInfoDictionaryVersion</key>

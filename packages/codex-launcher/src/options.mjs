@@ -22,7 +22,7 @@ export function parseOptions(argv) {
     throw new Error("Notarization requires --mode=bundle so the extension is included in the app.");
   }
 
-  const appName = "Codex WebMCP";
+  const appName = "AnyWebMCP Codex Launcher";
   const installDir = resolve(flags["install-dir"] ?? `${homedir()}/Applications`);
 
   return {

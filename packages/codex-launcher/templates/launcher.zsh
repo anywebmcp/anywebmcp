@@ -10,7 +10,7 @@ runtime_dir="$HOME/Library/Application Support/Codex-WebMCP/Runtime"
 fail() {
   /usr/bin/osascript \
     -e 'on run argv' \
-    -e 'display alert "Codex WebMCP" message (item 1 of argv) as critical' \
+    -e 'display alert "AnyWebMCP Codex Launcher" message (item 1 of argv) as critical' \
     -e 'end run' \
     "$1"
   exit 1
@@ -25,7 +25,7 @@ codex_running() {
 }
 
 if [[ "$profile_dir" == "$HOME/Library/Application Support/Codex" ]] && codex_running; then
-  fail "Codex is currently running. Quit Codex before opening Codex WebMCP."
+  fail "Codex is currently running. Quit Codex before opening AnyWebMCP Codex Launcher."
 fi
 
 [[ -x "$source_app/Contents/MacOS/ChatGPT" ]] || fail "Codex was not found at $source_app."

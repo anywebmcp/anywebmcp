@@ -24,7 +24,7 @@ The command prompts for a patch, minor, major, or exact version. For a non-inter
 ```text
 anywebmcp-extension-<version>.zip
 anywebmcp-chrome-web-store-<version>.zip
-codex-webmcp-macos-universal-<version>.zip
+anywebmcp-codex-launcher-macos-universal-<version>.zip
 ```
 
 The manual archive expands to a versioned extension directory. The Chrome Web Store archive has `manifest.json` at its root. Both contain the same extension build, and the launcher embeds that exact build. Use `npm run release -- --version=x.y.z --local` to verify the complete pipeline with an ad-hoc-signed launcher; local output is not suitable for distribution.
@@ -47,7 +47,7 @@ npm run validate:sites
 
 See [Site metadata](docs/site-metadata.md) for schema ownership and validation rules.
 
-## Develop with Codex WebMCP
+## Develop with AnyWebMCP Codex Launcher
 
 On macOS, install a Codex launcher that loads the extension from this checkout:
 
@@ -61,7 +61,7 @@ For later development sessions, rebuild the extension, refresh the launcher, and
 npm run codex:dev
 ```
 
-Quit Codex WebMCP before reopening it when extension code changes. The development launcher is installed at `~/Applications/Codex WebMCP.app` and keeps a profile separate from normal Codex.
+Quit AnyWebMCP Codex Launcher before reopening it when extension code changes. The development launcher is installed at `~/Applications/AnyWebMCP Codex Launcher.app` and keeps a profile separate from normal Codex.
 
 To develop against the standard Codex login and browser data, quit normal Codex and run `npm run codex:dev:standard`.
 

@@ -12,15 +12,15 @@ int main(void) {
   uint32_t size = sizeof(executable);
 
   if (_NSGetExecutablePath(executable, &size) != 0 || !realpath(executable, resolved)) {
-    fputs("Could not locate the Codex WebMCP launcher.\n", stderr);
+    fputs("Could not locate the AnyWebMCP Codex Launcher.\n", stderr);
     return 1;
   }
   if (snprintf(script, sizeof(script), "%s/../Resources/launcher.zsh", dirname(resolved)) >= (int)sizeof(script)) {
-    fputs("The Codex WebMCP launcher path is too long.\n", stderr);
+    fputs("The AnyWebMCP Codex Launcher path is too long.\n", stderr);
     return 1;
   }
 
   execl("/bin/zsh", "zsh", "-f", script, (char *)NULL);
-  perror("Could not start the Codex WebMCP launcher");
+  perror("Could not start the AnyWebMCP Codex Launcher");
   return 1;
 }

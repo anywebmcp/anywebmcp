@@ -11,7 +11,7 @@ export async function buildApp(options, targetPath) {
   const identity = await resolveSigningIdentity(options);
   if (options.notarize) await checkNotaryProfile(options.notaryProfile);
   await mkdir(dirname(targetPath), { recursive: true });
-  const stagingDir = await mkdtemp(resolve(dirname(targetPath), ".codex-webmcp-"));
+  const stagingDir = await mkdtemp(resolve(dirname(targetPath), ".anywebmcp-codex-launcher-"));
   const stagedPath = resolve(stagingDir, basename(targetPath));
 
   try {
@@ -60,7 +60,7 @@ async function prepareExtension(options, appPath) {
 
 async function writeTemplates(options, appPath, extensionValue, appVersion) {
   const templateDir = resolve(options.packageRoot, "templates");
-  const executableName = "Codex WebMCP Launcher";
+  const executableName = "AnyWebMCP Codex Launcher";
   const plist = applyTemplate(await readFile(resolve(templateDir, "Info.plist"), "utf8"), {
     APP_NAME: options.appName,
     APP_VERSION: appVersion,
@@ -85,8 +85,8 @@ async function writeTemplates(options, appPath, extensionValue, appVersion) {
 }
 
 async function copyIcon(options, appPath) {
-  const source = resolve(options.packageRoot, "assets/CodexWebMCP.icns");
-  const destination = resolve(appPath, "Contents/Resources/CodexWebMCP.icns");
+  const source = resolve(options.packageRoot, "assets/AnyWebMCPCodexLauncher.icns");
+  const destination = resolve(appPath, "Contents/Resources/AnyWebMCPCodexLauncher.icns");
   await cp(source, destination);
 }
 

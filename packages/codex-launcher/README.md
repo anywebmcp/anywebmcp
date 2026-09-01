@@ -1,4 +1,4 @@
-# Codex WebMCP launcher
+# AnyWebMCP Codex Launcher
 
 This macOS-only package generates a small launcher app that starts a locally installed Codex app with an unpacked WebMCP extension.
 
@@ -18,7 +18,7 @@ Rebuild the extension and reinstall/open the launcher with:
 npm run codex:dev
 ```
 
-Quit Codex WebMCP before reopening it when extension code changes.
+Quit AnyWebMCP Codex Launcher before reopening it when extension code changes.
 
 Development mode keeps its browser data isolated at `~/Library/Application Support/Codex-WebMCP/Profile`, so it can run alongside the standard Codex app.
 
@@ -38,7 +38,7 @@ After the one-time Apple setup below, build a Developer ID signed and notarized 
 npm run codex:release
 ```
 
-The command signs the app with hardened runtime and a secure timestamp, submits a temporary ZIP to Apple, waits for acceptance, staples Apple's ticket to the app, and checks both its signature and Gatekeeper acceptance. It then creates the final `Codex WebMCP.zip` from the stapled app. The app and ZIP are written to `packages/codex-launcher/dist`; send the ZIP to recipients. The launcher's bundle version is read from the embedded extension manifest. No Codex executable is uploaded or included in the release.
+The command signs the app with hardened runtime and a secure timestamp, submits a temporary ZIP to Apple, waits for acceptance, staples Apple's ticket to the app, and checks both its signature and Gatekeeper acceptance. It then creates the final `AnyWebMCP Codex Launcher.zip` from the stapled app. The app and ZIP are written to `packages/codex-launcher/dist`; send the ZIP to recipients. The launcher's bundle version is read from the embedded extension manifest. No Codex executable is uploaded or included in the release.
 
 The release fails if signing or notarization fails; it never falls back to an ad-hoc signature. Existing output is kept until the new app passes notarization and verification. Apple submissions can take time; the command prints the submission ID and waits up to 30 minutes. If it times out, Apple continues processing. Inspect that submission with `xcrun notarytool info <id> --keychain-profile anywebmcp` and retrieve its log with `xcrun notarytool log <id> --keychain-profile anywebmcp`. A timed-out build does not produce a new release ZIP; rerun the release command after resolving the issue.
 

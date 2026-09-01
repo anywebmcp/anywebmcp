@@ -72,7 +72,7 @@ async function buildArtifacts(stagingDir, version, local) {
 
   const manualZip = resolve(stagingDir, `anywebmcp-extension-${version}.zip`);
   const storeZip = resolve(stagingDir, `anywebmcp-chrome-web-store-${version}.zip`);
-  const launcherZip = resolve(stagingDir, `codex-webmcp-macos-universal-${version}${local ? "-local" : ""}.zip`);
+  const launcherZip = resolve(stagingDir, `anywebmcp-codex-launcher-macos-universal-${version}${local ? "-local" : ""}.zip`);
 
   await packageManualExtension(workDir, extensionDir, manualZip, version);
   await zipDirectory(extensionDir, storeZip);
@@ -98,11 +98,11 @@ async function createZip(cwd, input, output) {
 }
 
 async function buildLauncher(workDir, extensionDir, output, local) {
-  const appPath = resolve(workDir, "launcher/Codex WebMCP.app");
+  const appPath = resolve(workDir, "launcher/AnyWebMCP Codex Launcher.app");
   const args = [launcherCli, "build", "--mode=bundle", `--extension-dir=${extensionDir}`, `--output=${appPath}`];
   args.push(local ? "--archive" : "--notarize");
   await run("node", args);
-  await rename(resolve(workDir, "launcher/Codex WebMCP.zip"), output);
+  await rename(resolve(workDir, "launcher/AnyWebMCP Codex Launcher.zip"), output);
 }
 
 async function validateExtension(directory, version) {
@@ -135,7 +135,7 @@ async function validateArtifacts([manualZip, storeZip, launcherZip], version) {
   }
 
   const { stdout } = await exec("/usr/bin/unzip", [
-    "-p", launcherZip, "Codex WebMCP.app/Contents/Resources/extension/manifest.json"
+    "-p", launcherZip, "AnyWebMCP Codex Launcher.app/Contents/Resources/extension/manifest.json"
   ]);
   const embeddedManifest = JSON.parse(stdout);
   if (embeddedManifest.version !== version) throw new Error("The launcher contains the wrong extension version.");
