@@ -1,0 +1,11 @@
+{
+  "name": "@openwebmcp/site-producthunt",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*"
+  }
+}

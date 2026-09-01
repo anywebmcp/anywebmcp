@@ -11,6 +11,7 @@
     "@openwebmcp/site-ebay": "*",
     "@openwebmcp/site-hackernews": "*",
     "@openwebmcp/site-linkedin": "*",
+    "@openwebmcp/site-producthunt": "*",
     "@openwebmcp/site-temu": "*",
     "@openwebmcp/site-x": "*"
   }
