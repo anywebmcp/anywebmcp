@@ -1,5 +1,5 @@
 import { mountSite } from "@openwebmcp/common";
-import xSite from "@openwebmcp/site-x";
+import xSite, { installNetworkCapture } from "@openwebmcp/site-x";
 
+installNetworkCapture();
 mountSite(xSite);
-

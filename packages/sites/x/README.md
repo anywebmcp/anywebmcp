@@ -47,7 +47,7 @@ Top-level and quoted posts use the same recursive content shape; only top-level 
 
 ## Network capture
 
-The package patches `fetch` at `document_start` to observe X's GraphQL operations and transaction IDs. `x_get_api_status` exposes this diagnostic state.
+The X extension entrypoint explicitly starts capture before mounting the site. That entrypoint runs at `document_start`, so capture still patches `fetch` early enough to observe X's GraphQL operations and transaction IDs. Importing the site package itself has no browser side effects. `x_get_api_status` exposes the diagnostic state.
 
 ## Posting and replies
 
@@ -69,5 +69,7 @@ The intent flow uses the existing X login and needs no API credentials. X contro
 Automating the composer is website scripting. X's [automation rules](https://help.x.com/en/rules-and-policies/x-automation) prohibit non-API website scripting and warn that it may result in account suspension. The [official X API](https://docs.x.com/x-api/getting-started/about-x-api) supports production integrations through application OAuth.
 
 ## Local testing
+
+Run `npm test -w @openwebmcp/site-x` for the package's offline contract, capture, DOM, reader, and intent tests.
 
 Enable `chrome://flags/#enable-webmcp-testing`, relaunch Chrome, and load `packages/extension/dist` as an unpacked extension.
