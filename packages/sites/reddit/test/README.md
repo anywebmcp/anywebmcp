@@ -1,4 +1,14 @@
-# Reddit adapter smoke fixture
+# Reddit adapter fixtures
+
+The deterministic automated suite is the primary fixture workflow:
+
+```sh
+npm test -w @openwebmcp/site-reddit
+```
+
+It runs offline with `linkedom` and covers modern and legacy listings, threads, rules, access states, bounded expansion, target IDs, and non-submitting reply editors. It also mounts the site through the common test harness and executes all four wrapped tools.
+
+## Optional browser smoke fixture
 
 Serve the repository root over HTTP, open `packages/sites/reddit/test/fixture.html`, and inspect `window.registeredTools` after building the extension. The fixture exercises modern Reddit-style custom elements without contacting Reddit or requiring a signed-in account.
 
