@@ -11,7 +11,8 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
+    "test": "node --test test/*.test.mjs && npm run test --workspaces --if-present",
+    "validate:sites": "node scripts/validate-sites.mjs",
     "codex:build": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs build --mode=bundle --archive",
     "codex:release": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs build --mode=bundle --notarize",
     "codex:install": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev",
@@ -24,6 +25,7 @@
     "@types/node": "^26.4.0",
     "esbuild": "^0.25.0",
     "linkedom": "^0.18.12",
+    "tldts": "^7.4.11",
     "typescript": "^5.9.0"
   }
 }

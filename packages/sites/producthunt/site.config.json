@@ -1,0 +1,7 @@
+{
+  "id": "producthunt",
+  "title": "Product Hunt",
+  "version": "0.1.0",
+  "matches": ["https://www.producthunt.com/*", "https://producthunt.com/*"],
+  "runAt": "document_idle"
+}

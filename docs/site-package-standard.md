@@ -44,6 +44,8 @@ Importing site metadata or a package entry point MUST NOT:
 
 Browser effects MUST start only when the extension explicitly mounts the package.
 
+Canonical metadata fields and repository validation are defined by [Site metadata](site-metadata.md).
+
 ## Tool behavior and safety
 
 A tool SHOULD document and validate any page preconditions required for safe execution.

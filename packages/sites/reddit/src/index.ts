@@ -1,14 +1,15 @@
 import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import siteConfig from "../site.config.json" with { type: "json" };
 import { collectListingTool } from "./tools/collect-listing";
 import { getCommunityRulesTool } from "./tools/get-community-rules";
 import { prepareReplyDraftTool } from "./tools/prepare-reply-draft";
 import { readThreadTool } from "./tools/read-thread";
 
 export const manifest: SiteManifest = {
-  id: "reddit",
-  title: "Reddit",
-  matches: ["https://www.reddit.com/*", "https://old.reddit.com/*"],
-  version: "0.1.0"
+  id: siteConfig.id,
+  title: siteConfig.title,
+  matches: siteConfig.matches,
+  version: siteConfig.version
 };
 
 export default defineSite({

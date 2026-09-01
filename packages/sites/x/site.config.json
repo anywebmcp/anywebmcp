@@ -1,0 +1,7 @@
+{
+  "id": "x",
+  "title": "X",
+  "version": "0.1.0",
+  "matches": ["https://x.com/*", "https://twitter.com/*"],
+  "runAt": "document_start"
+}

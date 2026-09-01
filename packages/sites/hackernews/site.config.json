@@ -1,0 +1,7 @@
+{
+  "id": "hackernews",
+  "title": "Hacker News",
+  "version": "0.1.0",
+  "matches": ["https://news.ycombinator.com/*"],
+  "runAt": "document_idle"
+}
