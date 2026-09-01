@@ -7,6 +7,9 @@ test("registers wrapped read and manual-navigation tools", async t => {
   const harness = await importAndMountSite(
     () => import("../src/index"),
     {
+      document: {
+        querySelector() { return null; }
+      },
       window: {
         fetch() {
           fetchCalls += 1;
@@ -37,6 +40,15 @@ test("registers wrapped read and manual-navigation tools", async t => {
     status: "navigation_required",
     url: "https://x.com/intent/tweet?text=Review+before+posting",
     instruction: "Open this URL to prepare a post with text \"Review before posting\", then stop for user review. The user must confirm the draft by clicking Post in X manually. Do not click the button or call the tool again to submit. Nothing has been published."
+  });
+  assert.deepEqual(await harness.execute("x_reply_to_post", { postId: "42", text: "Review reply" }), {
+    status: "navigation_required",
+    url: "https://x.com/intent/tweet?text=Review+reply&in_reply_to=42",
+    instruction: "Open this URL to prepare a reply to post 42 with text \"Review reply\", then stop for user review. The user must confirm the draft by clicking Reply in X manually. Do not click the button or call the tool again to submit. Nothing has been published."
+  });
+  assert.deepEqual(await harness.execute("x_get_posts"), {
+    status: "failed",
+    message: "X's main content is not ready. Wait for the page to load and retry."
   });
   assert.equal(fetchCalls, 0);
 });
