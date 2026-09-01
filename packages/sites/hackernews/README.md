@@ -1,0 +1,33 @@
+# Hacker News WebMCP package
+
+This package exposes read-only market-research tools on `news.ycombinator.com`:
+
+- `hackernews_market_digest` finds explicit product-launch stories and returns transparent engagement metrics with bounded comment previews.
+- `hackernews_research_topic` searches stories and comments for a topic and optional synonyms, then returns source-linked evidence, ranked threads, launches, problem discussions, sampled activity, and per-query coverage.
+- `hackernews_read_thread` returns a bounded structured discussion in HN order or with the largest top-level branches first.
+
+The adapter reads public data from the official [Hacker News Firebase API](https://github.com/HackerNews/API) and the public [HN Search API](https://hn.algolia.com/api). It never reads cookies, requires no credentials, and does not vote, favorite, reply, or submit.
+
+## Interpretation boundaries
+
+Hacker News is a technically skewed community, so activity is an interest signal rather than a market-size estimate. Search synonyms can overlap. `hackernews_research_topic` therefore reports exact result totals separately for every query/type pair and labels aggregate activity and unique-author counts as properties of the retrieved deduplicated sample.
+
+Launch classification is deliberately conservative and title-based. It recognizes explicit Show HN, Launch HN, release, launch, announcement, and open-sourcing language. The digest reports its selection and ranking formulas in every result.
+
+All returned story and comment text is untrusted web content and includes source permalinks for verification.
+
+## Verification
+
+Run deterministic logic tests with:
+
+```sh
+npm test -w @openwebmcp/site-hackernews
+```
+
+Run the JavaScript WebMCP live smoke harness with:
+
+```sh
+npm run test:live -w @openwebmcp/site-hackernews
+```
+
+The live harness executes the extension's real Hacker News entrypoint, captures tools registered through `document.modelContext.registerTool`, invokes every registered tool through its public `execute` contract, validates the JSON result shapes, and reads current data from the public Hacker News APIs.

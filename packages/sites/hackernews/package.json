@@ -1,0 +1,15 @@
+{
+  "name": "@openwebmcp/site-hackernews",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "esbuild tests/logic.test.ts --bundle --platform=node --format=esm --outfile=/tmp/openwebmcp-hackernews-tests.mjs && node --test /tmp/openwebmcp-hackernews-tests.mjs",
+    "test:live": "esbuild tests/live-smoke.ts --bundle --platform=node --format=esm --outfile=/tmp/openwebmcp-hackernews-live-smoke.mjs && node /tmp/openwebmcp-hackernews-live-smoke.mjs"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*"
+  }
+}

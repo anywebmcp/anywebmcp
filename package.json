@@ -19,6 +19,7 @@
     "codex:doctor": "node packages/codex-launcher/bin/openwebmcp-codex.mjs doctor"
   },
   "devDependencies": {
+    "@types/node": "^26.4.0",
     "esbuild": "^0.25.0",
     "linkedom": "^0.18.12",
     "typescript": "^5.9.0"
