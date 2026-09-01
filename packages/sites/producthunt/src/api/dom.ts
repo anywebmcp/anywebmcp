@@ -94,6 +94,7 @@ export function listLaunches(input: ListLaunchesInput = {}) {
   const main = document.querySelector("main");
   if (!main) {
     return {
+      ok: false,
       pageUrl: location.href,
       pageTitle: document.title,
       count: 0,
@@ -130,6 +131,7 @@ export function listLaunches(input: ListLaunchesInput = {}) {
   const availableSections = Array.from(new Set(launches.map(launch => launch.section)));
 
   return {
+    ok: true,
     pageUrl: location.href,
     pageTitle: document.title,
     requestedSection,

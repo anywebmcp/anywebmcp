@@ -9,7 +9,6 @@ const sitesDir = path.join(rootDir, "packages/sites");
 
 // TODO: Remove each exception when its site migration issue adds offline coverage.
 const siteTestExceptions = new Map([
-  ["@openwebmcp/site-producthunt", "#20"],
   ["@openwebmcp/site-linkedin", "#25"],
   ["@openwebmcp/site-reddit", "#26"]
 ]);

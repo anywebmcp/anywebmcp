@@ -53,7 +53,7 @@ function findProductSearch(value: unknown, depth = 0): ProductSearchConnection |
 }
 
 function hydrationPayload(document: Document) {
-  const script = Array.from(document.scripts).find(candidate => {
+  const script = Array.from(document.querySelectorAll("script")).find(candidate => {
     return candidate.textContent?.includes('"productSearch"');
   });
   const source = script?.textContent ?? "";

@@ -1,20 +1,24 @@
 import { completed, failed } from "@openwebmcp/common";
 
-type ProductHuntResult = {
-  ok?: boolean;
-  error?: string;
-  [key: string]: unknown;
-};
+const MALFORMED_RESULT_MESSAGE = "Product Hunt returned a malformed result.";
 
-export function fromProductHuntResult<T extends ProductHuntResult>(result: T) {
-  if (result.ok === false || (typeof result.error === "string" && result.error)) {
-    return failed(result.error || "Product Hunt request failed.");
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === "object" && !Array.isArray(value);
+}
+
+export function fromProductHuntResult(result: unknown) {
+  if (!isRecord(result) || (result.ok !== true && result.ok !== false)) {
+    return failed(MALFORMED_RESULT_MESSAGE);
   }
 
-  if (result.ok === true) {
-    const { ok: _ok, ...data } = result;
-    return completed(data);
+  if (result.ok === false) {
+    return typeof result.error === "string" && result.error.trim()
+      ? failed(result.error)
+      : failed(MALFORMED_RESULT_MESSAGE);
   }
 
-  return completed(result);
+  if (Object.hasOwn(result, "error")) return failed(MALFORMED_RESULT_MESSAGE);
+
+  const { ok: _ok, ...data } = result;
+  return completed(data);
 }
