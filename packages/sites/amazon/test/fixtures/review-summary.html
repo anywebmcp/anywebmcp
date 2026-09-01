@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head><title>Amazon review summary fixture</title></head>
+  <body>
+    <div data-hook="rating-out-of-text">4.3 out of 5</div>
+    <div data-hook="total-review-count">2,345 global ratings</div>
+    <div data-testid="overall-summary">Customers like the compact size and charging speed.</div>
+    <div id="histogramTable">
+      <a aria-label="70 percent 5 stars"></a>
+      <a aria-label="15 percent 4 stars"></a>
+      <a aria-label="5 percent 3 stars"></a>
+      <a aria-label="4 percent 2 stars"></a>
+      <a aria-label="6 percent 1 star"></a>
+    </div>
+    <section data-testid="bottomsheet-content-charging-speed">
+      <div data-testid="mentions-inline">100 customers mention charging speed; 82 positive and 18 negative</div>
+      <div data-testid="aspect-summary">Most customers report fast charging.</div>
+    </section>
+    <section data-testid="bottomsheet-content-durability">
+      <div data-testid="mentions-inline">40 customers mention durability; 10 positive and 30 negative</div>
+      <div data-testid="aspect-summary">Some units broke or stopped working.</div>
+    </section>
+    <div data-hook="review" id="S1">
+      <span data-hook="review-star-rating"><span class="a-icon-alt">5 out of 5 stars</span></span>
+      <span data-hook="format-strip">Color: Red</span>
+      <div data-hook="reviewText">Great.</div>
+    </div>
+    <div data-hook="review" id="S2">
+      <span data-hook="review-star-rating"><span class="a-icon-alt">2 out of 5 stars</span></span>
+      <span data-hook="format-strip">Color: Blue</span>
+      <div data-hook="reviewText">Broke.</div>
+    </div>
+  </body>
+</html>
