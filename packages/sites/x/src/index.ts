@@ -1,4 +1,5 @@
 import { defineSite, type SiteManifest } from "@openwebmcp/common";
+import siteConfig from "../site.config.json" with { type: "json" };
 import { installNetworkCapture } from "./api/network";
 import { createPostTool } from "./tools/create-post";
 import { getApiStatusTool } from "./tools/get-api-status";
@@ -8,10 +9,10 @@ import { replyToPostTool } from "./tools/reply-to-post";
 installNetworkCapture();
 
 export const manifest: SiteManifest = {
-  id: "x",
-  title: "X",
-  matches: ["https://x.com/*", "https://twitter.com/*"],
-  version: "0.1.0"
+  id: siteConfig.id,
+  title: siteConfig.title,
+  matches: siteConfig.matches,
+  version: siteConfig.version
 };
 
 export default defineSite({

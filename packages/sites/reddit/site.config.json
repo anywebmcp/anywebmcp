@@ -1,0 +1,7 @@
+{
+  "id": "reddit",
+  "title": "Reddit",
+  "version": "0.1.0",
+  "matches": ["https://www.reddit.com/*", "https://old.reddit.com/*"],
+  "runAt": "document_idle"
+}

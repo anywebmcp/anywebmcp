@@ -1,0 +1,16 @@
+{
+  "id": "ebay",
+  "title": "eBay",
+  "version": "0.1.0",
+  "matches": [
+    "https://*.ebay.com/*",
+    "https://*.ebay.co.uk/*",
+    "https://*.ebay.de/*",
+    "https://*.ebay.fr/*",
+    "https://*.ebay.it/*",
+    "https://*.ebay.es/*",
+    "https://*.ebay.ca/*",
+    "https://*.ebay.com.au/*"
+  ],
+  "runAt": "document_idle"
+}

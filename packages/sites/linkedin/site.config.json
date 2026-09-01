@@ -1,0 +1,7 @@
+{
+  "id": "linkedin",
+  "title": "LinkedIn",
+  "version": "0.1.0",
+  "matches": ["https://www.linkedin.com/*"],
+  "runAt": "document_idle"
+}

@@ -45,7 +45,7 @@ Each package MUST provide canonical information sufficient to identify and load 
 - the tool-name namespace and public tool inventory; and
 - documented page contexts or preconditions for each tool.
 
-This standard does not prescribe field names, a file format, or the final metadata schema. Those are owned by [#11](https://github.com/lugovsky/openwebmcp/issues/11).
+This standard does not prescribe field names or file-format details. Those are owned by [Site metadata](site-metadata.md).
 
 ## Page applicability
 
@@ -128,7 +128,7 @@ Benchmark results belong in `BENCHMARKS.md` under the [benchmark policy](benchma
 | Cross-package site invariants and governance | This document |
 | Public `WorkflowResult` completion, failure, and navigation semantics | [Tool result contract](tool-result-contract.md) |
 | Adapter-level errors, retryability, diagnostics, and conversion to `WorkflowResult` | [#14](https://github.com/lugovsky/openwebmcp/issues/14) until its accepted contract is documented |
-| Canonical metadata schema and validation | [#11](https://github.com/lugovsky/openwebmcp/issues/11) until its accepted schema is documented |
+| Canonical metadata schema and validation | [Site metadata](site-metadata.md) |
 | Test layout and contract-harness conventions | [#13](https://github.com/lugovsky/openwebmcp/issues/13) until its accepted harness is documented |
 | Shared runtime primitives and operational defaults | [#15](https://github.com/lugovsky/openwebmcp/issues/15) until its accepted runtime contract is documented |
 | Lifecycle, extension registration, and page-applicability mechanics | [#16](https://github.com/lugovsky/openwebmcp/issues/16) until its accepted lifecycle contract is documented |
@@ -146,7 +146,7 @@ packages/sites/<site>/
   package.json
   README.md
   BENCHMARKS.md
-  <canonical site metadata>     Format owned by #11
+  <canonical site metadata>     Format owned by site-metadata.md
   src/
     index.ts                    Pure package entry point
     tools/                      Thin WebMCP definitions

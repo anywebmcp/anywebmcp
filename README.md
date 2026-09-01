@@ -11,6 +11,16 @@ npm run build
 
 The unpacked extension is generated at `packages/extension/dist`.
 
+## Validate site metadata
+
+Validate every canonical site declaration and its repository wiring with:
+
+```sh
+npm run validate:sites
+```
+
+See [Site metadata](docs/site-metadata.md) for schema ownership and validation rules.
+
 ## Develop with Codex WebMCP
 
 On macOS, install a Codex launcher that loads the extension from this checkout:
