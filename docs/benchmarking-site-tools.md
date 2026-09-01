@@ -1,5 +1,7 @@
 # Benchmarking site tools
 
+This document owns the benchmark method and benchmark-file content. Cross-package architecture and safety requirements belong to the [site package standard](site-package-standard.md).
+
 Benchmark each tool against completing the same operation through the browser without WebMCP.
 
 1. Define a representative operation and the expected successful result.

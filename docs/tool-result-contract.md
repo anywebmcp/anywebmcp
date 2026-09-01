@@ -1,5 +1,7 @@
 # Tool result contract
 
+This document owns the public `WorkflowResult` completion, failure, and navigation semantics. Cross-package architecture and safety requirements belong to the [site package standard](site-package-standard.md); adapter-level error and diagnostic semantics are tracked separately in [#14](https://github.com/lugovsky/openwebmcp/issues/14).
+
 Follow this contract when creating tools. The common package enforces the result type and wraps tool execution at registration. Navigation continuation storage and the caller's resume flow still need implementation.
 
 ## Result payload
