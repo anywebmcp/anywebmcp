@@ -24,6 +24,8 @@ Run deterministic logic tests with:
 npm test -w @openwebmcp/site-hackernews
 ```
 
+The offline suite also mounts the package through the shared WebMCP contract harness and uses deterministic API fixtures for successful reads, HTTP failures, malformed responses, and missing items.
+
 Run the JavaScript WebMCP live smoke harness with:
 
 ```sh

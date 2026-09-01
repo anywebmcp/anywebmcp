@@ -1,3 +1,4 @@
+import { ToolError } from "@openwebmcp/common";
 import { getAlgoliaItem } from "./client";
 import { flattenComments } from "./logic";
 import { publicStoryFromAlgoliaItem } from "./normalize";
@@ -16,8 +17,9 @@ export async function readThread({
   maxDepth = 8
 }: ReadThreadInput) {
   const item = await getAlgoliaItem(id);
+  if (!item) throw new ToolError(`Hacker News item ${id} was not found.`);
   const story = publicStoryFromAlgoliaItem(item);
-  if (!story) throw new Error(`Hacker News item ${id} is not a readable story.`);
+  if (!story) throw new ToolError(`Hacker News item ${id} is not a readable story.`);
 
   const result = flattenComments(item.children ?? [], mode, maxDepth, maxComments);
   return {
