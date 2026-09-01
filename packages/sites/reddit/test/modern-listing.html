@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <button data-testid="user-drawer-button">Fixture user</button>
+    <main>
+      <shreddit-post
+        id="t3_modern1"
+        post-title="Modern fullname post"
+        author="alice"
+        subreddit-prefixed-name="r/typescript"
+        permalink="/r/typescript/comments/modern1/fullname/"
+        score="1.2k"
+        comment-count="12"
+        post-type="text">
+        <div slot="text-body">A modern post body.</div>
+      </shreddit-post>
+      <shreddit-post
+        post-title="Permalink fallback post"
+        author="bob"
+        subreddit-prefixed-name="r/typescript"
+        permalink="/r/typescript/s/shared-link">
+      </shreddit-post>
+      <shreddit-post post-title="Fingerprint fallback post" author="carol">
+        <div slot="text-body">No stable attributes are available.</div>
+      </shreddit-post>
+      <shreddit-post id="t3_advert" post-title="Sponsored post" promoted>
+        <div slot="promoted-label">Promoted</div>
+      </shreddit-post>
+    </main>
+  </body>
+</html>

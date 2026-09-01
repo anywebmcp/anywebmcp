@@ -13,6 +13,8 @@ Every successful result contains `pageContext`, including the page type, subredd
 
 The adapter uses Reddit's rendered DOM and the user's existing browser session. It recognizes modern `shreddit-*` custom elements as well as common legacy Reddit containers. Stable Reddit fullnames (`t3_` for posts and `t1_` for comments) are preferred, with permalinks and deterministic fingerprints as bounded fallbacks for listings.
 
+The implementation stays local to this package and separates page/access detection, DOM helpers, post and comment parsing, community rules, the bounded in-page post registry, and reply-editor interaction. `src/api/dom.ts` is a compatibility facade for the four tool operations; importing it does not inspect or mutate the page.
+
 Reads are deliberately limited to 50 posts, 200 comments, 20 levels of comment depth, 20 visible comment expansions, and 10 listing scrolls. Promoted posts are excluded. Reddit content is marked as untrusted, registry state remains in the current page session, and no cookies, tokens, modhashes, private messages, or persistent content copies are exposed.
 
 The package does not publish replies, create posts, vote, save, join communities, send messages, solve CAPTCHAs, or bypass Reddit access controls. Draft preparation refuses to overwrite a different existing draft and returns `submitted: false`; the user must review the editor and publish through Reddit's normal UI.
@@ -26,3 +28,13 @@ Reddit's frontend and custom-element attributes can change without notice. Commu
 Before publicly distributing or operating this adapter, review Reddit's current Developer Terms, Data API Terms, and Responsible Builder Policy. The adapter is intentionally scoped as a user-directed page assistant, not a crawler or bulk data collector.
 
 For local native WebMCP testing, enable `chrome://flags/#enable-webmcp-testing` and relaunch Chrome before loading `packages/extension/dist` as an unpacked extension.
+
+## Tests
+
+Run the package's deterministic offline fixture and wrapped-contract tests with:
+
+```sh
+npm test -w @openwebmcp/site-reddit
+```
+
+The package also participates in the root `npm test` workspace run. Fixtures cover modern and old Reddit listings and threads, rule surfaces, access states, stable and fallback IDs, bounded comment expansion, and draft insertion without submission. No Reddit credentials or network access are required.
