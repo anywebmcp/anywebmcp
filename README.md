@@ -47,8 +47,13 @@ The same extension registers Amazon tools on supported `www.amazon.*` marketplac
 ## Amazon tools
 
 - `amazon_search_products`
+- `amazon_get_product`
+- `amazon_get_buying_options`
+- `amazon_read_reviews`
+- `amazon_get_review_summary`
+- `amazon_compare_products`
 
-The Amazon adapter performs read-only product searches on the current marketplace and does not require sign-in or expose cart operations. See [the Amazon package](packages/sites/amazon/README.md) for supported marketplaces, returned fields, and current limitations.
+The Amazon adapter performs read-only product search and research on the current marketplace. The normal flow does not require sign-in and exposes no cart operations. See [the Amazon package](packages/sites/amazon/README.md) for supported marketplaces, returned fields, and current limitations.
 
 ## eBay tools
 
