@@ -28,6 +28,7 @@ await build({
 });
 
 await cp("manifest.json", `${outdir}/manifest.json`);
+await cp("icons", `${outdir}/icons`, { recursive: true });
 await cp("../../LICENSE", `${outdir}/LICENSE`);
 await cp("../../NOTICE", `${outdir}/NOTICE`);
 

@@ -85,7 +85,7 @@ async function writeTemplates(options, appPath, extensionValue, appVersion) {
 }
 
 async function copyIcon(options, appPath) {
-  const source = resolve(options.sourceApp, "Contents/Resources/app.icns");
+  const source = resolve(options.packageRoot, "assets/CodexWebMCP.icns");
   const destination = resolve(appPath, "Contents/Resources/CodexWebMCP.icns");
   await cp(source, destination);
 }
