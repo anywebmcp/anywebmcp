@@ -55,6 +55,7 @@ test("extracts detail fields, SKU variants, and live selection from a product fi
   const reference = allProducts(document, "live-page")[0];
   assert.ok(reference);
   const product = detailFromDocument(document, reference, "live-page");
+  assert.ok(product);
 
   assert.equal(product.productId, "601099500000001");
   assert.equal(product.completeness, "detail");
@@ -77,6 +78,25 @@ test("extracts detail fields, SKU variants, and live selection from a product fi
     }
   ]);
   assert.deepEqual(product.warnings, []);
+});
+
+test("rejects generic and mismatched pages as product details", async t => {
+  const productHtml = await fixture("product-detail.html");
+  const parsed = parseHTML(productHtml);
+  t.after(installPage(parsed.window, parsed.document, "https://www.temu.com/aluminum-hub-g-601099500000001.html"));
+
+  const reference = allProducts(parsed.document, "live-page")[0];
+  assert.ok(reference);
+
+  const homepage = parseHTML("<!doctype html><html><body><main><h1>Temu homepage</h1><p>Delivery guarantee</p></main></body></html>").document;
+  assert.equal(
+    detailFromDocument(homepage, reference, "fetched-page", "https://www.temu.com/"),
+    null
+  );
+  assert.equal(
+    detailFromDocument(parsed.document, reference, "fetched-page", "https://www.temu.com/other-g-601099500000002.html"),
+    null
+  );
 });
 
 test("restores the live search position when collection is cancelled during a bounded scroll", async t => {

@@ -18,6 +18,28 @@ function snapshotDetail(snapshot: ReturnType<typeof resolveProduct>["snapshot"],
   };
 }
 
+function unreadableProductPage(
+  reference: ReturnType<typeof resolveProduct>,
+  observedUrl: string,
+  warning: string
+) {
+  if (reference.snapshot) {
+    return {
+      ok: true as const,
+      product: snapshotDetail(reference.snapshot, warning)
+    };
+  }
+  return failure("PRODUCT_PAGE_NOT_READABLE", "Temu did not return verifiable details for the requested product.", {
+    retryable: true,
+    diagnostics: {
+      productId: reference.productId,
+      url: reference.url,
+      observedUrl
+    },
+    suggestedAction: "Open the product page, wait for its title and price to render, and retry."
+  });
+}
+
 export async function readProduct(input: ReadProductInput, signal?: AbortSignal) {
   try {
     signal?.throwIfAborted();
@@ -34,7 +56,13 @@ export async function readProduct(input: ReadProductInput, signal?: AbortSignal)
       !isSecurityVerification(document.body?.innerText, window.location.href) &&
       !isAuthenticationRequired(document.body?.innerText, window.location.href)) {
       const fallback = reference.snapshot || emptyProductSummary(reference.productId, reference.url, "live-page");
-      return { ok: true as const, product: detailFromDocument(document, fallback, "live-page") };
+      const product = detailFromDocument(document, fallback, "live-page", window.location.href);
+      if (product) return { ok: true as const, product };
+      return unreadableProductPage(
+        reference,
+        window.location.href,
+        "The open Temu page did not expose verifiable details for this product; returning the known search snapshot."
+      );
     }
 
     const fetched = await fetchDocument(reference.url, signal);
@@ -71,7 +99,13 @@ export async function readProduct(input: ReadProductInput, signal?: AbortSignal)
       });
     }
     const fallback = reference.snapshot || emptyProductSummary(reference.productId, reference.url, "fetched-page");
-    return { ok: true as const, product: detailFromDocument(fetched.doc, fallback, "fetched-page") };
+    const product = detailFromDocument(fetched.doc, fallback, "fetched-page", fetched.url);
+    if (product) return { ok: true as const, product };
+    return unreadableProductPage(
+      reference,
+      fetched.url,
+      "Temu did not return a verifiable detail page for this product; returning the known search snapshot."
+    );
   } catch (error) {
     return unexpectedFailure(error);
   }

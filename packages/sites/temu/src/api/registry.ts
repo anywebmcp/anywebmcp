@@ -17,8 +17,9 @@ export function rememberProduct(product: ProductSummary) {
 
 export function resolveProduct(product: string) {
   const value = cleanText(product, 2_000);
-  const directUrl = normalizeTemuUrl(value);
-  const productId = productIdFromUrl(directUrl) || value.match(/^\d{6,}$/)?.[0] || "";
+  const bareProductId = value.match(/^\d{6,}$/)?.[0] || "";
+  const directUrl = bareProductId ? "" : normalizeTemuUrl(value);
+  const productId = bareProductId || productIdFromUrl(directUrl);
   const snapshot = products.get(productId);
   const url = directUrl || snapshot?.url || "";
   return { value, productId, url, snapshot };

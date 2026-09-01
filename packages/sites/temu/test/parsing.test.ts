@@ -53,6 +53,7 @@ test("parses ratings, compact review counts, and search queries", () => {
 test("recognizes Temu security verification pages", () => {
   assert.equal(isSecurityVerification("Security Verification — Slide to complete the puzzle"), true);
   assert.equal(isSecurityVerification("", "https://www.temu.com/bgn_verification.html?verifyCode=abc"), true);
+  assert.equal(isSecurityVerification("<script src='https://static.kwcdn.com/upload-static/assets/chl/js/challenge.js'></script>"), true);
   assert.equal(isSecurityVerification("Search results for usb c hub"), false);
 });
 

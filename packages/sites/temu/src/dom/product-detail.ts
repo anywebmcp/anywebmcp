@@ -1,4 +1,4 @@
-import { cleanText } from "../api/parsing";
+import { cleanText, productIdFromUrl } from "../api/parsing";
 import type { ProductDetail, ProductSource, ProductSummary } from "../api/types";
 import { allProducts } from "./products";
 import { structuredVariants } from "./structured-data";
@@ -31,10 +31,25 @@ function selectedAttributes(doc: Document) {
 export function detailFromDocument(
   doc: Document,
   reference: ProductSummary,
-  source: ProductSource
-): ProductDetail {
+  source: ProductSource,
+  pageUrl = doc.baseURI
+): ProductDetail | null {
   const products = allProducts(doc, source);
-  const matched = products.find(product => product.productId === reference.productId) || products[0] || reference;
+  const matched = products.find(product => product.productId === reference.productId);
+  if (productIdFromUrl(pageUrl) !== reference.productId || !matched) return null;
+
+  const summary: ProductSummary = {
+    ...reference,
+    ...matched,
+    title: matched.title === "Untitled Temu product" ? reference.title : matched.title,
+    imageUrl: matched.imageUrl || reference.imageUrl,
+    displayedPrice: matched.displayedPrice || reference.displayedPrice,
+    referencePrice: matched.referencePrice || reference.referencePrice,
+    rating: matched.rating ?? reference.rating,
+    reviewCount: matched.reviewCount ?? reference.reviewCount,
+    soldText: matched.soldText || reference.soldText,
+    deliveryText: matched.deliveryText || reference.deliveryText
+  };
   const heading = elementText(doc, ["main h1", "h1", "[data-testid*='title']"], 1_000);
   const description = elementText(doc, [
     "[data-testid*='description']",
@@ -49,13 +64,13 @@ export function detailFromDocument(
   const variants = structuredVariants(doc);
   const warnings: string[] = [];
   if (!variants.length) warnings.push("No structured SKU variants were exposed by this page.");
-  if (!matched.displayedPrice) warnings.push("No currency-qualified product price was found.");
+  if (!summary.displayedPrice) warnings.push("No currency-qualified product price was found.");
   if (source !== "live-page") warnings.push("Variant selection state may require opening the product page interactively.");
 
   return {
-    ...matched,
-    title: heading || matched.title,
-    deliveryText: shipping || matched.deliveryText,
+    ...summary,
+    title: heading || summary.title,
+    deliveryText: shipping || summary.deliveryText,
     sellerName: cleanText(seller?.innerText || seller?.getAttribute("aria-label"), 300) || null,
     description: description || null,
     variants,
