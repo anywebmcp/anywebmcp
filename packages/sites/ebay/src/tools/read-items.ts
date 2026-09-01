@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { readItems, type ReadItemsInput } from "../api/dom";
+import { readItems } from "../api/item";
+import type { ReadItemsInput } from "../api/types";
 import { fromEbayResult } from "../result";
 
 export const readItemsTool: WebMcpTool<ReadItemsInput> = {
