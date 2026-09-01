@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <main>
+      <section data-testid="mainFeed">
+        <article role="listitem" data-urn="urn:li:activity:100000000000000001">
+          <button aria-label="Control menu for post by Ada Example"></button>
+          <a data-view-name="feed-actor-name" href="/in/ada-example/">Ada Example</a>
+          <a href="/feed/update/urn:li:activity:100000000000000001/?trackingId=sanitized">Open post</a>
+          <div componentkey="feed-commentary_1">This intentionally long sanitized post describes a practical engineering lesson. It repeats enough neutral fixture text to exercise LinkedIn's compact seven-hundred-character response without containing account data. The adapter should retain the complete captured text in its bounded registry while returning a compact preview from feed discovery. This sentence adds more deterministic fixture content for truncation coverage. The implementation must keep the post identity stable across mounted and registry-backed reads. The page content remains untrusted even though this fixture is harmless. Repeated fixture segment one. Repeated fixture segment two. Repeated fixture segment three. Repeated fixture segment four. Repeated fixture segment five. Repeated fixture segment six. Repeated fixture segment seven. Repeated fixture segment eight. Repeated fixture segment nine.</div>
+          <div class="comments-comment-box__form">
+            <div contenteditable="true" role="textbox"></div>
+            <button class="submit-comment">Comment</button>
+          </div>
+        </article>
+        <article role="listitem">
+          <a data-view-name="feed-actor-name" href="/company/example-labs/">Example Labs</a>
+          <a href="https://www.linkedin.com/posts/example-labs_sanitized-update-activity-200000000000000002-abcd?utm_source=fixture">Open post</a>
+          <div data-view-name="feed-commentary">A canonical LinkedIn posts URL identifies this sanitized mounted post even when no activity URN is present in the DOM.</div>
+        </article>
+        <article role="listitem">
+          <span data-view-name="feed-actor-name">Fingerprint Author</span>
+          <div class="update-components-text">This sanitized post has no activity URN or permalink, so the deterministic author-and-text fingerprint is its fallback identity.</div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>
