@@ -1,4 +1,5 @@
 import {
+  compactText,
   deepQueryAll,
   firstAttribute,
   firstText,
@@ -25,6 +26,7 @@ import {
 export function candidatePostRoots() {
   return deepQueryAll<HTMLElement>([
     "shreddit-post",
+    "search-telemetry-tracker[data-testid='search-sdui-post']",
     "article[data-testid='post-container']",
     "div[data-testid='post-container']",
     ".Post",
@@ -46,12 +48,72 @@ function permalinkFromRoot(root: HTMLElement) {
   return normalizePermalink(link?.href);
 }
 
+type SearchTrackingContext = {
+  post?: {
+    id?: unknown;
+    nsfw?: unknown;
+    spoiler?: unknown;
+    title?: unknown;
+  };
+  profile?: { name?: unknown };
+  subreddit?: { name?: unknown };
+};
+
+function searchTrackingContext(root: HTMLElement): SearchTrackingContext | null {
+  const value = root.getAttribute("data-faceplate-tracking-context");
+  if (!value) return null;
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === "object" ? parsed as SearchTrackingContext : null;
+  } catch {
+    return null;
+  }
+}
+
+function cleanTrackingValue(value: unknown, maxLength: number) {
+  return typeof value === "string" ? compactText(value, maxLength) : "";
+}
+
+function trackingSubreddit(value: unknown) {
+  const name = cleanTrackingValue(value, 200).replace(/^r\//i, "");
+  return name ? `r/${name}` : "";
+}
+
+function subredditFromRoot(root: HTMLElement, tracking: SearchTrackingContext | null) {
+  const attribute = firstAttribute(root, ["subreddit-prefixed-name", "subreddit-name"]);
+  if (attribute) return attribute;
+  const tracked = trackingSubreddit(tracking?.subreddit?.name);
+  if (tracked) return tracked;
+  const labelled = firstText(root, ["[data-testid='subreddit-name']"], 200);
+  if (labelled) return labelled;
+  for (const link of deepQueryAll<HTMLAnchorElement>("a[href^='/r/']", root)) {
+    try {
+      const match = new URL(link.href, window.location.href).pathname.match(/^\/r\/([^/]+)\/?$/i);
+      if (match) return `r/${decodeURIComponent(match[1])}`;
+    } catch {
+      // Ignore malformed page-provided links and keep looking for a community root.
+    }
+  }
+  return subredditFromPath() || "";
+}
+
+function searchCounterValues(root: HTMLElement) {
+  const text = firstText(root, ["[data-testid='search-counter-row']"], 200);
+  const values = text.match(/-?\d+(?:[.,]\d+)?\s*[km]?/gi) || [];
+  return {
+    score: values[0] || "",
+    comments: values[1] || ""
+  };
+}
+
 function postFromRoot(root: HTMLElement): LivePost | null {
   if (isPromotedPost(root)) return null;
+  const tracking = searchTrackingContext(root);
   const permalink = permalinkFromRoot(root);
   const rawId = [
     root.id,
-    firstAttribute(root, ["thing-id", "post-id", "data-fullname", "data-post-id"]),
+    firstAttribute(root, ["thing-id", "post-id", "data-fullname", "data-post-id", "data-thingid"]),
+    tracking?.post?.id,
     permalink
   ].find(value => fullname(value, "t3"));
   const stableId = fullname(rawId, "t3") || postIdFromPermalink(permalink);
@@ -62,7 +124,7 @@ function postFromRoot(root: HTMLElement): LivePost | null {
     "h2",
     "h3",
     ".title a.title"
-  ], 1_000);
+  ], 1_000) || cleanTrackingValue(tracking?.post?.title, 1_000);
   const body = firstText(root, [
     "[slot='text-body']",
     "[data-post-click-location='text-body']",
@@ -77,21 +139,19 @@ function postFromRoot(root: HTMLElement): LivePost | null {
     "a[href*='/user/']",
     "a[href*='/u/']",
     ".author"
-  ], 200);
-  const subreddit = firstAttribute(root, ["subreddit-prefixed-name", "subreddit-name"]) || firstText(root, [
-    "a[href^='/r/']",
-    "[data-testid='subreddit-name']"
-  ], 200) || subredditFromPath();
+  ], 200) || cleanTrackingValue(tracking?.profile?.name, 200);
+  const subreddit = subredditFromRoot(root, tracking);
+  const searchCounters = searchCounterValues(root);
   const scoreValue = firstAttribute(root, ["score", "data-score"]) || firstText(root, [
     "[slot='vote-button'] [aria-label*='upvote']",
     "[data-testid='post-container'] [id*='vote-arrows']",
     ".score"
-  ], 100);
+  ], 100) || searchCounters.score;
   const commentsValue = firstAttribute(root, ["comment-count", "data-comment-count", "num-comments"]) || firstText(root, [
     "a[href*='/comments/'] [slot='comment-count']",
     "[data-click-id='comments']",
     ".comments"
-  ], 100);
+  ], 100) || searchCounters.comments;
   const createdAt = firstAttribute(root, ["created-timestamp", "created", "data-timestamp"]) ||
     deepQueryAll<HTMLTimeElement>("time[datetime]", root)[0]?.dateTime || null;
   const fingerprint = `fp:v1:${hash(`${subreddit}|${authorValue}|${title}|${body.slice(0, 1_000)}`.toLowerCase())}`;
@@ -110,8 +170,8 @@ function postFromRoot(root: HTMLElement): LivePost | null {
     createdAt,
     score: parseCount(scoreValue),
     commentCount: parseCount(commentsValue),
-    nsfw: root.hasAttribute("nsfw") || root.hasAttribute("is-nsfw") || /\bnsfw\b/i.test(root.className),
-    spoiler: root.hasAttribute("spoiler") || root.hasAttribute("is-spoiler") || /\bspoiler\b/i.test(root.className),
+    nsfw: root.hasAttribute("nsfw") || root.hasAttribute("is-nsfw") || /\bnsfw\b/i.test(root.className) || tracking?.post?.nsfw === true,
+    spoiler: root.hasAttribute("spoiler") || root.hasAttribute("is-spoiler") || /\bspoiler\b/i.test(root.className) || tracking?.post?.spoiler === true,
     truncated: false,
     fingerprint,
     lastSeenY: Math.max(0, Math.round(window.scrollY + rect.top)),
