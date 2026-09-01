@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { searchProducts, type SearchProductsInput } from "../api/dom";
+import { searchProducts } from "../api/search-products";
+import type { SearchProductsInput } from "../api/types";
 import { fromTemuResult } from "../result";
 
 export const searchProductsTool: WebMcpTool<SearchProductsInput> = {

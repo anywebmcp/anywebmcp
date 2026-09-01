@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { compareProducts, type CompareProductsInput } from "../api/dom";
+import { compareProducts } from "../api/compare-products";
+import type { CompareProductsInput } from "../api/types";
 import { fromTemuResult } from "../result";
 
 export const compareProductsTool: WebMcpTool<CompareProductsInput> = {
