@@ -10,6 +10,7 @@
     "@openwebmcp/site-amazon": "*",
     "@openwebmcp/site-ebay": "*",
     "@openwebmcp/site-linkedin": "*",
+    "@openwebmcp/site-temu": "*",
     "@openwebmcp/site-x": "*"
   }
 }

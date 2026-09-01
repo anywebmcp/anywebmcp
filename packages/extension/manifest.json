@@ -42,6 +42,7 @@
         "https://*.ebay.ca/*",
         "https://*.ebay.com.au/*",
         "https://www.linkedin.com/*",
+        "https://www.temu.com/*",
         "https://x.com/*",
         "https://twitter.com/*"
       ],
@@ -98,6 +99,14 @@
         "https://www.linkedin.com/*"
       ],
       "js": ["sites/linkedin.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.temu.com/*"
+      ],
+      "js": ["sites/temu.js"],
       "run_at": "document_idle",
       "world": "MAIN"
     },

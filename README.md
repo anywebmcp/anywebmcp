@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, X, and LinkedIn.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, X, LinkedIn, and Temu.
 
 ## Build
 
@@ -40,9 +40,9 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 1. Open `chrome://flags/#enable-webmcp-testing`, enable WebMCP testing, and relaunch Chrome.
 2. Open `chrome://extensions` and enable **Developer mode**.
 3. Choose **Load unpacked** and select `packages/extension/dist`.
-4. Open or reload `https://x.com`.
+4. Open or reload a supported site such as `https://x.com`, `https://www.linkedin.com`, or `https://www.temu.com`.
 
-The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, and LinkedIn tools on `https://www.linkedin.com`. Reload an existing tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, LinkedIn tools on `https://www.linkedin.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
 
 ## Amazon tools
 
@@ -80,3 +80,11 @@ See [the system overview](docs/system-overview.md) and [the X package](packages/
 - `linkedin_prepare_comment_draft`
 
 The LinkedIn adapter reads the current feed through the page DOM. Collection and recovery scrolling are bounded. Comment drafting only inserts and verifies text in the visible editor; it never submits the comment. See [the LinkedIn package](packages/sites/linkedin/README.md) for details.
+
+## Temu tools
+
+- `temu_search_products`
+- `temu_read_product`
+- `temu_compare_products`
+
+The Temu adapter is read-only. It reads bounded search results and public product details, reports whether exact SKU data was available, and does not modify the cart or begin checkout. Interactive security verification is detected but never automated. See [the Temu package](packages/sites/temu/README.md) for details.

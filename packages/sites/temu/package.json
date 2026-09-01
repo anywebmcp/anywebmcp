@@ -1,0 +1,14 @@
+{
+  "name": "@openwebmcp/site-temu",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "node test/run.mjs"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*"
+  }
+}
