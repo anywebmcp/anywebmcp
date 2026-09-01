@@ -175,7 +175,7 @@ export function parseRating(value: unknown) {
 
 export function parseReviewCount(value: unknown) {
   const text = cleanText(value, 5_000);
-  const match = text.match(/([\d.,\s]+[kKmM]?)\s*(?:reviews?|ratings?|отзыв(?:ов|а)?|Bewertungen?|avis|recensioni)/i);
+  const match = text.match(/((?:\d{1,3}(?:[.,\s]\d{3})+|\d+(?:[.,]\d+)?)\s*[kKmM]?)\s*(?:reviews?|ratings?|отзыв(?:ов|а)?|Bewertungen?|avis|recensioni)/i);
   if (!match) return null;
   const compact = match[1].replace(/[\s,]/g, "");
   const suffix = compact.slice(-1).toLowerCase();

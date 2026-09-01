@@ -46,6 +46,7 @@ test("parses localized prices without confusing thousands and decimals", () => {
 test("parses ratings, compact review counts, and search queries", () => {
   assert.equal(parseRating("Rated 4.8 out of 5 stars"), 4.8);
   assert.equal(parseReviewCount("4.8 · 1.2K reviews"), 1200);
+  assert.equal(parseReviewCount("$19.48 $29.99 · 1.2K reviews"), 1200);
   assert.equal(currentSearchQuery("https://www.temu.com/search_result.html?search_key=usb+c+hub"), "usb c hub");
 });
 

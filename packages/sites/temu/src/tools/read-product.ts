@@ -1,5 +1,6 @@
 import type { WebMcpTool } from "@openwebmcp/common";
-import { readProduct, type ReadProductInput } from "../api/dom";
+import { readProduct } from "../api/read-product";
+import type { ReadProductInput } from "../api/types";
 import { fromTemuResult } from "../result";
 
 export const readProductTool: WebMcpTool<ReadProductInput> = {
