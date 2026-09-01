@@ -1,30 +1,36 @@
 import { execFile } from "node:child_process";
-import { access, chmod, cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { access, cp, mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { basename, dirname, resolve } from "node:path";
 import { promisify } from "node:util";
+import { checkNotaryProfile, notarizeApp, resolveSigningIdentity, signApp } from "./signing.mjs";
 
 const exec = promisify(execFile);
 
 export async function buildApp(options, targetPath) {
-  const stagedPath = `${targetPath}.building`;
   await validateInputs(options);
-  await rm(stagedPath, { force: true, recursive: true });
-  await mkdir(resolve(stagedPath, "Contents/MacOS"), { recursive: true });
-  await mkdir(resolve(stagedPath, "Contents/Resources"), { recursive: true });
-
-  const extensionValue = await prepareExtension(options, stagedPath);
-  await writeTemplates(options, stagedPath, extensionValue);
-  await copyIcon(options, stagedPath);
-  await signApp(stagedPath);
-
+  const identity = await resolveSigningIdentity(options);
+  if (options.notarize) await checkNotaryProfile(options.notaryProfile);
   await mkdir(dirname(targetPath), { recursive: true });
-  await rm(targetPath, { force: true, recursive: true });
-  await rename(stagedPath, targetPath);
-  return targetPath;
-}
+  const stagingDir = await mkdtemp(resolve(dirname(targetPath), ".codex-webmcp-"));
+  const stagedPath = resolve(stagingDir, basename(targetPath));
 
-export async function verifyApp(appPath) {
-  await exec("/usr/bin/codesign", ["--verify", "--deep", "--strict", appPath]);
+  try {
+    await mkdir(resolve(stagedPath, "Contents/MacOS"), { recursive: true });
+    await mkdir(resolve(stagedPath, "Contents/Resources"), { recursive: true });
+    const extensionValue = await prepareExtension(options, stagedPath);
+    await writeTemplates(options, stagedPath, extensionValue);
+    await copyIcon(options, stagedPath);
+    await signApp(stagedPath, identity);
+    if (options.notarize) {
+      await notarizeApp(stagedPath, await archiveApp(stagedPath), options.notaryProfile);
+    }
+
+    await rm(targetPath, { force: true, recursive: true });
+    await rename(stagedPath, targetPath);
+    return targetPath;
+  } finally {
+    await rm(stagingDir, { force: true, recursive: true });
+  }
 }
 
 export async function archiveApp(appPath) {
@@ -58,15 +64,18 @@ async function writeTemplates(options, appPath, extensionValue) {
   });
   const launcher = applyTemplate(await readFile(resolve(templateDir, "launcher.zsh"), "utf8"), {
     EXTENSION_DIR: extensionValue,
-    PROFILE_DIR: profileValue(options.mode),
+    PROFILE_DIR: profileValue(options.profile),
     SOURCE_APP: shellQuote(options.sourceApp)
   });
 
   const plistPath = resolve(appPath, "Contents/Info.plist");
   const executablePath = resolve(appPath, `Contents/MacOS/${executableName}`);
   await writeFile(plistPath, plist);
-  await writeFile(executablePath, launcher);
-  await chmod(executablePath, 0o755);
+  await writeFile(resolve(appPath, "Contents/Resources/launcher.zsh"), launcher);
+  await exec("/usr/bin/xcrun", [
+    "clang", "-arch", "arm64", "-arch", "x86_64", "-mmacosx-version-min=13.0",
+    "-Os", "-Wall", "-Wextra", resolve(templateDir, "launcher.c"), "-o", executablePath
+  ]);
   await exec("/usr/bin/plutil", ["-lint", plistPath]);
 }
 
@@ -74,11 +83,6 @@ async function copyIcon(options, appPath) {
   const source = resolve(options.sourceApp, "Contents/Resources/app.icns");
   const destination = resolve(appPath, "Contents/Resources/CodexWebMCP.icns");
   await cp(source, destination);
-}
-
-async function signApp(appPath) {
-  await exec("/usr/bin/codesign", ["--force", "--sign", "-", appPath]);
-  await verifyApp(appPath);
 }
 
 function applyTemplate(template, values) {
@@ -92,7 +96,7 @@ function shellQuote(value) {
   return `'${value.replaceAll("'", `'\\''`)}'`;
 }
 
-function profileValue(mode) {
-  const directory = mode === "dev" ? "Codex-WebMCP/Profile" : "Codex";
+function profileValue(profile) {
+  const directory = profile === "isolated" ? "Codex-WebMCP/Profile" : "Codex";
   return `"$HOME/Library/Application Support/${directory}"`;
 }

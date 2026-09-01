@@ -27,13 +27,15 @@ npm run codex:dev
 
 Quit Codex WebMCP before reopening it when extension code changes. The development launcher is installed at `~/Applications/Codex WebMCP.app` and keeps a profile separate from normal Codex.
 
-To generate a distributable launcher with the extension embedded:
+To develop against the standard Codex login and browser data, quit normal Codex and run `npm run codex:dev:standard`.
+
+To generate a Developer ID signed and notarized production launcher with the extension embedded:
 
 ```sh
-npm run codex:build
+npm run codex:release
 ```
 
-The generated app and a transfer-safe ZIP are written to `packages/codex-launcher/dist`. Production builds use the standard Codex profile, so normal Codex must be closed before launching them. Node.js is required to build the artifacts, but not to run the app. The receiving Mac still needs Codex installed. Ad-hoc builds transferred through a browser or messenger require quarantine removal by the recipient; frictionless distribution requires Developer ID signing and notarization. See [the launcher package](packages/codex-launcher/README.md) for details.
+First complete the [Apple certificate and notarization setup](packages/codex-launcher/README.md#one-time-apple-setup). The command writes the signed app and a ZIP containing Apple's stapled notarization ticket to `packages/codex-launcher/dist`, so recipients should not need the macOS “Open Anyway” workaround. A normal first-open confirmation may still appear. Production builds use the standard Codex profile, so normal Codex must be closed before launching them. Building requires Node.js and Apple's Command Line Tools; the receiving Mac only needs macOS and Codex installed. For a local ad-hoc build without Apple credentials, use `npm run codex:build`.
 
 ## Load in Chrome
 

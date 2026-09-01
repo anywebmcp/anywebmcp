@@ -13,8 +13,10 @@
     "build": "npm run build --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "codex:build": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs build --mode=bundle --archive",
+    "codex:release": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs build --mode=bundle --notarize",
     "codex:install": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev",
     "codex:dev": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev --open",
+    "codex:dev:standard": "npm run build -w @openwebmcp/extension && node packages/codex-launcher/bin/openwebmcp-codex.mjs install --mode=dev --profile=standard --open",
     "codex:open": "node packages/codex-launcher/bin/openwebmcp-codex.mjs open",
     "codex:doctor": "node packages/codex-launcher/bin/openwebmcp-codex.mjs doctor"
   },

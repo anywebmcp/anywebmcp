@@ -7,7 +7,9 @@
   },
   "scripts": {
     "generate": "node bin/openwebmcp-codex.mjs build --archive",
+    "release": "node bin/openwebmcp-codex.mjs build --mode=bundle --notarize",
     "install:app": "node bin/openwebmcp-codex.mjs install --mode=dev",
+    "install:standard": "node bin/openwebmcp-codex.mjs install --mode=dev --profile=standard",
     "doctor": "node bin/openwebmcp-codex.mjs doctor"
   },
   "engines": {

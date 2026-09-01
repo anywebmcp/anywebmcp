@@ -9,9 +9,17 @@ export function parseOptions(argv) {
   const [command = "help", ...args] = argv;
   const flags = parseFlags(args);
   const mode = flags.mode ?? "bundle";
+  const profile = flags.profile ?? (mode === "bundle" ? "standard" : "isolated");
+  const notarize = flags.notarize === true;
 
   if (!new Set(["bundle", "dev"]).has(mode)) {
     throw new Error(`Unsupported launcher mode: ${mode}`);
+  }
+  if (!new Set(["standard", "isolated"]).has(profile)) {
+    throw new Error(`Unsupported profile mode: ${profile}`);
+  }
+  if (notarize && mode !== "bundle") {
+    throw new Error("Notarization requires --mode=bundle so the extension is included in the app.");
   }
 
   const appName = "Codex WebMCP";
@@ -19,16 +27,21 @@ export function parseOptions(argv) {
 
   return {
     appName,
-    archive: flags.archive === true,
+    archive: flags.archive === true || notarize,
     bundleId: "dev.openwebmcp.codex-launcher",
     command,
     extensionDir: resolve(flags["extension-dir"] ?? `${repoRoot}/packages/extension/dist`),
     installPath: resolve(installDir, `${appName}.app`),
     mode,
+    notarize,
+    notaryProfile: flags["notary-profile"] ?? process.env.APPLE_NOTARY_PROFILE ?? "openwebmcp",
     open: flags.open === true,
     outputPath: resolve(flags.output ?? `${packageRoot}/dist/${appName}.app`),
     packageRoot,
+    profile,
     repoRoot,
+    signed: flags.signed === true || notarize || flags["signing-identity"] !== undefined,
+    signingIdentity: flags["signing-identity"] ?? process.env.APPLE_SIGNING_IDENTITY,
     sourceApp: resolve(flags["source-app"] ?? "/Applications/ChatGPT.app")
   };
 }

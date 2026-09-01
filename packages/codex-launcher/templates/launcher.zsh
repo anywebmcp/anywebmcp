@@ -2,8 +2,7 @@
 set -eu
 
 source_app=__SOURCE_APP__
-launcher_dir="${0:A:h}"
-resources_dir="${launcher_dir:h}/Resources"
+resources_dir="${0:A:h}"
 extension_dir=__EXTENSION_DIR__
 profile_dir=__PROFILE_DIR__
 runtime_dir="$HOME/Library/Application Support/Codex-WebMCP/Runtime"
@@ -20,6 +19,14 @@ fail() {
 plist_value() {
   /usr/bin/plutil -extract "$2" raw -o - "$1" 2>/dev/null || true
 }
+
+codex_running() {
+  /bin/ps -axo command= | /usr/bin/grep -Eq '/Contents/MacOS/[C]hatGPT([[:space:]]|$)'
+}
+
+if [[ "$profile_dir" == "$HOME/Library/Application Support/Codex" ]] && codex_running; then
+  fail "Codex is currently running. Quit Codex before opening Codex WebMCP."
+fi
 
 [[ -x "$source_app/Contents/MacOS/ChatGPT" ]] || fail "Codex was not found at $source_app."
 [[ -f "$extension_dir/manifest.json" ]] || fail "The extension build was not found at $extension_dir."
