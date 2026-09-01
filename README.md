@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Product Hunt, Temu, and X.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Product Hunt, Reddit, Temu, and X.
 
 ## Build
 
@@ -42,7 +42,7 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 3. Choose **Load unpacked** and select `packages/extension/dist`.
 4. Open or reload a supported site such as `https://news.ycombinator.com`, `https://www.temu.com`, or `https://x.com`.
 
-The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, Hacker News tools on `https://news.ycombinator.com`, LinkedIn tools on `https://www.linkedin.com`, Product Hunt tools on `https://www.producthunt.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, Hacker News tools on `https://news.ycombinator.com`, LinkedIn tools on `https://www.linkedin.com`, Product Hunt tools on `https://www.producthunt.com`, Reddit tools on `https://www.reddit.com` and `https://old.reddit.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension. Reddit may require the user to complete a human-verification challenge before tools can access page content.
 
 ## Amazon tools
 
@@ -110,3 +110,12 @@ The Product Hunt adapter reads launches, product details, and comments from the 
 - `temu_compare_products`
 
 The Temu adapter is read-only. It reads bounded search results and public product details, reports whether exact SKU data was available, and does not modify the cart or begin checkout. Interactive security verification is detected but never automated. See [the Temu package](packages/sites/temu/README.md) for details.
+
+## Reddit tools
+
+- `reddit_collect_listing`
+- `reddit_read_thread`
+- `reddit_get_community_rules`
+- `reddit_prepare_reply_draft`
+
+The Reddit adapter performs bounded reads of the current page and keeps page context inside every result instead of exposing a separate context tool. Reply drafting only inserts and verifies text in the visible editor; it never submits the reply. See [the Reddit package](packages/sites/reddit/README.md) for details.
