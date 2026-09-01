@@ -24,7 +24,8 @@ export async function fetchDocument(url: string, signal?: AbortSignal) {
   return {
     doc,
     url: responseUrl,
-    verification: isSecurityVerification(doc.body?.innerText || html, responseUrl),
+    verification: isSecurityVerification(html, responseUrl) ||
+      isSecurityVerification(doc.body?.innerText, responseUrl),
     authenticationRequired: isAuthenticationRequired(doc.body?.innerText || html, responseUrl)
   };
 }

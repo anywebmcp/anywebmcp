@@ -25,6 +25,26 @@ test("registers and executes all three Temu read-only tool contracts", async t =
         async text() { return "<!doctype html><html><body><main></main></body></html>"; }
       };
     }
+    if (url.includes("601099500000004")) {
+      return {
+        ok: true,
+        status: 200,
+        url: "https://www.temu.com/",
+        async text() {
+          return "<!doctype html><html><body><main><h1>Temu homepage</h1><p>Delivery guarantee</p></main></body></html>";
+        }
+      };
+    }
+    if (url.includes("601099500000005")) {
+      return {
+        ok: true,
+        status: 200,
+        url,
+        async text() {
+          return "<!doctype html><html><body><main>Temu</main><script src='https://static.kwcdn.com/upload-static/assets/chl/js/challenge.js'></script></body></html>";
+        }
+      };
+    }
     const second = url.includes("601099500000002");
     const html = second
       ? productHtml
@@ -113,6 +133,31 @@ test("registers and executes all three Temu read-only tool contracts", async t =
     assert.equal(comparison.data.highlights.lowestDisplayedPriceProductId, "601099500000001");
     assert.equal(comparison.data.highlights.priceComparisonAvailable, true);
   }
+
+  const mismatchedProductUrl = "https://www.temu.com/mismatched-g-601099500000003.html";
+  assert.deepEqual(await harness.execute("temu_read_product", { product: mismatchedProductUrl }), {
+    status: "navigation_required",
+    url: mismatchedProductUrl,
+    instruction: "Open this Temu product page, wait for its title and price to render, then call temu_read_product again with the same product URL or productId."
+  });
+
+  const homepageProductUrl = "https://www.temu.com/homepage-g-601099500000004.html";
+  assert.deepEqual(await harness.execute("temu_read_product", { product: homepageProductUrl }), {
+    status: "navigation_required",
+    url: homepageProductUrl,
+    instruction: "Open this Temu product page, wait for its title and price to render, then call temu_read_product again with the same product URL or productId."
+  });
+
+  const challengeProductUrl = "https://www.temu.com/challenge-g-601099500000005.html";
+  const challenge = await harness.execute("temu_read_product", { product: challengeProductUrl });
+  assert.equal(challenge.status, "failed");
+  assert.match(challenge.status === "failed" ? challenge.message : "", /SECURITY_VERIFICATION_REQUIRED/);
+
+  const invalidComparison = await harness.execute("temu_compare_products", {
+    products: [mismatchedProductUrl, homepageProductUrl]
+  });
+  assert.equal(invalidComparison.status, "failed");
+  assert.match(invalidComparison.status === "failed" ? invalidComparison.message : "", /COMPARISON_INCOMPLETE/);
 
   assert.deepEqual(await harness.execute("temu_search_products", { query: "mechanical keyboard" }), {
     status: "navigation_required",

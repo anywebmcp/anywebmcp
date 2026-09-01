@@ -24,6 +24,21 @@ test("requests navigation when fetched search HTML has no rendered products", ()
   });
 });
 
+test("requests navigation when a fetched product page cannot be verified", () => {
+  assert.deepEqual(fromTemuResult({
+    ok: false,
+    error: {
+      code: "PRODUCT_PAGE_NOT_READABLE",
+      message: "No product details were rendered.",
+      diagnostics: { url: "https://www.temu.com/example-g-601099500000001.html" }
+    }
+  }), {
+    status: "navigation_required",
+    url: "https://www.temu.com/example-g-601099500000001.html",
+    instruction: "Open this Temu product page, wait for its title and price to render, then call temu_read_product again with the same product URL or productId."
+  });
+});
+
 test("adapts expected blockers to the shared failed result", () => {
   assert.deepEqual(fromTemuResult({
     ok: false,

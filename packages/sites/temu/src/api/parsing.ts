@@ -196,7 +196,8 @@ export function isSecurityVerification(
   return [
     "security verification",
     "slide to complete the puzzle",
-    "complete the verification to continue"
+    "complete the verification to continue",
+    "upload-static/assets/chl/js/"
   ].some(marker => text.includes(marker));
 }
 

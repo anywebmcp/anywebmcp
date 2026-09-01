@@ -20,6 +20,12 @@ export function fromTemuResult<T extends { ok: true }>(result: T | TemuFailure) 
         "Open the Temu search-results page, wait for product cards to render, then call temu_search_products again without query."
       );
     }
+    if (code === "PRODUCT_PAGE_NOT_READABLE" && typeof url === "string") {
+      return navigationRequired(
+        url,
+        "Open this Temu product page, wait for its title and price to render, then call temu_read_product again with the same product URL or productId."
+      );
+    }
     return failed([
       `${code}: ${message}`,
       suggestedAction,
