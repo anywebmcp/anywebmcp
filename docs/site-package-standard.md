@@ -6,9 +6,9 @@ The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** ar
 
 ## Package boundaries
 
-A site package owns its WebMCP tool definitions, website adapters, domain types, selectors, endpoint knowledge, and site-specific interpretation. The extension owns injection and mounting. The common package owns only contracts and helpers whose semantics are genuinely shared.
+A site package owns its WebMCP tool definitions, website operations, domain types, selectors, endpoint knowledge, and site-specific interpretation. The extension owns injection and mounting. The common package owns only contracts and helpers whose semantics are genuinely shared.
 
-Site classification, selectors, challenge detection, and business behavior MUST remain in the site package. Shared infrastructure MUST NOT introduce a universal DOM abstraction.
+Site classification, selectors, parsing, challenge detection, limits, UI behavior, and business semantics MUST remain in the site package. A shared abstraction SHOULD be introduced only after at least three implementations demonstrate the same semantics. Shared infrastructure MUST NOT introduce a universal DOM abstraction.
 
 ## Recommended structure
 
@@ -19,14 +19,18 @@ packages/sites/<site>/
   src/
     index.ts
     tools/
-    adapters/
-    domain/       optional
+    api/          optional
+    dom/          optional
+    result.ts     optional
   test/
+    fixtures/     optional
 ```
 
 These are responsibility boundaries, not mandatory directory names. A package MAY keep a different layout when its behavior remains clear.
 
-Tool-definition modules SHOULD be thin: declare the WebMCP-facing metadata and execution entry point, then delegate website interaction and interpretation to adapters. Adapters own site-specific DOM, UI, official-API, and internal-API behavior. Domain types SHOULD remain independent of WebMCP response formatting.
+`src/index.ts` SHOULD be a pure assembly point. Tool-definition modules SHOULD be thin: declare the WebMCP-facing metadata and execution entry point, then delegate website interaction and interpretation to focused `api/`, `dom/`, or equivalent modules. Domain types SHOULD remain independent of WebMCP response formatting.
+
+Large files SHOULD be split only when the split improves testing or isolates code that changes for a different reason. File size alone is not a reason to introduce another layer.
 
 ## Import behavior
 
@@ -60,7 +64,7 @@ Existing public tool names and successful result payloads MUST remain compatible
 
 ## Tests
 
-Every new or materially changed tool MUST have a relevant automated test. DOM-dependent behavior SHOULD use sanitized fixtures when practical. Tests for state-changing tools MUST cover target validation, postcondition verification, and failure behavior.
+Every package MUST expose a standard `test` script and provide offline tests for the behavior that applies to it. Every new or materially changed tool MUST have a relevant automated test. DOM-dependent behavior SHOULD use sanitized fixtures when practical. Tests for state-changing tools MUST cover target validation, postcondition verification, and failure behavior.
 
 Ordinary tests SHOULD run offline without credentials or private user data. Live smoke tests MAY exist as a separate command when they provide useful coverage, but they MUST NOT run as part of every ordinary local test invocation.
 
@@ -80,11 +84,12 @@ Benchmarking remains a separate process described in [Benchmarking site tools](b
 ## Pull request checklist
 
 - [ ] Package imports have no browser side effects.
-- [ ] Tool definitions are thin and site-specific behavior remains local to the package.
+- [ ] `src/index.ts` is a pure assembly point; tool definitions are thin and site-specific operations remain in focused modules.
 - [ ] Tool annotations match actual read, write, and untrusted-content behavior.
 - [ ] State-changing tools validate their target and verify the result.
 - [ ] Website content cannot change tool policy or expose credentials and unrelated private data.
 - [ ] Potentially unbounded work has documented limits.
 - [ ] Public tool names and successful payloads remain compatible, or a breaking change is documented.
-- [ ] New or changed behavior has a relevant test and the package README is current.
+- [ ] The package has a standard `test` script; new or changed behavior has a relevant test and the package README is current.
 - [ ] No universal DOM abstraction or speculative shared framework was introduced.
+- [ ] Any new shared abstraction is backed by at least three implementations with the same semantics.
