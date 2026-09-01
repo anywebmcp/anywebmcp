@@ -41,6 +41,7 @@
         "https://*.ebay.es/*",
         "https://*.ebay.ca/*",
         "https://*.ebay.com.au/*",
+        "https://news.ycombinator.com/*",
         "https://www.linkedin.com/*",
         "https://www.temu.com/*",
         "https://x.com/*",
@@ -91,6 +92,14 @@
         "https://*.ebay.com.au/*"
       ],
       "js": ["sites/ebay.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://news.ycombinator.com/*"
+      ],
+      "js": ["sites/hackernews.js"],
       "run_at": "document_idle",
       "world": "MAIN"
     },

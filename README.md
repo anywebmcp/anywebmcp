@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, X, LinkedIn, and Temu.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Temu, and X.
 
 ## Build
 
@@ -40,9 +40,9 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 1. Open `chrome://flags/#enable-webmcp-testing`, enable WebMCP testing, and relaunch Chrome.
 2. Open `chrome://extensions` and enable **Developer mode**.
 3. Choose **Load unpacked** and select `packages/extension/dist`.
-4. Open or reload a supported site such as `https://x.com`, `https://www.linkedin.com`, or `https://www.temu.com`.
+4. Open or reload a supported site such as `https://news.ycombinator.com`, `https://www.temu.com`, or `https://x.com`.
 
-The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, LinkedIn tools on `https://www.linkedin.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, Hacker News tools on `https://news.ycombinator.com`, LinkedIn tools on `https://www.linkedin.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
 
 ## Amazon tools
 
@@ -64,6 +64,14 @@ The Amazon adapter performs read-only product search and research on the current
 - `ebay_set_watch_state`
 
 The eBay adapter uses the current regional eBay session for same-origin, read-only search and item requests. Watchlist changes use a mounted eBay UI control and verify its resulting state; the adapter never bids, buys, adds to cart, or makes offers. See [the eBay package](packages/sites/ebay/README.md) for supported regional sites and implementation details.
+
+## Hacker News tools
+
+- `hackernews_market_digest`
+- `hackernews_research_topic`
+- `hackernews_read_thread`
+
+The Hacker News adapter is fully read-only. It builds bounded, source-linked launch and topic-research evidence from the public HN APIs without treating community activity as a market-size estimate. See [the Hacker News package](packages/sites/hackernews/README.md) for methodology and interpretation boundaries.
 
 ## X tools
 

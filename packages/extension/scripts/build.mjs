@@ -13,6 +13,7 @@ await build({
     bridge: "src/bridge.ts",
     "sites/amazon": "src/sites/amazon.ts",
     "sites/ebay": "src/sites/ebay.ts",
+    "sites/hackernews": "src/sites/hackernews.ts",
     "sites/linkedin": "src/sites/linkedin.ts",
     "sites/temu": "src/sites/temu.ts",
     "sites/x": "src/sites/x.ts"
