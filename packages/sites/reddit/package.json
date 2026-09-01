@@ -1,0 +1,11 @@
+{
+  "name": "@openwebmcp/site-reddit",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*"
+  }
+}

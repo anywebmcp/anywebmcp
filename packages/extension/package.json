@@ -13,6 +13,7 @@
     "@openwebmcp/site-linkedin": "*",
     "@openwebmcp/site-producthunt": "*",
     "@openwebmcp/site-temu": "*",
+    "@openwebmcp/site-reddit": "*",
     "@openwebmcp/site-x": "*"
   }
 }

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Reddit WebMCP fixture</title>
+    <style>
+      shreddit-post, shreddit-comment, shreddit-subreddit-rules, shreddit-community-rule {
+        display: block;
+        margin: 12px;
+        padding: 12px;
+        border: 1px solid #ccc;
+      }
+      [hidden] { display: none; }
+    </style>
+    <script>
+      window.directDomTestMode = new URLSearchParams(location.search).has("direct");
+      history.replaceState({}, "", "/r/typescript/comments/abc123/webmcp_fixture?sort=best");
+      window.registeredTools = new Map();
+      document.modelContext = {
+        async registerTool(tool) {
+          window.registeredTools.set(tool.name, tool);
+        }
+      };
+      window.showEditor = function showEditor(id) {
+        document.getElementById(id).hidden = false;
+      };
+    </script>
+  </head>
+  <body data-submit-count="0">
+    <main>
+      <shreddit-post
+        id="t3_abc123"
+        post-title="How should a WebMCP read Reddit?"
+        author="fixture_author"
+        subreddit-prefixed-name="r/typescript"
+        permalink="https://www.reddit.com/r/typescript/comments/abc123/webmcp_fixture/"
+        score="1.2k"
+        comment-count="2"
+        created-timestamp="2026-08-31T08:00:00.000Z"
+        post-type="text">
+        <div slot="text-body">Use bounded page reads and keep publication under user control.</div>
+        <button type="button" aria-label="Add a comment" onclick="showEditor('post-editor')">Add a comment</button>
+        <div id="post-editor" hidden>
+          <textarea name="text"></textarea>
+          <button type="submit" onclick="document.body.dataset.submitCount = String(Number(document.body.dataset.submitCount) + 1)">Comment</button>
+        </div>
+      </shreddit-post>
+
+      <shreddit-comment
+        thingid="t1_reply1"
+        parentid="t3_abc123"
+        postid="t3_abc123"
+        author="alice"
+        depth="0"
+        score="42"
+        permalink="https://www.reddit.com/r/typescript/comments/abc123/webmcp_fixture/reply1/">
+        <div slot="comment">Return structured IDs and preserve the thread shape.</div>
+        <button type="button" aria-label="Reply" onclick="showEditor('reply-editor')">Reply</button>
+        <div id="reply-editor" hidden>
+          <div id="reply-editor-input" contenteditable="true" role="textbox"><br></div>
+          <button type="submit" onclick="document.body.dataset.submitCount = String(Number(document.body.dataset.submitCount) + 1)">Reply</button>
+        </div>
+      </shreddit-comment>
+
+      <shreddit-comment
+        thingid="t1_reply2"
+        parentid="t1_reply1"
+        postid="t3_abc123"
+        author="fixture_author"
+        depth="1"
+        score="7"
+        is-op
+        permalink="https://www.reddit.com/r/typescript/comments/abc123/webmcp_fixture/reply2/">
+        <div slot="comment">And never publish a reply automatically.</div>
+      </shreddit-comment>
+    </main>
+
+    <aside>
+      <shreddit-subreddit-rules>
+        <h2>Community Rules</h2>
+        <shreddit-community-rule rule-number="1" rule-title="Be constructive">
+          <div>Critique ideas, not people.</div>
+        </shreddit-community-rule>
+        <shreddit-community-rule rule-number="2" rule-title="Stay on topic">
+          <div>Posts must relate to TypeScript.</div>
+        </shreddit-community-rule>
+      </shreddit-subreddit-rules>
+    </aside>
+
+    <section id="direct-test-controls" hidden>
+      <button id="run-direct-smoke" type="button">Run direct adapter smoke test</button>
+      <pre id="direct-test-result"></pre>
+    </section>
+
+    <script type="module">
+      if (window.directDomTestMode) {
+        const adapter = await import("/packages/sites/reddit/test/dom-test.generated.js");
+        const controls = document.getElementById("direct-test-controls");
+        const runButton = document.getElementById("run-direct-smoke");
+        const result = document.getElementById("direct-test-result");
+        controls.hidden = false;
+        runButton.addEventListener("click", async () => {
+          const listing = await adapter.collectListing({ limit: 5, maxScrolls: 0 });
+          const thread = await adapter.readThread({ limit: 10, maxDepth: 4, maxExpansions: 0 });
+          const rules = adapter.getCommunityRules();
+          const draft = await adapter.prepareReplyDraft(
+            "t1_reply1",
+            "A fixture reply that must remain a draft."
+          );
+          const overwriteAttempt = await adapter.prepareReplyDraft(
+            "t1_reply1",
+            "This must not overwrite the existing draft."
+          );
+          result.textContent = JSON.stringify({
+            listing,
+            thread,
+            rules,
+            draft,
+            overwriteAttempt,
+            draftValue: document.getElementById("reply-editor-input")?.innerText ?? null,
+            submitCount: document.body.dataset.submitCount
+          });
+        });
+      } else {
+        await import("/packages/extension/dist/sites/reddit.js");
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Reddit mod rules fixture</title>
+    <style>
+      mod-rule-item { display: block; }
+    </style>
+    <script>
+      history.replaceState({}, "", "/mod/typescript/rules/");
+    </script>
+  </head>
+  <body>
+    <h1>Community Rules</h1>
+    <mod-rules-items-sortable>
+      <mod-rule-item
+        subreddit-name="typescript"
+        rule-obj='{"priority":0,"name":"Be constructive","description":"Critique ideas, not people."}'>
+      </mod-rule-item>
+      <mod-rule-item
+        subreddit-name="typescript"
+        rule-obj='{"priority":1,"name":"Stay on topic","content":{"markdown":"Posts must relate to TypeScript."}}'>
+      </mod-rule-item>
+    </mod-rules-items-sortable>
+
+    <button id="run-rules-test" type="button">Run direct rules test</button>
+    <pre id="rules-test-result"></pre>
+
+    <script type="module">
+      const adapter = await import("/packages/sites/reddit/test/dom-test.generated.js");
+      document.getElementById("run-rules-test").addEventListener("click", () => {
+        document.getElementById("rules-test-result").textContent = JSON.stringify(
+          adapter.getCommunityRules()
+        );
+      });
+    </script>
+  </body>
+</html>

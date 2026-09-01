@@ -17,6 +17,7 @@ await build({
     "sites/linkedin": "src/sites/linkedin.ts",
     "sites/producthunt": "src/sites/producthunt.ts",
     "sites/temu": "src/sites/temu.ts",
+    "sites/reddit": "src/sites/reddit.ts",
     "sites/x": "src/sites/x.ts"
   },
   format: "esm",
