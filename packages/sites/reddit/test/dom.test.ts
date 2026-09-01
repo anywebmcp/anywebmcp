@@ -123,6 +123,29 @@ test("collects old Reddit listings", async () => {
   });
 });
 
+test("collects current Reddit search SDUI listings", async () => {
+  await withFixture("search-listing.html", "https://www.reddit.com/search/?q=self-hosted+internal+apps&type=posts", async () => {
+    const result = await collectListing({ limit: 10, maxScrolls: 0 });
+    assert.equal(result.ok, true, JSON.stringify(result));
+    if (!result.ok) return;
+    assert.equal(result.pageContext.pageType, "search");
+    assert.deepEqual(result.posts.map(post => post.postId), ["t3_search1", "t3_search2"]);
+    assert.deepEqual(result.posts.map(post => post.title), ["Current Reddit search result", "Fallback search result"]);
+    assert.equal(result.posts[0].permalink, "https://www.reddit.com/r/selfhosted/comments/search1/current_reddit_search_result/");
+    assert.equal(result.posts[0].subreddit, "r/selfhosted");
+    assert.equal(result.posts[0].author, "search_author");
+    assert.equal(result.posts[0].score, 1_400);
+    assert.equal(result.posts[0].commentCount, 83);
+    assert.equal(result.posts[0].createdAt, "2026-09-01T10:11:30.613Z");
+    assert.equal(result.posts[0].nsfw, true);
+    assert.equal(result.posts[0].spoiler, false);
+    assert.equal(result.posts[1].author, null);
+    assert.equal(result.posts[1].score, 42);
+    assert.equal(result.posts[1].commentCount, 7);
+    assert.equal(result.posts.some(post => post.postId === "t3_search_ad"), false);
+  });
+});
+
 test("reads modern and legacy threads with stable comment relationships", async () => {
   await withFixture("fixture.html", "https://www.reddit.com/r/typescript/comments/abc123/webmcp_fixture?sort=best", async () => {
     const result = await readThread({ limit: 10, maxDepth: 4, maxExpansions: 0 });

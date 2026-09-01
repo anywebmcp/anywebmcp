@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <button data-testid="user-drawer-button">Fixture user</button>
+    <main>
+      <search-telemetry-tracker
+        data-testid="search-sdui-post"
+        data-thingid="t3_search1"
+        data-faceplate-tracking-context='{"post":{"id":"t3_search1","nsfw":true,"spoiler":false,"title":"Current Reddit search result"},"profile":{"name":"search_author"},"subreddit":{"name":"selfhosted"}}'>
+        <div data-testid="search-post-unit">
+          <h2>
+            <a
+              data-testid="post-title"
+              href="/r/selfhosted/comments/search1/current_reddit_search_result/">
+              Current Reddit search result
+            </a>
+          </h2>
+          <div data-testid="sdui-post-unit">
+            <a href="/r/selfhosted/">r/selfhosted</a>
+            <time datetime="2026-09-01T10:11:30.613Z">5h ago</time>
+            <a
+              data-testid="post-title-text"
+              href="/r/selfhosted/comments/search1/current_reddit_search_result/">
+              Current Reddit search result
+            </a>
+            <div data-testid="search-counter-row">1.4K votes · 83 comments</div>
+          </div>
+        </div>
+      </search-telemetry-tracker>
+
+      <search-telemetry-tracker
+        data-testid="search-sdui-post"
+        data-thingid="t3_search2"
+        data-faceplate-tracking-context="not-json">
+        <div data-testid="search-post-unit">
+          <h2>
+            <a
+              data-testid="post-title"
+              href="/r/kubernetes/comments/search2/fallback_search_result/">
+              Fallback search result
+            </a>
+          </h2>
+          <a href="/r/kubernetes/">r/kubernetes</a>
+          <div data-testid="search-counter-row">42 votes · 7 comments</div>
+        </div>
+      </search-telemetry-tracker>
+
+      <search-telemetry-tracker
+        data-testid="search-sdui-post"
+        data-thingid="t3_search_ad"
+        ad-click-location="background">
+        <div data-testid="search-post-unit">
+          <h2><a href="/comments/search_ad/promoted/">Promoted search result</a></h2>
+        </div>
+      </search-telemetry-tracker>
+    </main>
+  </body>
+</html>
