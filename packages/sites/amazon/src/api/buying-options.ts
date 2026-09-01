@@ -132,17 +132,10 @@ function fallbackProductOffer(document: Document) {
   };
 }
 
-export async function getBuyingOptions(input: BuyingOptionsInput) {
-  const asin = normalizeAsin(input?.asin);
-  if (!asin) {
-    return { ok: false as const, error: "invalid_asin", message: "asin must be a 10-character Amazon ASIN" };
-  }
-  const response = await fetchAmazonDocument(`/gp/offer-listing/${asin}?condition=ALL`);
-  if (!response.ok) return response;
-
+export function parseBuyingOptionsDocument(document: Document) {
   const roots = [
-    ...response.document.querySelectorAll("#aod-pinned-offer"),
-    ...response.document.querySelectorAll("#aod-offer")
+    ...document.querySelectorAll("#aod-pinned-offer"),
+    ...document.querySelectorAll("#aod-offer")
   ];
   const options: BuyingOption[] = [];
   const seen = new Set<string>();
@@ -155,18 +148,29 @@ export async function getBuyingOptions(input: BuyingOptionsInput) {
     options.push(option);
   }
   if (!options.length) {
-    const fallback = fallbackProductOffer(response.document);
+    const fallback = fallbackProductOffer(document);
     if (fallback) options.push(fallback);
   }
-  if (!options.length) {
-    return { ok: false as const, error: "offers_not_found", message: "Amazon did not expose buying options for this ASIN." };
-  }
-
   options.sort((left, right) => {
     const leftAmount = left.estimatedTotal?.amount ?? left.price?.amount ?? Number.POSITIVE_INFINITY;
     const rightAmount = right.estimatedTotal?.amount ?? right.price?.amount ?? Number.POSITIVE_INFINITY;
     return leftAmount - rightAmount;
   });
+  return options;
+}
+
+export async function getBuyingOptions(input: BuyingOptionsInput) {
+  const asin = normalizeAsin(input?.asin);
+  if (!asin) {
+    return { ok: false as const, error: "invalid_asin", message: "asin must be a 10-character Amazon ASIN" };
+  }
+  const response = await fetchAmazonDocument(`/gp/offer-listing/${asin}?condition=ALL`);
+  if (!response.ok) return response;
+
+  const options = parseBuyingOptionsDocument(response.document);
+  if (!options.length) {
+    return { ok: false as const, error: "offers_not_found", message: "Amazon did not expose buying options for this ASIN." };
+  }
 
   return {
     ok: true as const,

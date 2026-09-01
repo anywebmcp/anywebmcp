@@ -5,6 +5,7 @@ import {
   firstText,
   normalizeAsin,
   normalizedInteger,
+  parseCount,
   parseRating
 } from "./shared";
 
@@ -33,8 +34,7 @@ export type AmazonReview = {
 
 function helpfulVotesFrom(value: string) {
   if (/\bone\s+person\b/i.test(value)) return 1;
-  const match = value.match(/\d[\d,.]*/);
-  return match ? Number(match[0].replace(/\D/g, "")) || 0 : 0;
+  return parseCount(value) ?? 0;
 }
 
 function reviewFrom(root: HTMLElement): AmazonReview | null {

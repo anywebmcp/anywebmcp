@@ -60,3 +60,13 @@ If Amazon returns a CAPTCHA or robot-check page, the tool returns a `bot_check` 
 ```json
 { "asins": ["B0BR3M8XHK", "B0D2X2VQY7"] }
 ```
+
+## Tests
+
+Run the Amazon package's offline contract and sanitized fixture tests from the repository root:
+
+```sh
+npm test -w @openwebmcp/site-amazon
+```
+
+The root `npm test` command also includes this package. No Amazon credentials or live requests are used.

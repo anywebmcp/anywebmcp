@@ -1,13 +1,5 @@
 import { completed, failed } from "@openwebmcp/common";
-
-type AmazonFailure = {
-  ok: false;
-  error: string;
-  message: string;
-  status?: number;
-  query?: string;
-  searchUrl?: string;
-};
+import type { AmazonFailure } from "./api/shared";
 
 export function fromAmazonResult<T extends { ok: true }>(result: T | AmazonFailure) {
   if (!result.ok) {

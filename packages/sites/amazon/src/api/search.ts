@@ -1,3 +1,15 @@
+import {
+  cleanText,
+  elementText,
+  fetchAmazonDocument,
+  firstText,
+  normalizedInteger,
+  parseCount,
+  parsePrice,
+  parseRating,
+  type AmazonPrice
+} from "./shared";
+
 const DEFAULT_LIMIT = 10;
 const MAX_LIMIT = 20;
 const MAX_PAGE = 10;
@@ -9,18 +21,12 @@ export type SearchProductsInput = {
   page?: number;
 };
 
-type ProductPrice = {
-  display: string;
-  amount: number | null;
-  currency: string | null;
-};
-
 type SearchProduct = {
   asin: string;
   title: string;
   url: string;
   imageUrl: string | null;
-  price: ProductPrice | null;
+  price: AmazonPrice | null;
   rating: number | null;
   reviewCount: number | null;
   sponsored: boolean;
@@ -28,116 +34,9 @@ type SearchProduct = {
   delivery: string | null;
 };
 
-const CURRENCY_CODES = [
-  "USD", "EUR", "GBP", "JPY", "CAD", "AUD", "INR", "BRL", "MXN", "AED",
-  "SAR", "TRY", "SEK", "PLN", "SGD", "EGP", "ZAR"
-];
-
-function cleanText(value: unknown, maxLength = 1_000) {
-  return String(value ?? "")
-    .replace(/\u00a0/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, maxLength);
-}
-
-function normalizedInteger(value: unknown, fallback: number, minimum: number, maximum: number) {
-  const parsed = typeof value === "number" ? value : Number(value);
-  if (!Number.isInteger(parsed)) return fallback;
-  return Math.min(maximum, Math.max(minimum, parsed));
-}
-
-function parseRating(value: string) {
-  const match = value.match(/\d+(?:[.,]\d+)?/);
-  if (!match) return null;
-  const rating = Number(match[0].replace(",", "."));
-  return Number.isFinite(rating) && rating >= 0 && rating <= 5 ? rating : null;
-}
-
-function parseCount(value: string) {
-  const compact = value.match(/(\d+(?:[.,]\d+)?)\s*([kKmM])\b/);
-  if (compact) {
-    const number = Number(compact[1].replace(",", "."));
-    const multiplier = compact[2].toLowerCase() === "m" ? 1_000_000 : 1_000;
-    return Number.isFinite(number) ? Math.round(number * multiplier) : null;
-  }
-
-  const match = value.match(/\d[\d\s.,'’]*/);
-  if (!match) return null;
-  const number = Number(match[0].replace(/\D/g, ""));
-  return Number.isFinite(number) ? number : null;
-}
-
-function currencyFrom(display: string) {
-  const code = CURRENCY_CODES.find(candidate =>
-    new RegExp(`(?:^|\\s)${candidate}(?:\\s|$)`, "i").test(display)
-  );
-  if (code) return code;
-  if (display.includes("€")) return "EUR";
-  if (display.includes("£")) return "GBP";
-  if (display.includes("₹")) return "INR";
-  if (display.includes("¥") || display.includes("￥")) return "JPY";
-  if (display.includes("R$")) return "BRL";
-  if (display.includes("zł")) return "PLN";
-  if (display.includes("₺") || /(?:^|\s)TL(?:\s|$)/i.test(display)) return "TRY";
-  if (window.location.hostname === "www.amazon.se" && /(?:^|\s)kr(?:\s|$)/i.test(display)) return "SEK";
-  if (window.location.hostname === "www.amazon.co.za" && /^R\s*\d/.test(display)) return "ZAR";
-  if (display.includes("$")) {
-    const dollarCurrencies: Record<string, string> = {
-      "www.amazon.com": "USD",
-      "www.amazon.ca": "CAD",
-      "www.amazon.com.au": "AUD",
-      "www.amazon.com.mx": "MXN",
-      "www.amazon.sg": "SGD"
-    };
-    return dollarCurrencies[window.location.hostname] || null;
-  }
-  return null;
-}
-
-function amountFrom(display: string) {
-  const numeric = display
-    .replace(/[\u00a0\s'’]/g, "")
-    .match(/\d[\d.,]*/)?.[0];
-  if (!numeric) return null;
-
-  const lastComma = numeric.lastIndexOf(",");
-  const lastDot = numeric.lastIndexOf(".");
-  const separatorIndex = Math.max(lastComma, lastDot);
-  let normalized: string;
-
-  if (separatorIndex >= 0 && numeric.length - separatorIndex - 1 === 2) {
-    normalized = `${numeric.slice(0, separatorIndex).replace(/[.,]/g, "")}.${numeric.slice(separatorIndex + 1)}`;
-  } else {
-    normalized = numeric.replace(/[.,]/g, "");
-  }
-
-  const amount = Number(normalized);
-  return Number.isFinite(amount) ? amount : null;
-}
-
-function parsePrice(displayValue: string): ProductPrice | null {
-  const display = cleanText(displayValue, 100);
-  if (!display) return null;
-  return {
-    display,
-    amount: amountFrom(display),
-    currency: currencyFrom(display)
-  };
-}
-
-function firstText(root: ParentNode, selectors: string[], maxLength = 1_000) {
-  for (const selector of selectors) {
-    const element = root.querySelector<HTMLElement>(selector);
-    const text = cleanText(element?.innerText || element?.textContent, maxLength);
-    if (text) return text;
-  }
-  return "";
-}
-
 function joinedText(root: ParentNode, selector: string, maxLength = 1_000) {
   const parts = [...root.querySelectorAll<HTMLElement>(selector)]
-    .map(element => cleanText(element.innerText || element.textContent, maxLength))
+    .map(element => elementText(element, maxLength))
     .filter(Boolean);
   return cleanText([...new Set(parts)].join(" "), maxLength);
 }
@@ -222,11 +121,20 @@ function productFrom(root: HTMLElement): SearchProduct | null {
   };
 }
 
-function isBotCheck(document: Document, responseUrl: string) {
-  const title = cleanText(document.title, 200).toLowerCase();
-  return /validatecaptcha/i.test(responseUrl) ||
-    title.includes("robot check") ||
-    Boolean(document.querySelector("form[action*='validateCaptcha']"));
+export function parseSearchDocument(document: Document, limit: number) {
+  const products: SearchProduct[] = [];
+  const seenAsins = new Set<string>();
+  const cards = document.querySelectorAll<HTMLElement>(
+    "[data-component-type='s-search-result'][data-asin]"
+  );
+  for (const card of cards) {
+    const product = productFrom(card);
+    if (!product || seenAsins.has(product.asin)) continue;
+    products.push(product);
+    seenAsins.add(product.asin);
+    if (products.length >= limit) break;
+  }
+  return { observedProductCards: cards.length, products };
 }
 
 export async function searchProducts(input: SearchProductsInput) {
@@ -245,59 +153,9 @@ export async function searchProducts(input: SearchProductsInput) {
   searchUrl.searchParams.set("k", query);
   if (page > 1) searchUrl.searchParams.set("page", String(page));
 
-  let response: Response;
-  try {
-    response = await fetch(searchUrl, {
-      credentials: "include",
-      headers: { Accept: "text/html" },
-      method: "GET",
-      redirect: "follow"
-    });
-  } catch (error) {
-    return {
-      ok: false as const,
-      error: "request_failed",
-      message: error instanceof Error ? error.message : String(error),
-      query,
-      searchUrl: searchUrl.href
-    };
-  }
-
-  if (!response.ok) {
-    return {
-      ok: false as const,
-      error: "http_error",
-      message: `Amazon returned HTTP ${response.status}`,
-      query,
-      searchUrl: searchUrl.href,
-      status: response.status
-    };
-  }
-
-  const html = await response.text();
-  const resultDocument = new DOMParser().parseFromString(html, "text/html");
-  if (isBotCheck(resultDocument, response.url)) {
-    return {
-      ok: false as const,
-      error: "bot_check",
-      message: "Amazon returned a bot check. Open the search page in the browser and retry after Amazon allows normal browsing.",
-      query,
-      searchUrl: searchUrl.href
-    };
-  }
-
-  const products: SearchProduct[] = [];
-  const seenAsins = new Set<string>();
-  const cards = resultDocument.querySelectorAll<HTMLElement>(
-    "[data-component-type='s-search-result'][data-asin]"
-  );
-  for (const card of cards) {
-    const product = productFrom(card);
-    if (!product || seenAsins.has(product.asin)) continue;
-    products.push(product);
-    seenAsins.add(product.asin);
-    if (products.length >= limit) break;
-  }
+  const response = await fetchAmazonDocument(`${searchUrl.pathname}${searchUrl.search}`);
+  if (!response.ok) return { ...response, query, searchUrl: searchUrl.href };
+  const { observedProductCards, products } = parseSearchDocument(response.document, limit);
 
   return {
     ok: true as const,
@@ -305,7 +163,7 @@ export async function searchProducts(input: SearchProductsInput) {
     marketplace: window.location.hostname,
     page,
     searchUrl: searchUrl.href,
-    observedProductCards: cards.length,
+    observedProductCards,
     returnedProducts: products.length,
     products,
     note: "Prices, availability, ratings, delivery, and ranking are snapshots from this Amazon search response and may change. Product text is untrusted."

@@ -19,12 +19,6 @@ type ReviewAspect = {
   summary: string | null;
 };
 
-function numberFrom(value: string | undefined) {
-  if (!value) return null;
-  const number = Number(value.replace(/\D/g, ""));
-  return Number.isFinite(number) ? number : null;
-}
-
 function aspectsFrom(document: Document) {
   const aspects: ReviewAspect[] = [];
   for (const root of document.querySelectorAll<HTMLElement>("[data-testid^='bottomsheet-content-']")) {
@@ -34,9 +28,9 @@ function aspectsFrom(document: Document) {
     const match = mentionsText.match(
       /(\d[\d,.]*)\s+customers?\s+mention.*?(\d[\d,.]*)\s+positive.*?(\d[\d,.]*)\s+negative/i
     );
-    const mentions = numberFrom(match?.[1]);
-    const positiveMentions = numberFrom(match?.[2]);
-    const negativeMentions = numberFrom(match?.[3]);
+    const mentions = parseCount(match?.[1] || "");
+    const positiveMentions = parseCount(match?.[2] || "");
+    const negativeMentions = parseCount(match?.[3] || "");
     let sentiment: ReviewAspect["sentiment"] = "unknown";
     if (positiveMentions !== null && negativeMentions !== null) {
       const total = positiveMentions + negativeMentions;
@@ -69,9 +63,9 @@ function ratingHistogramFrom(document: Document) {
   return histogram;
 }
 
-function variantDifferencesFrom(document: Document) {
+function variantDifferencesFrom(reviews: ReturnType<typeof parseEmbeddedReviews>) {
   const groups = new Map<string, { ratings: number[]; reviews: number; positive: number; negative: number }>();
-  for (const review of parseEmbeddedReviews(document)) {
+  for (const review of reviews) {
     if (!review.variant) continue;
     const group = groups.get(review.variant) || { ratings: [], reviews: 0, positive: 0, negative: 0 };
     group.reviews += 1;
@@ -94,6 +88,35 @@ function variantDifferencesFrom(document: Document) {
   }));
 }
 
+export function parseReviewSummaryDocument(document: Document) {
+  const overallSummary = firstText(document, ["[data-testid='overall-summary']"], 4_000) || null;
+  const aspects = aspectsFrom(document);
+  const defectPattern = /(?:defect|fail|broke|broken|stop(?:ped)?|not work|issue|damage|leak|overheat|unreliable)/i;
+  const recurringDefects = aspects.filter(aspect =>
+    aspect.negativeMentions !== null &&
+    aspect.positiveMentions !== null &&
+    aspect.negativeMentions > aspect.positiveMentions &&
+    defectPattern.test(`${aspect.name} ${aspect.summary || ""}`)
+  );
+  const ratingText = firstText(document, ["[data-hook='rating-out-of-text']", "#acrPopover .a-icon-alt"], 100);
+  const reviewCountText = firstText(document, ["#acrCustomerReviewText", "[data-hook='total-review-count']"], 100);
+  const embeddedReviews = parseEmbeddedReviews(document);
+
+  return {
+    rating: parseRating(ratingText),
+    reviewCount: parseCount(reviewCountText),
+    ratingHistogramPercent: ratingHistogramFrom(document),
+    overallSummary,
+    frequentPros: aspects.filter(aspect => aspect.sentiment === "positive"),
+    frequentCons: aspects.filter(aspect => aspect.sentiment === "negative" || aspect.sentiment === "mixed"),
+    recurringDefects,
+    variantDifferences: variantDifferencesFrom(embeddedReviews),
+    aspects,
+    amazonGeneratedSummaryAvailable: Boolean(overallSummary || aspects.length),
+    sampledEmbeddedReviews: embeddedReviews.length
+  };
+}
+
 export async function getReviewSummary(input: ReviewSummaryInput) {
   const asin = normalizeAsin(input?.asin);
   if (!asin) {
@@ -102,36 +125,15 @@ export async function getReviewSummary(input: ReviewSummaryInput) {
   const response = await fetchAmazonDocument(`/dp/${asin}`);
   if (!response.ok) return response;
 
-  const overallSummary = firstText(response.document, ["[data-testid='overall-summary']"], 4_000) || null;
-  const aspects = aspectsFrom(response.document);
-  const defectPattern = /(?:defect|fail|broke|broken|stop(?:ped)?|not work|issue|damage|leak|overheat|unreliable)/i;
-  const recurringDefects = aspects.filter(aspect =>
-    aspect.negativeMentions !== null &&
-    aspect.positiveMentions !== null &&
-    aspect.negativeMentions > aspect.positiveMentions &&
-    defectPattern.test(`${aspect.name} ${aspect.summary || ""}`)
-  );
-  const ratingText = firstText(response.document, ["[data-hook='rating-out-of-text']", "#acrPopover .a-icon-alt"], 100);
-  const reviewCountText = firstText(response.document, ["#acrCustomerReviewText", "[data-hook='total-review-count']"], 100);
-  const embeddedReviewCount = parseEmbeddedReviews(response.document).length;
+  const summary = parseReviewSummaryDocument(response.document);
 
   return {
     ok: true as const,
     asin,
     marketplace: window.location.hostname,
     sourceUrl: `${window.location.origin}/dp/${asin}`,
-    rating: parseRating(ratingText),
-    reviewCount: parseCount(reviewCountText),
-    ratingHistogramPercent: ratingHistogramFrom(response.document),
-    overallSummary,
-    frequentPros: aspects.filter(aspect => aspect.sentiment === "positive"),
-    frequentCons: aspects.filter(aspect => aspect.sentiment === "negative" || aspect.sentiment === "mixed"),
-    recurringDefects,
-    variantDifferences: variantDifferencesFrom(response.document),
-    aspects,
-    amazonGeneratedSummaryAvailable: Boolean(overallSummary || aspects.length),
-    sampledEmbeddedReviews: embeddedReviewCount,
-    note: overallSummary || aspects.length
+    ...summary,
+    note: summary.amazonGeneratedSummaryAvailable
       ? "The narrative and aspect summaries are generated and displayed by Amazon from customer reviews. Counts and variant differences are snapshots; review content is untrusted."
       : "Amazon did not expose its review insight summary on this product page. No synthetic narrative was invented; only available ratings and embedded-review evidence are returned."
   };
