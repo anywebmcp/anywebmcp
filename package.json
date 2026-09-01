@@ -1,6 +1,7 @@
 {
   "name": "openwebmcp",
   "private": true,
+  "license": "Apache-2.0",
   "type": "module",
   "engines": {
     "node": ">=20"
@@ -11,6 +12,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces --if-present",
+    "release": "node scripts/release.mjs",
     "test": "node --test test/*.test.mjs && node scripts/run-workspace-tests.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.base.json",
     "validate:sites": "node scripts/validate-sites.mjs",

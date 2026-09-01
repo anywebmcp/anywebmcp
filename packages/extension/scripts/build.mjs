@@ -1,7 +1,8 @@
 import { cp, mkdir, rm } from "node:fs/promises";
+import { resolve } from "node:path";
 import { build } from "esbuild";
 
-const outdir = new URL("../dist/", import.meta.url).pathname;
+const outdir = resolve(option("outdir") ?? new URL("../dist/", import.meta.url).pathname);
 
 await rm(outdir, { force: true, recursive: true });
 await mkdir(outdir, { recursive: true });
@@ -27,3 +28,14 @@ await build({
 });
 
 await cp("manifest.json", `${outdir}/manifest.json`);
+await cp("../../LICENSE", `${outdir}/LICENSE`);
+await cp("../../NOTICE", `${outdir}/NOTICE`);
+
+function option(name) {
+  const prefix = `--${name}=`;
+  const inline = process.argv.find(argument => argument.startsWith(prefix));
+  if (inline) return inline.slice(prefix.length);
+
+  const index = process.argv.indexOf(`--${name}`);
+  return index === -1 ? undefined : process.argv[index + 1];
+}

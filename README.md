@@ -11,6 +11,32 @@ npm run build
 
 The unpacked extension is generated at `packages/extension/dist`.
 
+## Release
+
+Create the manual extension ZIP, Chrome Web Store ZIP, and signed/notarized macOS Codex launcher ZIP with one command:
+
+```sh
+npm run release
+```
+
+The command prompts for a patch, minor, major, or exact version. For a non-interactive release, pass `--bump=patch|minor|major` or `--version=x.y.z`. Production releases require a clean worktree and the Apple setup described below. Artifacts are written to `dist/releases/<version>`:
+
+```text
+openwebmcp-extension-<version>.zip
+openwebmcp-chrome-web-store-<version>.zip
+codex-webmcp-macos-universal-<version>.zip
+```
+
+The manual archive expands to a versioned extension directory. The Chrome Web Store archive has `manifest.json` at its root. Both contain the same extension build, and the launcher embeds that exact build. Use `npm run release -- --version=x.y.z --local` to verify the complete pipeline with an ad-hoc-signed launcher; local output is not suitable for distribution.
+
+After committing the version change, tag and publish the three production ZIPs as GitHub Release assets:
+
+```sh
+git tag v0.2.0
+git push origin v0.2.0
+gh release create v0.2.0 dist/releases/0.2.0/*.zip --verify-tag --generate-notes
+```
+
 ## Validate site metadata
 
 Validate every canonical site declaration and its repository wiring with:
@@ -131,3 +157,9 @@ The Temu adapter is read-only. It reads bounded search results and public produc
 - `reddit_prepare_reply_draft`
 
 The Reddit adapter performs bounded reads of the current page and keeps page context inside every result instead of exposing a separate context tool. Reply drafting only inserts and verifies text in the visible editor; it never submits the reply. See [the Reddit package](packages/sites/reddit/README.md) for details.
+
+## License
+
+[Apache License 2.0](LICENSE)
+
+Copyright 2026 UI Bakery Inc.

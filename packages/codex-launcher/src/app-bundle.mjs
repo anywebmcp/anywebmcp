@@ -7,7 +7,7 @@ import { checkNotaryProfile, notarizeApp, resolveSigningIdentity, signApp } from
 const exec = promisify(execFile);
 
 export async function buildApp(options, targetPath) {
-  await validateInputs(options);
+  const appVersion = await validateInputs(options);
   const identity = await resolveSigningIdentity(options);
   if (options.notarize) await checkNotaryProfile(options.notaryProfile);
   await mkdir(dirname(targetPath), { recursive: true });
@@ -18,7 +18,7 @@ export async function buildApp(options, targetPath) {
     await mkdir(resolve(stagedPath, "Contents/MacOS"), { recursive: true });
     await mkdir(resolve(stagedPath, "Contents/Resources"), { recursive: true });
     const extensionValue = await prepareExtension(options, stagedPath);
-    await writeTemplates(options, stagedPath, extensionValue);
+    await writeTemplates(options, stagedPath, extensionValue, appVersion);
     await copyIcon(options, stagedPath);
     await signApp(stagedPath, identity);
     if (options.notarize) {
@@ -43,7 +43,11 @@ export async function archiveApp(appPath) {
 async function validateInputs(options) {
   if (process.platform !== "darwin") throw new Error("Codex launcher generation currently supports macOS only.");
   await access(resolve(options.sourceApp, "Contents/MacOS/ChatGPT"));
-  await access(resolve(options.extensionDir, "manifest.json"));
+  const manifest = JSON.parse(await readFile(resolve(options.extensionDir, "manifest.json"), "utf8"));
+  if (!/^\d+\.\d+\.\d+$/.test(manifest.version)) {
+    throw new Error("The extension manifest must contain a numeric major.minor.patch version.");
+  }
+  return manifest.version;
 }
 
 async function prepareExtension(options, appPath) {
@@ -54,11 +58,12 @@ async function prepareExtension(options, appPath) {
   return '"$resources_dir/extension"';
 }
 
-async function writeTemplates(options, appPath, extensionValue) {
+async function writeTemplates(options, appPath, extensionValue, appVersion) {
   const templateDir = resolve(options.packageRoot, "templates");
   const executableName = "Codex WebMCP Launcher";
   const plist = applyTemplate(await readFile(resolve(templateDir, "Info.plist"), "utf8"), {
     APP_NAME: options.appName,
+    APP_VERSION: appVersion,
     BUNDLE_ID: options.bundleId,
     EXECUTABLE_NAME: executableName
   });
