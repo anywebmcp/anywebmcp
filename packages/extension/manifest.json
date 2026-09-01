@@ -33,6 +33,14 @@
         "https://www.amazon.com.tr/*",
         "https://www.amazon.eg/*",
         "https://www.amazon.co.za/*",
+        "https://*.ebay.com/*",
+        "https://*.ebay.co.uk/*",
+        "https://*.ebay.de/*",
+        "https://*.ebay.fr/*",
+        "https://*.ebay.it/*",
+        "https://*.ebay.es/*",
+        "https://*.ebay.ca/*",
+        "https://*.ebay.com.au/*",
         "https://www.linkedin.com/*",
         "https://x.com/*",
         "https://twitter.com/*"
@@ -67,6 +75,21 @@
         "https://www.amazon.co.za/*"
       ],
       "js": ["sites/amazon.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://*.ebay.com/*",
+        "https://*.ebay.co.uk/*",
+        "https://*.ebay.de/*",
+        "https://*.ebay.fr/*",
+        "https://*.ebay.it/*",
+        "https://*.ebay.es/*",
+        "https://*.ebay.ca/*",
+        "https://*.ebay.com.au/*"
+      ],
+      "js": ["sites/ebay.js"],
       "run_at": "document_idle",
       "world": "MAIN"
     },

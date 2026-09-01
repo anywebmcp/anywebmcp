@@ -1,0 +1,14 @@
+{
+  "name": "@openwebmcp/site-ebay",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --experimental-strip-types --test test/*.test.mjs"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@openwebmcp/common": "*"
+  }
+}
