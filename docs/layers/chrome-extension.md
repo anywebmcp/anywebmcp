@@ -9,7 +9,7 @@ The main-world entry can access `document.modelContext` and the website's page s
 1. Chrome opens a supported domain.
 2. The extension injects the matching bundled site entry.
 3. The entry imports its side-effect-free site package.
-4. The entry explicitly invokes the lifecycle helper, which registers the package's WebMCP tools.
+4. The entry explicitly invokes the mount helper, which registers the package's WebMCP tools.
 5. Registration is removed when the document is unloaded.
 
 Unsupported domains receive no site entry.
