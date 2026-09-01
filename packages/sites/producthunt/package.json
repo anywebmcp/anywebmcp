@@ -5,6 +5,9 @@
   "exports": {
     ".": "./src/index.ts"
   },
+  "scripts": {
+    "test": "node ../../../scripts/run-package-tests.mjs"
+  },
   "dependencies": {
     "@openwebmcp/common": "*"
   }

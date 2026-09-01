@@ -18,3 +18,5 @@ This package exposes read-only WebMCP tools on `www.producthunt.com` and `produc
 The adapter does not navigate, scroll, click, vote, comment, or modify Product Hunt. It excludes promotional cards and forum content; launches without a displayed rank, such as the current-day list, use their visible page order. Returned product names, descriptions, comments, taglines, topics, and URLs are marked as untrusted content.
 
 The official Product Hunt API requires a separately provisioned access token, so these tools follow the normal signed-out or signed-in website UI instead. The DOM readers rely on Product Hunt's current semantic paths and `data-test` attributes. Search additionally relies on the public search page's `ApolloSSRDataTransport` hydration structure. These assumptions may require maintenance when Product Hunt changes its frontend.
+
+Run the package's offline contract and fixture tests with `npm test -w @openwebmcp/site-producthunt`.
