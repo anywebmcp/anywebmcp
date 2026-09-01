@@ -3,7 +3,10 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./test": "./test-support/index.ts"
+  },
+  "scripts": {
+    "test": "node ../../scripts/run-package-tests.mjs"
   }
 }
-

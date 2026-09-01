@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --experimental-strip-types --test test/*.test.mjs"
+    "test": "node ../../../scripts/run-package-tests.mjs"
   },
   "exports": {
     ".": "./src/index.ts"

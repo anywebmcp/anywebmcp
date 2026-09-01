@@ -70,6 +70,14 @@ Every package MUST expose a standard `test` script and provide offline tests for
 
 Ordinary tests SHOULD run offline without credentials or private user data. Live smoke tests MAY exist as a separate command when they provide useful coverage, but they MUST NOT run as part of every ordinary local test invocation.
 
+Keep ordinary tests in `test/`. Site packages use this script:
+
+```json
+"test": "node ../../../scripts/run-package-tests.mjs"
+```
+
+Contract tests can import `assertSiteContract` and `importAndMountSite` from `@openwebmcp/common/test`. The helper installs a fake `document.modelContext`, mounts the site, captures wrapped tools, checks their registration metadata, and parses their workflow result envelopes. Site-specific DOM, response, and mutation fixtures remain in the site package.
+
 ## Package README
 
 Every site package MUST have a README that documents:
