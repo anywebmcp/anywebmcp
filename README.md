@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for X and LinkedIn.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, X, and LinkedIn.
 
 ## Build
 
@@ -42,7 +42,13 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 3. Choose **Load unpacked** and select `packages/extension/dist`.
 4. Open or reload `https://x.com`.
 
-The same extension registers LinkedIn tools on `https://www.linkedin.com`. Reload an existing LinkedIn tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces and LinkedIn tools on `https://www.linkedin.com`. Reload an existing tab after installing or rebuilding the extension.
+
+## Amazon tools
+
+- `amazon_search_products`
+
+The Amazon adapter performs read-only product searches on the current marketplace and does not require sign-in or expose cart operations. See [the Amazon package](packages/sites/amazon/README.md) for supported marketplaces, returned fields, and current limitations.
 
 ## X tools
 
