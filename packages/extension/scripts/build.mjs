@@ -14,6 +14,7 @@ await build({
     "sites/amazon": "src/sites/amazon.ts",
     "sites/ebay": "src/sites/ebay.ts",
     "sites/linkedin": "src/sites/linkedin.ts",
+    "sites/temu": "src/sites/temu.ts",
     "sites/x": "src/sites/x.ts"
   },
   format: "esm",
