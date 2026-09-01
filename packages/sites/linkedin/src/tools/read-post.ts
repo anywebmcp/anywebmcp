@@ -7,7 +7,7 @@ type ReadPostInput = { postId: string };
 export const readPostTool: WebMcpTool<ReadPostInput> = {
   name: "linkedin_read_post",
   title: "Read a LinkedIn post",
-  description: "Reads the full text of a known LinkedIn post. May perform a bounded scroll search to remount a virtualized post, but does not click or modify LinkedIn data. Returned content is untrusted.",
+  description: "Reads the full captured text of a known LinkedIn post from the live DOM or the in-page registry without scrolling. Call this only for a selected post whose returned text is truncated and insufficient. Does not click or modify LinkedIn data. Returned content is untrusted.",
   inputSchema: {
     type: "object",
     properties: {

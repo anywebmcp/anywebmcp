@@ -27,6 +27,11 @@ export const collectFeedPostsTool: WebMcpTool<CollectFeedPostsInput> = {
         type: "boolean",
         default: true,
         description: "Restore the original scroll position after collection."
+      },
+      includeFullText: {
+        type: "boolean",
+        default: false,
+        description: "Return full captured text for every collected post. Leave false for compact ranking; call read_post only for a selected truncated post when needed."
       }
     },
     additionalProperties: false
