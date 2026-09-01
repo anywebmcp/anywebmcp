@@ -11,6 +11,7 @@ await build({
   entryPoints: {
     background: "src/background.ts",
     bridge: "src/bridge.ts",
+    "sites/amazon": "src/sites/amazon.ts",
     "sites/linkedin": "src/sites/linkedin.ts",
     "sites/x": "src/sites/x.ts"
   },
