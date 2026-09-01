@@ -43,6 +43,8 @@
         "https://*.ebay.com.au/*",
         "https://news.ycombinator.com/*",
         "https://www.linkedin.com/*",
+        "https://www.producthunt.com/*",
+        "https://producthunt.com/*",
         "https://www.temu.com/*",
         "https://x.com/*",
         "https://twitter.com/*"
@@ -108,6 +110,15 @@
         "https://www.linkedin.com/*"
       ],
       "js": ["sites/linkedin.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://www.producthunt.com/*",
+        "https://producthunt.com/*"
+      ],
+      "js": ["sites/producthunt.js"],
       "run_at": "document_idle",
       "world": "MAIN"
     },

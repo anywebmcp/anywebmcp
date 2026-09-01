@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Temu, and X.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, Hacker News, LinkedIn, Product Hunt, Temu, and X.
 
 ## Build
 
@@ -42,7 +42,7 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 3. Choose **Load unpacked** and select `packages/extension/dist`.
 4. Open or reload a supported site such as `https://news.ycombinator.com`, `https://www.temu.com`, or `https://x.com`.
 
-The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, Hacker News tools on `https://news.ycombinator.com`, LinkedIn tools on `https://www.linkedin.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, Hacker News tools on `https://news.ycombinator.com`, LinkedIn tools on `https://www.linkedin.com`, Product Hunt tools on `https://www.producthunt.com`, and Temu tools on `https://www.temu.com`. Reload an existing tab after installing or rebuilding the extension.
 
 ## Amazon tools
 
@@ -93,6 +93,15 @@ See [the system overview](docs/system-overview.md) and [the X package](packages/
 - `linkedin_prepare_comment_draft`
 
 The LinkedIn adapter reads the current feed through the page DOM. Collection and recovery scrolling are bounded. Comment drafting only inserts and verifies text in the visible editor; it never submits the comment. See [the LinkedIn package](packages/sites/linkedin/README.md) for details.
+
+## Product Hunt tools
+
+- `producthunt_list_launches`
+- `producthunt_read_product`
+- `producthunt_list_comments`
+- `producthunt_search_products`
+
+The Product Hunt adapter reads launches, product details, and comments from the page DOM, and searches products through Product Hunt's public search page without navigating the current tab. It never votes, comments, or modifies Product Hunt. See [the Product Hunt package](packages/sites/producthunt/README.md) for details.
 
 ## Temu tools
 

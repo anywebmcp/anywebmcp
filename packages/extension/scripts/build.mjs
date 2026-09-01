@@ -15,6 +15,7 @@ await build({
     "sites/ebay": "src/sites/ebay.ts",
     "sites/hackernews": "src/sites/hackernews.ts",
     "sites/linkedin": "src/sites/linkedin.ts",
+    "sites/producthunt": "src/sites/producthunt.ts",
     "sites/temu": "src/sites/temu.ts",
     "sites/x": "src/sites/x.ts"
   },
