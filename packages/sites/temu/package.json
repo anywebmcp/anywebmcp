@@ -6,7 +6,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "test": "node test/run.mjs"
+    "test": "node ../../../scripts/run-package-tests.mjs"
   },
   "dependencies": {
     "@openwebmcp/common": "*"
