@@ -8,6 +8,7 @@
   "dependencies": {
     "@openwebmcp/common": "*",
     "@openwebmcp/site-amazon": "*",
+    "@openwebmcp/site-ebay": "*",
     "@openwebmcp/site-linkedin": "*",
     "@openwebmcp/site-x": "*"
   }

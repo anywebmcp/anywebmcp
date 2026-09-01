@@ -1,6 +1,6 @@
 # OpenWebMCP
 
-OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, X, and LinkedIn.
+OpenWebMCP is a Chrome extension that adds WebMCP tools to supported websites. It currently includes adapters for Amazon, eBay, X, and LinkedIn.
 
 ## Build
 
@@ -42,13 +42,23 @@ The generated app and a transfer-safe ZIP are written to `packages/codex-launche
 3. Choose **Load unpacked** and select `packages/extension/dist`.
 4. Open or reload `https://x.com`.
 
-The same extension registers Amazon tools on supported `www.amazon.*` marketplaces and LinkedIn tools on `https://www.linkedin.com`. Reload an existing tab after installing or rebuilding the extension.
+The same extension registers Amazon tools on supported `www.amazon.*` marketplaces, eBay tools on supported regional eBay sites, and LinkedIn tools on `https://www.linkedin.com`. Reload an existing tab after installing or rebuilding the extension.
 
 ## Amazon tools
 
 - `amazon_search_products`
 
 The Amazon adapter performs read-only product searches on the current marketplace and does not require sign-in or expose cart operations. See [the Amazon package](packages/sites/amazon/README.md) for supported marketplaces, returned fields, and current limitations.
+
+## eBay tools
+
+- `ebay_search_items`
+- `ebay_read_item`
+- `ebay_read_items`
+- `ebay_get_watchlist`
+- `ebay_set_watch_state`
+
+The eBay adapter uses the current regional eBay session for same-origin, read-only search and item requests. Watchlist changes use a mounted eBay UI control and verify its resulting state; the adapter never bids, buys, adds to cart, or makes offers. See [the eBay package](packages/sites/ebay/README.md) for supported regional sites and implementation details.
 
 ## X tools
 
