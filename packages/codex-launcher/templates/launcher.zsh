@@ -56,7 +56,8 @@ if [[ "$runtime_version" != "$source_version" || "$runtime_build" != "$source_bu
   /bin/mv "$staged_app" "$runtime_app"
 fi
 
-exec "$runtime_app/Contents/MacOS/ChatGPT" \
+# Use Launch Services so macOS applies the app bundle's TCC permissions.
+exec /usr/bin/open -n "$runtime_app" --args \
   --user-data-dir="$profile_dir" \
   --load-extension="$extension_dir" \
   --enable-features=WebMCPTesting
