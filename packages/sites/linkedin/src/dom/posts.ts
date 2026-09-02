@@ -10,6 +10,33 @@ function firstText(root: ParentNode, selectors: string[], maxLength = 500) {
   return "";
 }
 
+function isCommentAction(element: HTMLElement) {
+  if (element.matches("button[data-view-name='feed-comment-button'], button.comment-button")) {
+    return true;
+  }
+  if (element.tagName !== "BUTTON") return false;
+  return /^(comment|comment on this post|комментировать|оставить комментарий)$/i.test(
+    cleanText(element.getAttribute("aria-label"), 100)
+  );
+}
+
+function currentFeedPostText(root: HTMLElement) {
+  const descendants = [...root.querySelectorAll<HTMLElement>("*")];
+  const commentActionIndex = descendants.findIndex(isCommentAction);
+  const candidates = [...root.querySelectorAll<HTMLElement>("p[componentkey]")]
+    .filter(candidate => {
+      const index = descendants.indexOf(candidate);
+      if (commentActionIndex >= 0 && index >= commentActionIndex) return false;
+      return !candidate.closest(
+        ".comments-comment-box__form, [data-view-name='comment-box'], [contenteditable='true']"
+      );
+    })
+    .map(candidate => cleanText(candidate.innerText, MAX_POST_TEXT))
+    .filter(text => text.length >= 40)
+    .sort((left, right) => right.length - left.length);
+  return candidates[0] || "";
+}
+
 function findAuthor(root: HTMLElement) {
   const menuButton = [...root.querySelectorAll<HTMLElement>("button[aria-label]")]
     .find(button => /control menu for post by\s+/i.test(button.getAttribute("aria-label") || ""));
@@ -151,7 +178,7 @@ export function postFromRoot(root: HTMLElement): LivePost | null {
     ".update-components-text",
     ".feed-shared-update-v2__description",
     ".feed-shared-text"
-  ], MAX_POST_TEXT);
+  ], MAX_POST_TEXT) || currentFeedPostText(root);
   if (text.length < 40) return null;
 
   const author = findAuthor(root);

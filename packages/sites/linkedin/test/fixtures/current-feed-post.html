@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <main>
+      <section data-testid="mainFeed">
+        <div role="listitem" componentkey="fixture-feed-card">
+          <button aria-label="Open control menu for post by Current Markup Author"></button>
+          <a href="/in/current-markup-author/">Current Markup Author</a>
+          <div componentkey="fixture-actor-section">
+            <p><span>This deliberately longer profile headline must not be mistaken for the post body by the structural fallback.</span></p>
+          </div>
+          <div componentkey="fixture-content-section">
+            <p componentkey="11111111-2222-4333-8444-555555555555"><span>This sanitized post body uses LinkedIn's current component-keyed paragraph markup and contains enough text for reliable parsing.</span></p>
+          </div>
+          <div componentkey="fixture-actions-section">
+            <button aria-label="Comment">Comment</button>
+          </div>
+          <div componentkey="fixture-comments-section">
+            <p componentkey="66666666-7777-4888-8999-000000000000"><span>This deliberately longer loaded comment appears after the post action bar and must never replace the actual post body during fallback extraction, even though its component-keyed paragraph contains more text.</span></p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
