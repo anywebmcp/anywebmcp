@@ -53,3 +53,30 @@ export function directMainChild(main: HTMLElement, element: Element | null) {
   while (current.parentElement && current.parentElement !== main) current = current.parentElement;
   return current.parentElement === main ? current as HTMLElement : null;
 }
+
+export async function waitForElement(selector: string, timeoutMs: number, signal?: AbortSignal) {
+  if (document.querySelector(selector)) return true;
+  signal?.throwIfAborted();
+
+  return new Promise<boolean>((resolve, reject) => {
+    const startedAt = Date.now();
+    let timer = 0;
+    const finish = (found: boolean) => {
+      window.clearTimeout(timer);
+      signal?.removeEventListener("abort", abort);
+      resolve(found);
+    };
+    const abort = () => {
+      window.clearTimeout(timer);
+      reject(signal?.reason);
+    };
+    const inspect = () => {
+      if (document.querySelector(selector)) return finish(true);
+      if (Date.now() - startedAt >= timeoutMs) return finish(false);
+      timer = window.setTimeout(inspect, 50);
+    };
+
+    signal?.addEventListener("abort", abort, { once: true });
+    timer = window.setTimeout(inspect, 50);
+  });
+}

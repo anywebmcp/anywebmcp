@@ -3,45 +3,73 @@
   <head><title>Product Hunt – The best new products in tech.</title></head>
   <body>
     <main>
-      <h1>Launching today</h1>
-      <section>
-        <img src="https://ph-files.imgix.net/alpha.png" alt="Alpha">
-        <div>
-          <div><a href="/products/alpha?ref=homepage"><span data-target="product-name">Alpha</span></a></div>
-          <div>A calm place to organize work</div>
-          <a href="/topics/productivity?ref=homepage">Productivity</a>
-        </div>
-        <button>12 comments</button>
-        <button data-test="vote-button">245</button>
-      </section>
-      <section data-test="promoted-card">
-        <a href="/products/sponsored-product">Sponsored product</a>
-        <button data-test="vote-button">999</button>
-      </section>
-      <section data-test="forum-card">
-        <a href="/posts/how-do-you-launch">How do you launch?</a>
-      </section>
-      <section>
-        <img src="https://ph-files.imgix.net/bravo.png" alt="Bravo">
-        <div>
-          <div><a href="/products/bravo"><span data-target="product-name">Bravo</span></a></div>
-          <div>Understand customer feedback</div>
-          <a href="/topics/analytics">Analytics</a>
-        </div>
-        <button>3 comments</button>
-        <button data-test="vote-button">1.2K</button>
-      </section>
-      <h2>Yesterday's top products</h2>
-      <section>
-        <img src="https://ph-files.imgix.net/charlie.png" alt="Charlie">
-        <div>
-          <div><a href="/products/charlie"><span data-target="product-name">2. Charlie</span></a></div>
-          <div>Ship reliable integrations</div>
-          <a href="/topics/developer-tools">Developer Tools</a>
-        </div>
-        <button>42 comments</button>
-        <button data-test="vote-button">987</button>
-      </section>
+      <div class="flex flex-col" data-test="homepage-section-today">
+        <h1 data-test="homepage-tagline">Launching today</h1>
+        <section data-container>
+          <img src="https://ph-files.imgix.net/alpha.png" alt="Alpha">
+          <div>
+            <div><a href="/products/alpha?ref=homepage"><span data-target="product-name">Alpha</span></a></div>
+            <div>A calm place to organize work</div>
+            <a href="/topics/productivity?ref=homepage">Productivity</a>
+          </div>
+          <button>12 comments</button>
+          <button data-test="vote-button">245</button>
+        </section>
+        <article data-test="promoted-card">
+          <section data-container>
+            <img src="https://ph-files.imgix.net/wispr.png" alt="Wispr Flow">
+            <div>
+              <div><a href="/products/wisprflow"><span data-target="product-name">Wispr Flow</span></a></div>
+              <div>Historical dictation launch promoted inside today's feed</div>
+              <a href="/topics/productivity">Productivity</a>
+            </div>
+            <button>538 comments</button>
+            <button data-test="vote-button">9.8K</button>
+          </section>
+        </article>
+        <article data-test="testimonial-card">
+          <section data-container>
+            <img src="https://ph-files.imgix.net/recommended.png" alt="Recommended product">
+            <div>
+              <div><a href="/products/recommended"><span data-target="product-name">Recommended product</span></a></div>
+              <div>A testimonial, not a launch</div>
+            </div>
+            <button>400 comments</button>
+            <button data-test="vote-button">8K</button>
+          </section>
+        </article>
+        <section data-container>
+          <img src="https://ph-files.imgix.net/bravo.png" alt="Bravo">
+          <div>
+            <div><a href="/products/bravo"><span data-target="product-name">Bravo</span></a></div>
+            <div>Understand customer feedback</div>
+            <a href="/topics/analytics">Analytics</a>
+          </div>
+          <button>3 comments</button>
+          <button data-test="vote-button">1.2K</button>
+        </section>
+      </div>
+      <div class="flex flex-col" data-test="homepage-section-yesterday">
+        <h2 data-test="homepage-tagline">Yesterday's top products</h2>
+        <section data-container>
+          <img src="https://ph-files.imgix.net/charlie.png" alt="Charlie">
+          <div>
+            <div><a href="/products/charlie"><span data-target="product-name">2. Charlie</span></a></div>
+            <div>Ship reliable integrations</div>
+            <a href="/topics/developer-tools">Developer Tools</a>
+          </div>
+          <button>42 comments</button>
+          <button data-test="vote-button">987</button>
+        </section>
+      </div>
+      <script>
+        (window[Symbol.for("ApolloSSRDataTransport")] ??= []).push({"data":{"feed":[
+          {"__typename":"Post","id":"101","name":"Alpha","slug":"alpha-launch","tagline":"A calm place to organize work","product":{"__typename":"Product","id":"201","slug":"alpha"},"commentsCount":12},
+          {"__typename":"Post","id":"999","name":"Wispr Flow","slug":"wispr-flow-old","tagline":"Historical dictation launch promoted inside today's feed","product":{"__typename":"Product","id":"299","slug":"wisprflow"},"commentsCount":538},
+          {"__typename":"Post","id":"102","name":"Bravo","slug":"bravo-2","tagline":"Understand customer feedback","product":{"__typename":"Product","id":"202","slug":"bravo"},"commentsCount":3},
+          {"__typename":"Post","id":"103","name":"Charlie","slug":"charlie-launch","tagline":"Ship reliable integrations","product":{"__typename":"Product","id":"203","slug":"charlie"},"commentsCount":42}
+        ]}})
+      </script>
     </main>
   </body>
 </html>

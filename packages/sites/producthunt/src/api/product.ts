@@ -1,4 +1,4 @@
-import { canonicalUrl, cleanText, directMainChild, parseCount } from "./shared";
+import { canonicalUrl, cleanText, directMainChild, parseCount, waitForElement } from "./shared";
 
 type LinkValue = {
   name: string;
@@ -82,26 +82,36 @@ function profileLinks(root: ParentNode) {
     });
 }
 
-function featuredLaunch(main: HTMLElement) {
+function statusText(root: HTMLElement) {
+  return Array.from(root.querySelectorAll<HTMLElement>("div, span, p"))
+    .map(element => cleanText(element.textContent, 100))
+    .find(text => /^(?:launching today|featured)$/i.test(text)) ?? "";
+}
+
+function featuredLaunch(main: HTMLElement, productHeader: HTMLElement) {
   const comments = main.querySelector("#comments");
   const block = directMainChild(main, comments)
+    ?? main.querySelector<HTMLElement>(':scope > [data-test="launch"]')
     ?? Array.from(main.children).find(child => {
       return child.querySelector("h2") && child.querySelector('a[href^="/topics/"]');
     }) as HTMLElement | undefined;
   if (!block) return null;
 
-  const header = Array.from(block.querySelectorAll<HTMLElement>("section")).find(section => {
+  const launchHeader = Array.from(block.querySelectorAll<HTMLElement>("section")).find(section => {
     return Boolean(section.querySelector(":scope > img") && section.querySelector("h2"));
   });
-  const heading = header?.querySelector("h2");
-  if (!header || !heading) return null;
+  const isCurrentLayout = block.matches('[data-test="launch"]');
+  if (!launchHeader && !isCurrentLayout) return null;
 
+  const heading = launchHeader?.querySelector("h2") ?? productHeader.querySelector("h1");
+  if (!heading) return null;
   const headingContainer = heading.parentElement;
   const details = headingContainer?.parentElement;
-  const image = header.querySelector<HTMLImageElement>(":scope > img");
-  const badge = header.querySelector<HTMLImageElement>('img[alt*=" was ranked #"]');
+  const image = launchHeader?.querySelector<HTMLImageElement>(":scope > img")
+    ?? productHeader.querySelector<HTMLImageElement>("img");
+  const badge = (launchHeader ?? block).querySelector<HTMLImageElement>('img[alt*=" was ranked #"]');
   const badgeMatch = badge?.alt.match(/ranked #(\d+) of the (day|week|month) for (.+)$/i);
-  const description = header.nextElementSibling;
+  const description = launchHeader?.nextElementSibling;
   const topicsSection = Array.from(block.querySelectorAll<HTMLElement>("section")).find(section => {
     return Boolean(section.querySelector('a[href^="/topics/"]'));
   });
@@ -115,9 +125,15 @@ function featuredLaunch(main: HTMLElement) {
 
   return {
     name: cleanText(heading.textContent, 200),
-    tagline: cleanText(headingContainer?.nextElementSibling?.textContent ?? details?.children.item(1)?.textContent, 300),
-    status: cleanText(heading.nextElementSibling?.textContent, 100),
-    description: cleanText(description?.textContent, 5_000),
+    tagline: cleanText(launchHeader
+      ? headingContainer?.nextElementSibling?.textContent ?? details?.children.item(1)?.textContent
+      : productHeader.querySelector("h2")?.textContent, 300),
+    status: launchHeader
+      ? cleanText(heading.nextElementSibling?.textContent, 100)
+      : statusText(productHeader),
+    description: launchHeader
+      ? cleanText(description?.textContent, 5_000)
+      : productDescription(productHeader),
     imageUrl: image?.currentSrc || image?.src || "",
     pricing,
     topics: topicsSection ? linkValues(topicsSection, "/topics/") : [],
@@ -130,7 +146,18 @@ function featuredLaunch(main: HTMLElement) {
   };
 }
 
-export function readProduct() {
+function expectsStreamedLaunch() {
+  const url = new URL(location.href);
+  if (url.searchParams.has("launch")) return true;
+  const header = document.querySelector<HTMLElement>('main [data-test="header"]');
+  return /launching today/i.test(cleanText(header?.textContent, 1_000));
+}
+
+export async function readProduct(signal?: AbortSignal) {
+  if (!document.querySelector('main [data-test="launch"]') && expectsStreamedLaunch()) {
+    await waitForElement('main [data-test="launch"]', 1_500, signal);
+  }
+
   const main = document.querySelector<HTMLElement>("main");
   const slug = productSlug();
   const heading = main?.querySelector("h1");
@@ -167,7 +194,7 @@ export function readProduct() {
       reviewsCount: parseCount(reviewsText),
       followersCount: parseCount(followersText),
       launchesCount: parseCount(launchesLink?.textContent),
-      featuredLaunch: featuredLaunch(main)
+      featuredLaunch: featuredLaunch(main, header)
     }
   };
 }
