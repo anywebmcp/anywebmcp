@@ -26,6 +26,21 @@ const TARGET_ROOT_SELECTOR = [
   ".thing.comment"
 ].join(",");
 
+const LEXICAL_BLOCK_TAGS = new Set([
+  "ADDRESS",
+  "BLOCKQUOTE",
+  "DIV",
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "LI",
+  "P",
+  "PRE"
+]);
+
 function targetRoots() {
   return unique([...candidatePostRoots(), ...candidateCommentRoots()]);
 }
@@ -33,12 +48,28 @@ function targetRoots() {
 function editorText(editor: HTMLElement) {
   if (editor instanceof HTMLTextAreaElement || editor instanceof HTMLInputElement) return editor.value;
   if (editor.getAttribute("data-lexical-editor") === "true" && editor.children.length) {
-    return [...editor.children]
-      .map(child => String((child as HTMLElement).innerText ?? child.textContent ?? "")
-        .replace(/\r\n?/g, "\n")
-        .replace(/\u00a0/g, " ")
-        .replace(/\n+$/g, ""))
-      .join("\n");
+    let value = "";
+    const visit = (node: Node) => {
+      if (node.nodeType === 3) {
+        value += node.nodeValue ?? "";
+        return;
+      }
+      if (!(node instanceof HTMLElement)) return;
+      if (node.tagName === "BR") {
+        value += "\n";
+        return;
+      }
+      const block = LEXICAL_BLOCK_TAGS.has(node.tagName);
+      const lengthBeforeChildren = value.length;
+      for (const child of node.childNodes) visit(child);
+      if (block && value.length === lengthBeforeChildren) value += "\n";
+      else if (block && !value.endsWith("\n")) value += "\n";
+    };
+    for (const child of editor.childNodes) visit(child);
+    return value
+      .replace(/\r\n?/g, "\n")
+      .replace(/\u00a0/g, " ")
+      .replace(/\n$/, "");
   }
   return String(editor.innerText ?? editor.textContent ?? "")
     .replace(/\r\n?/g, "\n")
@@ -109,13 +140,19 @@ function replyControls(root: HTMLElement, targetId: string) {
     .filter(eligible);
 }
 
-function findEditorForTarget(target: HTMLElement, previousEditors: Set<HTMLElement>, targetId: string) {
+function findEditorForTarget(
+  target: HTMLElement,
+  previousEditors: Set<HTMLElement>,
+  targetId: string,
+  allowNewUnscopedEditor = false
+) {
   const postComposerEditors = postComposerHosts(targetId).flatMap(host => findEditors(host));
   if (postComposerEditors.length) {
     return postComposerEditors.find(editor => !previousEditors.has(editor)) || postComposerEditors[0];
   }
   const scoped = findEditors(target);
   if (scoped.length) return scoped.find(editor => !previousEditors.has(editor)) || scoped[0];
+  if (!allowNewUnscopedEditor) return null;
   const all = findEditors();
   const newlyOpened = all.find(editor =>
     !previousEditors.has(editor) && !composedAncestor(editor, TARGET_ROOT_SELECTOR)
@@ -139,7 +176,7 @@ function waitForEditor(target: HTMLElement, previousEditors: Set<HTMLElement>, t
     };
     const inspect = () => {
       try {
-        const editor = findEditorForTarget(target, previousEditors, targetId);
+        const editor = findEditorForTarget(target, previousEditors, targetId, true);
         if (editor) finish(editor);
       } catch {}
     };
@@ -149,6 +186,35 @@ function waitForEditor(target: HTMLElement, previousEditors: Set<HTMLElement>, t
     const timeout = window.setTimeout(() => finish(null), timeoutMs);
     inspect();
   });
+}
+
+function activationEvent(type: string) {
+  const options = { bubbles: true, cancelable: true, composed: true };
+  if (type.startsWith("pointer") && typeof PointerEvent === "function") {
+    return new PointerEvent(type, { ...options, button: 0, buttons: type === "pointerdown" ? 1 : 0, pointerType: "mouse" });
+  }
+  if (typeof MouseEvent === "function") {
+    return new MouseEvent(type, { ...options, button: 0, buttons: type === "mousedown" ? 1 : 0 });
+  }
+  return new Event(type, options);
+}
+
+async function activateReplyControl(control: HTMLElement) {
+  control.scrollIntoView({ block: "center", behavior: "auto" });
+  if (!control.matches("faceplate-textarea-input[data-testid='trigger-button']")) {
+    control.click();
+    return;
+  }
+
+  const innerControl = deepQueryAll<HTMLElement>("textarea", control)[0] || control;
+  for (const type of ["pointerover", "mouseover", "pointerdown", "mousedown"]) {
+    innerControl.dispatchEvent(activationEvent(type));
+  }
+  innerControl.focus();
+  for (const type of ["pointerup", "mouseup", "click"]) {
+    innerControl.dispatchEvent(activationEvent(type));
+  }
+  await delay(50);
 }
 
 function dispatchEditorEvents(editor: HTMLElement, text: string | null) {
@@ -231,7 +297,7 @@ export async function prepareReplyDraft(targetId: string, text: string) {
     target.scrollIntoView({ block: "center", behavior: "auto" });
     await delay(150);
     const previousEditors = new Set(findEditors());
-    let editor = findEditorForTarget(target, new Set(), normalizedTargetId);
+    let editor = findEditorForTarget(target, previousEditors, normalizedTargetId);
 
     if (!editor) {
       const control = replyControls(target, normalizedTargetId)[0];
@@ -242,7 +308,7 @@ export async function prepareReplyDraft(targetId: string, text: string) {
           suggestedAction: "Reload the thread or open the target permalink, then retry."
         });
       }
-      control.click();
+      await activateReplyControl(control);
       editor = await waitForEditor(target, previousEditors, normalizedTargetId, 8_000);
     }
 

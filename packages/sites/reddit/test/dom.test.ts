@@ -321,7 +321,9 @@ test("opens the modern post composer and inserts a contenteditable draft exactly
           else paragraph.append(document.createElement("br"));
           return paragraph;
         });
-        editor.replaceChildren(...blocks);
+        const lexicalRoot = document.createElement("div");
+        lexicalRoot.append(...blocks);
+        editor.replaceChildren(lexicalRoot);
         return true;
       }
     });
@@ -331,7 +333,7 @@ test("opens the modern post composer and inserts a contenteditable draft exactly
     assert.equal(result.ok, true, JSON.stringify(result));
     if (!result.ok) return;
     assert.equal(result.draft.text, text);
-    assert.deepEqual([...editor.children].map(child => child.textContent), [
+    assert.deepEqual([...editor.children[0].children].map(child => child.textContent), [
       "A modern post-level draft that must be inserted once.",
       "",
       "The second paragraph must survive Lexical readback."
@@ -346,5 +348,54 @@ test("opens the modern post composer and inserts a contenteditable draft exactly
     assert.equal(conflict.error.code, "EDITOR_NOT_EMPTY");
     assert.equal(editor.textContent, text.replaceAll("\n", ""));
     assert.equal(document.body.dataset.submitCount, "0");
+  });
+});
+
+test("activates Reddit's custom textarea trigger with pointer and focus events", async () => {
+  await withFixture("modern-reply-editor.html", "https://www.reddit.com/r/typescript/comments/modernreply/modern_post_composer_fixture/", async ({ document }) => {
+    const trigger = document.querySelector<HTMLElement>("#modern-post-trigger")!;
+    const host = document.querySelector<HTMLElement>("comment-composer-host[post-id='t3_modernreply']")!;
+    const shadow = trigger.attachShadow({ mode: "open" });
+    const textarea = document.createElement("textarea");
+    shadow.append(textarea);
+    textarea.addEventListener("pointerdown", () => host.removeAttribute("hidden"));
+
+    const result = await prepareReplyDraft("t3_modernreply", "A draft opened through the custom trigger.");
+    assert.equal(result.ok, true, JSON.stringify(result));
+    if (!result.ok) return;
+    assert.equal(result.submitted, false);
+    assert.equal(document.querySelector<HTMLElement>("#modern-post-editor")?.textContent, result.draft.text);
+  });
+});
+
+test("does not reuse an existing unscoped post composer for a comment reply", async () => {
+  await withFixture("modern-reply-editor.html", "https://www.reddit.com/r/typescript/comments/modernreply/modern_post_composer_fixture/", async ({ document }) => {
+    const postHost = document.querySelector<HTMLElement>("comment-composer-host[post-id='t3_modernreply']")!;
+    const postEditor = document.querySelector<HTMLElement>("#modern-post-editor")!;
+    postHost.removeAttribute("hidden");
+    postEditor.textContent = "Keep this post draft unchanged.";
+
+    const comment = document.createElement("shreddit-comment");
+    comment.setAttribute("thingid", "t1_commentreply");
+    comment.setAttribute("parentid", "t3_modernreply");
+    comment.setAttribute("postid", "t3_modernreply");
+    comment.setAttribute("author", "comment_author");
+    comment.innerHTML = '<div slot="comment">A comment with an external reply composer.</div><button type="button" aria-label="Reply">Reply</button>';
+    document.querySelector("main")?.append(comment);
+
+    const commentEditor = document.createElement("div");
+    commentEditor.setAttribute("contenteditable", "true");
+    commentEditor.setAttribute("role", "textbox");
+    commentEditor.setAttribute("hidden", "");
+    document.querySelector("main")?.append(commentEditor);
+    comment.querySelector("button")?.addEventListener("click", () => commentEditor.removeAttribute("hidden"));
+
+    const text = "A comment-specific draft.";
+    const result = await prepareReplyDraft("t1_commentreply", text);
+    assert.equal(result.ok, true, JSON.stringify(result));
+    if (!result.ok) return;
+    assert.equal(commentEditor.textContent, text);
+    assert.equal(postEditor.textContent, "Keep this post draft unchanged.");
+    assert.equal(result.submitted, false);
   });
 });
