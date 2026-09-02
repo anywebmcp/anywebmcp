@@ -58,6 +58,15 @@ async function fetchJson<T>(
           "Hacker News extension transport is unavailable. Reload the Hacker News page with the AnyWeb MCP extension enabled."
         );
       }
+      if (error.code === "timeout") {
+        throw new ToolError("Hacker News data request timed out. Please try again.");
+      }
+      if (error.code === "network") {
+        throw new ToolError("Hacker News data request was blocked or could not reach the network. Please try again.");
+      }
+      if (error.code === "invalid_request") {
+        throw new ToolError("Hacker News rejected the extension data request. Reload the page and try again.");
+      }
     }
     throw new ToolError("Hacker News data request failed. Please try again.");
   }

@@ -95,6 +95,20 @@ test("background transport rejects unknown operations, arbitrary URLs, invalid p
   assert.equal(fetches, 0);
 });
 
+test("background transport trusts the sender document URL when the optional origin is opaque", async () => {
+  const result = await handleHackerNewsBackgroundRequest(
+    request("algoliaItem", { id: 123 }),
+    {
+      origin: "null",
+      url: `${HACKER_NEWS_ORIGIN}/item?id=123`,
+      tab: { url: `${HACKER_NEWS_ORIGIN}/item?id=123` }
+    },
+    { fetch: async () => new Response(JSON.stringify({ id: 123, children: [] })) }
+  );
+
+  assert.deepEqual(result, { ok: true, value: { id: 123, children: [] } });
+});
+
 test("background transport returns bounded HTTP, malformed-response, and timeout failures", async () => {
   const itemRequest = request("algoliaItem", { id: 123 });
   assert.deepEqual(await handleHackerNewsBackgroundRequest(itemRequest, sender, {
@@ -124,6 +138,21 @@ test("background transport returns bounded HTTP, malformed-response, and timeout
       init?.signal?.addEventListener("abort", () => reject(new DOMException("aborted", "AbortError")));
     })
   }), { ok: false, code: "timeout" });
+});
+
+test("background transport invokes fetch with the worker global as its receiver", async () => {
+  const itemRequest = request("algoliaItem", { id: 123 });
+  let receiver: unknown;
+
+  const result = await handleHackerNewsBackgroundRequest(itemRequest, sender, {
+    fetch: async function () {
+      receiver = this;
+      return new Response(JSON.stringify({ id: 123, children: [] }));
+    }
+  });
+
+  assert.equal(receiver, globalThis);
+  assert.deepEqual(result, { ok: true, value: { id: 123, children: [] } });
 });
 
 type Listener = (event: MessageEvent) => void;

@@ -53,15 +53,13 @@ function isAlgoliaItem(value: unknown): value is AlgoliaItem {
 }
 
 function senderHasHackerNewsOrigin(sender: HackerNewsMessageSender) {
-  const candidates = [sender.origin, sender.url, sender.tab?.url].filter(Boolean) as string[];
-  if (candidates.length === 0) return false;
-  return candidates.every(candidate => {
-    try {
-      return new URL(candidate).origin === HACKER_NEWS_ORIGIN;
-    } catch {
-      return false;
-    }
-  });
+  const candidate = sender.url ?? sender.origin ?? sender.tab?.url;
+  if (!candidate) return false;
+  try {
+    return new URL(candidate).origin === HACKER_NEWS_ORIGIN;
+  } catch {
+    return false;
+  }
 }
 
 function requestUrl(request: HackerNewsBackgroundRequest) {
@@ -137,7 +135,7 @@ export async function handleHackerNewsBackgroundRequest(
   const timer = setTimer(() => controller.abort(), dependencies.timeoutMs ?? HACKER_NEWS_REQUEST_TIMEOUT_MS);
 
   try {
-    const response = await dependencies.fetch(url, {
+    const response = await dependencies.fetch.call(globalThis, url, {
       method: "GET",
       headers: { accept: "application/json" },
       credentials: "omit",
