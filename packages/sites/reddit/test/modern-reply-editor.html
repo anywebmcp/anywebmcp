@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <body data-submit-count="0">
+    <main>
+      <shreddit-post
+        id="t3_modernreply"
+        post-title="Modern post composer fixture"
+        author="fixture_author"
+        subreddit-prefixed-name="r/typescript"
+        permalink="https://www.reddit.com/r/typescript/comments/modernreply/modern_post_composer_fixture/"
+        score="12"
+        comment-count="1"
+        created-timestamp="2026-09-02T08:00:00.000Z"
+        post-type="text">
+        <div slot="text-body">The post composer is mounted outside the post element.</div>
+      </shreddit-post>
+
+      <shreddit-async-loader bundlename="comment_composer">
+        <faceplate-textarea-input
+          id="modern-post-trigger"
+          data-testid="trigger-button"
+          placeholder="Join the conversation"
+          aria-disabled="false">
+        </faceplate-textarea-input>
+        <comment-composer-host post-id="t3_modernreply" hidden>
+          <shreddit-composer name="content" mode="richText" placeholder="Join the conversation">
+            <div
+              id="modern-post-editor"
+              slot="rte"
+              name="body"
+              contenteditable="true"
+              role="textbox"
+              aria-placeholder="Join the conversation"
+              data-lexical-editor="true"><p><br></p></div>
+            <button
+              id="modern-post-submit"
+              slot="submit-button"
+              type="submit"
+              onclick="document.body.dataset.submitCount = String(Number(document.body.dataset.submitCount) + 1)">Comment</button>
+          </shreddit-composer>
+        </comment-composer-host>
+      </shreddit-async-loader>
+    </main>
+  </body>
+</html>

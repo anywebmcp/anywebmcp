@@ -32,6 +32,14 @@ function targetRoots() {
 
 function editorText(editor: HTMLElement) {
   if (editor instanceof HTMLTextAreaElement || editor instanceof HTMLInputElement) return editor.value;
+  if (editor.getAttribute("data-lexical-editor") === "true" && editor.children.length) {
+    return [...editor.children]
+      .map(child => String((child as HTMLElement).innerText ?? child.textContent ?? "")
+        .replace(/\r\n?/g, "\n")
+        .replace(/\u00a0/g, " ")
+        .replace(/\n+$/g, ""))
+      .join("\n");
+  }
   return String(editor.innerText ?? editor.textContent ?? "")
     .replace(/\r\n?/g, "\n")
     .replace(/\u00a0/g, " ");
@@ -51,24 +59,61 @@ function findEditors(root: Document | ShadowRoot | Element = document) {
   ].join(","), root).filter(isVisible);
 }
 
+function postComposerHosts(targetId: string) {
+  if (!targetId.startsWith("t3_")) return [];
+  return deepQueryAll<HTMLElement>(`comment-composer-host[post-id="${targetId}"]`);
+}
+
+function postComposerRoots(targetId: string) {
+  const hosts = postComposerHosts(targetId);
+  const loaders = hosts
+    .map(host => composedAncestor(host, "shreddit-async-loader"))
+    .filter((loader): loader is HTMLElement => loader instanceof HTMLElement);
+  return unique([...loaders, ...hosts]);
+}
+
 function replyControls(root: HTMLElement, targetId: string) {
   const commentPattern = /^(reply|respond|ответить)$/i;
-  const postPattern = /^(add a comment|leave a comment|comment|комментировать|оставить комментарий)$/i;
+  const postPattern = /^(add a comment|leave a comment|join the conversation|comment|комментировать|оставить комментарий)$/i;
   const pattern = targetId.startsWith("t1_") ? commentPattern : postPattern;
   const eligible = (control: HTMLElement) => {
     if (control instanceof HTMLButtonElement && control.disabled) return false;
+    if (control.getAttribute("aria-disabled") === "true") return false;
     if (!isVisible(control)) return false;
     if (composedAncestor(control, "shreddit-composer, form.comment, .usertext-edit")) return false;
-    const label = compactText(control.getAttribute("aria-label") || control.innerText, 200);
+    const label = compactText(
+      control.getAttribute("aria-label") ||
+      control.getAttribute("placeholder") ||
+      control.getAttribute("aria-placeholder") ||
+      control.innerText,
+      200
+    );
     return pattern.test(label);
   };
-  const scoped = deepQueryAll<HTMLElement>("button, a[data-event-action='comment'], a[role='button']", root).filter(eligible);
+  const controlSelector = [
+    "button",
+    "a[data-event-action='comment']",
+    "a[role='button']",
+    "faceplate-textarea-input[data-testid='trigger-button']"
+  ].join(",");
+  const roots = targetId.startsWith("t1_") ? [root] : unique([root, ...postComposerRoots(targetId)]);
+  const scoped = unique(roots.flatMap(candidate => deepQueryAll<HTMLElement>(controlSelector, candidate)))
+    .filter(eligible);
   if (scoped.length || targetId.startsWith("t1_")) return scoped;
-  return deepQueryAll<HTMLElement>("main button, main a[role='button'], .commentarea button")
+  return deepQueryAll<HTMLElement>([
+    "main button",
+    "main a[role='button']",
+    ".commentarea button",
+    "main faceplate-textarea-input[data-testid='trigger-button']"
+  ].join(","))
     .filter(eligible);
 }
 
 function findEditorForTarget(target: HTMLElement, previousEditors: Set<HTMLElement>, targetId: string) {
+  const postComposerEditors = postComposerHosts(targetId).flatMap(host => findEditors(host));
+  if (postComposerEditors.length) {
+    return postComposerEditors.find(editor => !previousEditors.has(editor)) || postComposerEditors[0];
+  }
   const scoped = findEditors(target);
   if (scoped.length) return scoped.find(editor => !previousEditors.has(editor)) || scoped[0];
   const all = findEditors();
@@ -106,7 +151,7 @@ function waitForEditor(target: HTMLElement, previousEditors: Set<HTMLElement>, t
   });
 }
 
-function dispatchEditorEvents(editor: HTMLElement, text: string) {
+function dispatchEditorEvents(editor: HTMLElement, text: string | null) {
   editor.dispatchEvent(new InputEvent("input", {
     bubbles: true,
     composed: true,
@@ -133,13 +178,13 @@ async function insertDraft(editor: HTMLElement, text: string) {
   range.selectNodeContents(editor);
   selection?.removeAllRanges();
   selection?.addRange(range);
-  document.execCommand("insertText", false, text);
-  dispatchEditorEvents(editor, text);
+  const inserted = document.execCommand("insertText", false, text);
   await delay(250);
   if (comparableEditorText(editorText(editor)) === comparableEditorText(text)) return editorText(editor);
+  if (inserted && editorText(editor).trim()) return editorText(editor);
 
   editor.textContent = text;
-  dispatchEditorEvents(editor, text);
+  dispatchEditorEvents(editor, null);
   await delay(250);
   return editorText(editor);
 }
