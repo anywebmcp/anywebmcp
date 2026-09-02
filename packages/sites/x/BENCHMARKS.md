@@ -1,37 +1,43 @@
-# X benchmarks
+# X benchmark
 
-Historical character-count comparison for the earlier mounted-post reader (not a benchmark of the current modes):
+## Request
 
-| Tool | Browser | WebMCP | Reduction |
-| --- | ---: | ---: | ---: |
-| `x_get_posts` | 16,868 chars | 5,286 chars | 69% |
+“Review the first 15 posts in my current For You timeline on X, choose the one most relevant to AI developer tools, summarize why it matters, and prepare a thoughtful reply as text that adds a concrete insight. Do not open the reply composer or publish anything.”
 
-## Post retrieval modes — 2026-08-31
+## Setup and success criteria
 
-`x_get_posts` now supports `visible`, `batch`, and anchored `next`, with reply filtering and page context. The historical comparison above no longer measures its current behavior.
+- Date: 2026-09-02
+- Model: `gpt-5.6-sol`, high reasoning effort
+- Environment: Codex Desktop 0.151.0-alpha.7.2 on macOS; fresh projectless tasks; in-app Browser at `https://x.com/home`; the same signed-in X account and selected For You tab for both approaches; live timeline data; alternating browser-only and WebMCP runs. Before measurement, X opened successfully and `x_get_posts` was available and executable.
+- Experimental exception: the request intentionally fixes the reviewed set at the first 15 posts so both approaches perform the same amount of collection work. This deliberately departs from the repository's usual guidance against hard-coding a result limit and is specific to this controlled experiment.
+- Collection boundary: the first 15 unique top-level post cards with a permalink, in display order from the top of For You; promoted cards count when they have a post permalink. Browser-only runs used visible DOM/UI and stopped at 15. WebMCP runs used a batch limit of 15. Neither approach opened a reply composer or prepared a reply intent.
+- Expected outcome: choose the post among those 15 that is most relevant to AI developer tools, explain its significance, and provide—but do not publish—a thoughtful reply containing a concrete insight.
+- A run passes when it reviews exactly 15 qualifying posts, identifies an observed post by author or link, gives an accurate relevance summary, supplies a specific and additive reply draft, makes no account-changing action, and exposes no credential or private data.
 
-Verification used Chrome, the production tool bundled into a temporary local preview, and a synthetic virtualized feed with delayed loading. No test files were added to the repository. Manual checks confirmed:
+## Individual measurements
 
-- `visible` returned three viewport posts without scrolling; `limit: 1` returned one post without moving from a mid-feed position.
-- A 20-post batch returned IDs 1–20. Another started with partially visible ID 10 and returned IDs 10–29, with no earlier offscreen cards.
-- `next` after ID 20 returned IDs 21–30. After scrolling back to the top and unmounting ID 29, continuation remounted that anchor and returned IDs 30–34.
-- Reply-only collection returned seven conversation replies, excluding the subject and stopping before the recommendation section.
-- A reply inside a quote did not mark its outer post as a reply, and quoted content did not count toward limits.
-- Cross-page continuation failed without scrolling. Cancellation propagated and released the reader for a subsequent visible read.
-- Changing the selected feed during a read stopped it with a failure. A two-card snapshot requested with a limit of five returned two posts and `stalled`, not a false exhaustion signal.
+Measurements cover request submission through the final answer. Rows are in execution order.
 
-The live X conversation layout was inspected without posting or reacting. Two public X article DOM snapshots were also parsed through the production tool in the local preview: the subject, its quoted post, and a following reply were identified correctly. Image and media network loads were blocked in that preview.
+| Approach | Run | Time | Input tokens | Output tokens | Total tokens | Result |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Without WebMCP | 1 | 102.558 s | 316,933 | 2,679 | 319,612 | Passed |
+| With WebMCP | 1 | 71.148 s | 278,195 | 1,520 | 279,715 | Passed |
+| Without WebMCP | 2 | 159.040 s | 600,595 | 4,450 | 605,045 | Passed |
+| With WebMCP | 2 | 140.275 s | 400,799 | 3,864 | 404,663 | Passed |
+| Without WebMCP | 3 | 156.203 s | 611,170 | 4,153 | 615,323 | Passed |
+| With WebMCP | 3 | 62.122 s | 241,523 | 1,452 | 242,975 | Passed |
 
-We ran `x_get_posts({ mode: "batch", limit: 10 })` through native WebMCP in the signed-in in-app Browser after fixing optional cancellation-signal handling and restarting the app. This live smoke check returned 10 unique posts in 1,070 ms, with `status: "completed"`, `stopReason: "limit"`, and four downward scrolls. The last post matched `lastPostId`; six posts included nested quotes. Some text was truncated, and the quoted posts had null IDs and URLs.
+## Median comparison
 
-`npm run build`, an X-package strict TypeScript check, and `git diff --check` passed. A live WebMCP-versus-browser benchmark remains pending. The single-call duration above excludes navigation and measures no token savings. Run at least three alternating, equivalent-start runs per approach under the [benchmarking process](../../../docs/benchmarking-site-tools.md) before publishing a new comparison.
+| Approach | Median time | Median input tokens | Median output tokens | Median total tokens | Passed runs |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Without WebMCP | 156.203 s | 600,595 | 4,153 | 605,045 | 3/3 |
+| With WebMCP | 71.148 s | 278,195 | 1,520 | 279,715 | 3/3 |
 
-## Posting and reply intents — 2026-08-31
+With the collection size fixed, WebMCP used 325,330 fewer median total tokens (53.8% less) and completed 85.055 seconds sooner at the median (54.5% faster).
 
-`x_create_post` and `x_reply_to_post` now only return prefilled intent URLs and require manual user submission. The former publishing implementation, including button clicking, submission tracking, and success-toast detection, was removed.
+## Notes
 
-Earlier browser inspection verified the `/intent/tweet` to `/intent/post` redirect and prefilled text with blank lines and special characters. A live publishing attempt was blocked by Browser's automatic safety review before submission; no post was published through the tool.
-
-Local checks invoked both current tools through the common wrapper without browser globals. They returned `navigation_required`, preserved multiline text and special characters, encoded the reply target, included manual-submission instructions, and returned the same result on repeated calls. Blank text and invalid reply IDs were rejected. Build, TypeScript, and whitespace checks passed. No test files were added.
-
-No WebMCP-versus-browser benchmark is claimed for the current URL builders. The representative operation is now preparing a post or reply draft for review, stopping before submission. Follow the [benchmarking process](../../../docs/benchmarking-site-tools.md): use the same model and instruction, alternate browser-only and WebMCP runs at least three times each, and record individual timings, token usage, and medians. Publication is outside these tools' scope.
+- No measured run failed.
+- The live For You timeline changed between runs, so each run selected a different post. In one WebMCP run, none of the first 15 posts explicitly discussed AI developer tools; that run identified and explained the closest match and still met the relative-selection request.
+- Browser-only logs contained no WebMCP calls. Every WebMCP run returned exactly 15 posts with the limit stop reason. No measured run called the reply-preparation tool, opened a reply composer, published, or engaged with a post.
