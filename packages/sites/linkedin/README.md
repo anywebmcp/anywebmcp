@@ -18,7 +18,7 @@ The adapter never publishes a comment. Draft preparation changes the visible Lin
 
 ## DOM and localization assumptions
 
-The integration recognizes current feed cards through `mainFeed`, `feed-full-update`, activity URNs, legacy feed-update classes, article/list-item roles, and commentary component keys. It reads authors, post text, and permalinks from current `data-view-name` attributes first and retains legacy LinkedIn class fallbacks. Posts shorter than 40 normalized characters are ignored to avoid treating page chrome as feed content.
+The integration recognizes current feed cards through `mainFeed`, `feed-full-update`, activity URNs, legacy feed-update classes, article/list-item roles, and commentary component keys. It reads authors, post text, and permalinks from current `data-view-name` attributes first and retains legacy LinkedIn class fallbacks. When LinkedIn omits semantic commentary markers, it uses the longest component-keyed paragraph before the post's Comment action; paragraphs after that action are excluded so loaded comments cannot replace the post body. Posts shorter than 40 normalized characters are ignored to avoid treating page chrome as feed content.
 
 Comment-editor discovery uses contenteditable textboxes inside the mounted post. Comment and retry controls prefer structural attributes, then exact English and Russian accessibility labels or visible text. Other localized labels are not currently enumerated, so LinkedIn localization or frontend changes can make editor opening fail safely. The adapter never finds or clicks the final submit control.
 

@@ -40,6 +40,22 @@ test("parses mounted posts and preserves URN, canonical URL, and fingerprint ide
   }
 });
 
+test("parses current component-keyed post text without capturing loaded comments", () => {
+  const dom = linkedInDom(fixture("current-feed-post.html"));
+  useDom(dom);
+
+  const result = listLoadedPosts({ limit: 10 });
+  assert.equal(result.ok, true, JSON.stringify(result));
+  if (!result.ok) return;
+  assert.equal(result.totalLoaded, 1);
+  assert.equal(result.posts[0].author, "Current Markup Author");
+  assert.equal(
+    result.posts[0].text,
+    "This sanitized post body uses LinkedIn's current component-keyed paragraph markup and contains enough text for reliable parsing."
+  );
+  assert.doesNotMatch(result.posts[0].text, /loaded comment/);
+});
+
 test("bounds the in-page post registry and evicts its oldest identities", async () => {
   const posts = Array.from({ length: 205 }, (_, index) => {
     const id = String(600000000000000000n + BigInt(index));
