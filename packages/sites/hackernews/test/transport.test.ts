@@ -140,18 +140,31 @@ test("background transport returns bounded HTTP, malformed-response, and timeout
   }), { ok: false, code: "timeout" });
 });
 
-test("background transport invokes fetch with the worker global as its receiver", async () => {
+test("background transport invokes worker APIs with the worker global as their receiver", async () => {
   const itemRequest = request("algoliaItem", { id: 123 });
-  let receiver: unknown;
+  let fetchReceiver: unknown;
+  let setTimeoutReceiver: unknown;
+  let clearTimeoutReceiver: unknown;
+  const setTimeout = function (this: unknown) {
+    setTimeoutReceiver = this;
+    return 1;
+  } as unknown as typeof globalThis.setTimeout;
+  const clearTimeout = function (this: unknown) {
+    clearTimeoutReceiver = this;
+  } as unknown as typeof globalThis.clearTimeout;
 
   const result = await handleHackerNewsBackgroundRequest(itemRequest, sender, {
+    setTimeout,
+    clearTimeout,
     fetch: async function () {
-      receiver = this;
+      fetchReceiver = this;
       return new Response(JSON.stringify({ id: 123, children: [] }));
     }
   });
 
-  assert.equal(receiver, globalThis);
+  assert.equal(fetchReceiver, globalThis);
+  assert.equal(setTimeoutReceiver, globalThis);
+  assert.equal(clearTimeoutReceiver, globalThis);
   assert.deepEqual(result, { ok: true, value: { id: 123, children: [] } });
 });
 
