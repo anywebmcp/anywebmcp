@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { createDirectFetchHackerNewsTransport } from "../src/transport/direct";
+import { setHackerNewsTransport } from "../src/transport/state";
 
 type RegisteredTool = {
   name: string;
@@ -24,6 +26,7 @@ Object.defineProperty(globalThis, "document", {
 });
 
 await import("../../../extension/src/sites/hackernews");
+setHackerNewsTransport(createDirectFetchHackerNewsTransport(globalThis.fetch));
 for (let attempt = 0; attempt < 50 && registeredTools.length < 3; attempt += 1) {
   await new Promise(resolve => setTimeout(resolve, 10));
 }

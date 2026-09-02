@@ -3,7 +3,11 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./transport": "./src/transport/page.ts",
+    "./transport/background": "./src/transport/background.ts",
+    "./transport/protocol": "./src/transport/protocol.ts",
+    "./transport/state": "./src/transport/state.ts"
   },
   "scripts": {
     "test": "node ../../../scripts/run-package-tests.mjs",

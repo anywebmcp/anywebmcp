@@ -10,8 +10,31 @@ await mkdir(outdir, { recursive: true });
 await build({
   bundle: true,
   entryPoints: {
-    background: "src/background.ts",
-    bridge: "src/bridge.ts",
+    background: "src/background.ts"
+  },
+  format: "esm",
+  outdir,
+  platform: "browser",
+  target: "chrome120"
+});
+
+// Manifest V3 content scripts are classic scripts, even when the background
+// service worker is a module. Keep the isolated-world bridge valid if its
+// implementation exports helpers for tests.
+await build({
+  bundle: true,
+  entryPoints: {
+    bridge: "src/bridge.ts"
+  },
+  format: "iife",
+  outdir,
+  platform: "browser",
+  target: "chrome120"
+});
+
+await build({
+  bundle: true,
+  entryPoints: {
     "sites/amazon": "src/sites/amazon.ts",
     "sites/ebay": "src/sites/ebay.ts",
     "sites/hackernews": "src/sites/hackernews.ts",
