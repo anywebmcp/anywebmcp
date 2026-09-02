@@ -132,7 +132,11 @@ export async function handleHackerNewsBackgroundRequest(
   const controller = new AbortController();
   const setTimer = dependencies.setTimeout ?? globalThis.setTimeout;
   const clearTimer = dependencies.clearTimeout ?? globalThis.clearTimeout;
-  const timer = setTimer(() => controller.abort(), dependencies.timeoutMs ?? HACKER_NEWS_REQUEST_TIMEOUT_MS);
+  const timer = setTimer.call(
+    globalThis,
+    () => controller.abort(),
+    dependencies.timeoutMs ?? HACKER_NEWS_REQUEST_TIMEOUT_MS
+  );
 
   try {
     const response = await dependencies.fetch.call(globalThis, url, {
@@ -158,6 +162,6 @@ export async function handleHackerNewsBackgroundRequest(
     if (controller.signal.aborted) return { ok: false, code: "timeout" };
     return { ok: false, code: "network" };
   } finally {
-    clearTimer(timer);
+    clearTimer.call(globalThis, timer);
   }
 }
