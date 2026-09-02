@@ -13,23 +13,23 @@
 
 ## Individual measurements
 
-| Approach | Run | Time | Input tokens | Output tokens | Total tokens | Result |
-| --- | ---: | ---: | ---: | ---: | ---: | --- |
-| Without WebMCP | 1 | 151.1 s | 778,257 | 4,038 | 782,295 | Passed |
-| With WebMCP | 1 | 172.5 s | 504,783 | 3,886 | 508,669 | Passed |
-| With WebMCP | 2 | 138.2 s | 53,537 | 306 | 53,843 | Passed |
-| Without WebMCP | 2 | 139.2 s | 730,614 | 3,138 | 733,752 | Passed |
-| Without WebMCP | 3 | 146.2 s | 652,332 | 3,532 | 655,864 | Passed |
-| With WebMCP | 3 | 148.9 s | 72,144 | 476 | 72,620 | Passed |
+| Approach | Run | Time | Input tokens | Cached input tokens | Output tokens | Total tokens | Result |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| Without WebMCP | 1 | 151.1 s | 778,257 | 683,776 | 4,038 | 782,295 | Passed |
+| With WebMCP | 1 | 172.5 s | 504,783 | 454,016 | 3,886 | 508,669 | Passed |
+| With WebMCP | 2 | 138.2 s | 53,537 | 40,960 | 306 | 53,843 | Passed |
+| Without WebMCP | 2 | 139.2 s | 730,614 | 642,304 | 3,138 | 733,752 | Passed |
+| Without WebMCP | 3 | 146.2 s | 652,332 | 557,056 | 3,532 | 655,864 | Passed |
+| With WebMCP | 3 | 148.9 s | 72,144 | 49,920 | 476 | 72,620 | Passed |
 
 ## Median comparison
 
-| Approach | Median time | Median input tokens | Median output tokens | Median total tokens | Pass rate |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Without WebMCP | 146.2 s | 730,614 | 3,532 | 733,752 | 3/3 |
-| With WebMCP | 148.9 s | 72,144 | 476 | 72,620 | 3/3 |
+| Approach | Median time | Median input tokens | Median cached input tokens | Median uncached input tokens | Median output tokens | Median total tokens | Pass rate |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Without WebMCP | 146.2 s | 730,614 | 642,304 | 94,481 | 3,532 | 733,752 | 3/3 |
+| With WebMCP | 148.9 s | 72,144 | 49,920 | 22,224 | 476 | 72,620 | 3/3 |
 
-WebMCP reduced median input tokens by 90.1%, output tokens by 86.5%, and total tokens by 90.1%. Median elapsed time was 2.7 seconds, or 1.8%, longer with WebMCP.
+WebMCP reduced median input tokens by 90.1%, cached input tokens by 92.2%, independently calculated uncached input tokens by 76.5%, output tokens by 86.5%, and total tokens by 90.1%. Median elapsed time was 2.7 seconds, or 1.8%, longer with WebMCP.
 
 ## Notes
 
