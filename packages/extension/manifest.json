@@ -13,6 +13,10 @@
     "service_worker": "background.js",
     "type": "module"
   },
+  "host_permissions": [
+    "https://hn.algolia.com/*",
+    "https://hacker-news.firebaseio.com/*"
+  ],
   "content_scripts": [
     {
       "matches": [

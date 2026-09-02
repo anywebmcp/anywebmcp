@@ -1,6 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
+import { createDirectFetchHackerNewsTransport } from "../src/transport/direct";
+import { setHackerNewsTransport } from "../src/transport/state";
 import {
   launchSearchHit,
   researchCommentHit,
@@ -27,14 +29,16 @@ async function withHarness(
   fetch: typeof window.fetch,
   run: (harness: Awaited<ReturnType<typeof importAndMountSite>>) => Promise<void>
 ) {
+  setHackerNewsTransport(createDirectFetchHackerNewsTransport(fetch));
   const harness = await importAndMountSite(
     () => import("../src/index"),
-    { window: { fetch } }
+    { window: {} }
   );
   try {
     await run(harness);
   } finally {
     harness.dispose();
+    setHackerNewsTransport(undefined);
   }
 }
 
@@ -130,4 +134,17 @@ test("reports a missing thread item without throwing through the wrapper", async
       message: "Hacker News item 999999999 was not found."
     });
   });
+});
+
+test("reports an actionable failure when no extension transport is installed", async () => {
+  setHackerNewsTransport(undefined);
+  const harness = await importAndMountSite(() => import("../src/index"));
+  try {
+    assert.deepEqual(await harness.execute("hackernews_read_thread", { id: 101 }), {
+      status: "failed",
+      message: "Hacker News extension transport is unavailable. Reload the Hacker News page with the AnyWeb MCP extension enabled."
+    });
+  } finally {
+    harness.dispose();
+  }
 });
