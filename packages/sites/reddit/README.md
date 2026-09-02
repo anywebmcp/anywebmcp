@@ -11,7 +11,7 @@ Every successful result contains `pageContext`, including the page type, subredd
 
 ## Implementation and safety
 
-The adapter uses Reddit's rendered DOM and the user's existing browser session. It recognizes modern `shreddit-*` custom elements, Reddit Search's `search-sdui-post` result containers, and common legacy Reddit containers. Stable Reddit fullnames (`t3_` for posts and `t1_` for comments) are preferred, with permalinks and deterministic fingerprints as bounded fallbacks for listings.
+The adapter uses Reddit's rendered DOM and the user's existing browser session. It recognizes modern `shreddit-*` custom elements, Reddit Search's `search-sdui-post` result containers, and common legacy Reddit containers. Reply drafting also recognizes post-scoped `comment-composer-host` elements and Reddit's Lexical contenteditable alongside legacy textareas. Stable Reddit fullnames (`t3_` for posts and `t1_` for comments) are preferred, with permalinks and deterministic fingerprints as bounded fallbacks for listings.
 
 The implementation stays local to this package and separates page/access detection, DOM helpers, post and comment parsing, community rules, the bounded in-page post registry, and reply-editor interaction. `src/api/dom.ts` is a compatibility facade for the four tool operations; importing it does not inspect or mutate the page.
 

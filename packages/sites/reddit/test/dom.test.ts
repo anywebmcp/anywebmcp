@@ -296,3 +296,55 @@ test("inserts and verifies reply drafts, refuses conflicts, and never submits", 
     assert.equal(document.body.dataset.submitCount, "0");
   });
 });
+
+test("opens the modern post composer and inserts a contenteditable draft exactly once", async () => {
+  await withFixture("modern-reply-editor.html", "https://www.reddit.com/r/typescript/comments/modernreply/modern_post_composer_fixture/", async ({ document }) => {
+    const trigger = document.querySelector<HTMLElement>("#modern-post-trigger")!;
+    const host = document.querySelector<HTMLElement>("comment-composer-host[post-id='t3_modernreply']")!;
+    const editor = document.querySelector<HTMLElement>("#modern-post-editor")!;
+    trigger.addEventListener("click", () => host.removeAttribute("hidden"));
+
+    let syntheticInsertions = 0;
+    editor.addEventListener("input", event => {
+      const data = (event as InputEvent).data;
+      if (!data) return;
+      syntheticInsertions += 1;
+      editor.textContent = `${editor.textContent ?? ""}${data}`;
+    });
+    Object.defineProperty(document, "execCommand", {
+      configurable: true,
+      value(command: string, _showUi: boolean, value: string) {
+        if (command !== "insertText") return false;
+        const blocks = value.split("\n").map(line => {
+          const paragraph = document.createElement("p");
+          if (line) paragraph.textContent = line;
+          else paragraph.append(document.createElement("br"));
+          return paragraph;
+        });
+        editor.replaceChildren(...blocks);
+        return true;
+      }
+    });
+
+    const text = "A modern post-level draft that must be inserted once.\n\nThe second paragraph must survive Lexical readback.";
+    const result = await prepareReplyDraft("t3_modernreply", text);
+    assert.equal(result.ok, true, JSON.stringify(result));
+    if (!result.ok) return;
+    assert.equal(result.draft.text, text);
+    assert.deepEqual([...editor.children].map(child => child.textContent), [
+      "A modern post-level draft that must be inserted once.",
+      "",
+      "The second paragraph must survive Lexical readback."
+    ]);
+    assert.equal(syntheticInsertions, 0);
+    assert.equal(result.submitted, false);
+    assert.equal(document.body.dataset.submitCount, "0");
+
+    const conflict = await prepareReplyDraft("t3_modernreply", "Do not overwrite the verified modern draft.");
+    assert.equal(conflict.ok, false);
+    if (conflict.ok) return;
+    assert.equal(conflict.error.code, "EDITOR_NOT_EMPTY");
+    assert.equal(editor.textContent, text.replaceAll("\n", ""));
+    assert.equal(document.body.dataset.submitCount, "0");
+  });
+});
