@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { assertSiteContract, importAndMountSite } from "@anywebmcp/common/test";
 import { createDirectFetchHackerNewsTransport } from "../src/transport/direct";
-import { setHackerNewsTransport } from "../src/transport/state";
+import { HackerNewsTransportError, setHackerNewsTransport } from "../src/transport/state";
 import {
   launchSearchHit,
   researchCommentHit,
@@ -146,5 +146,32 @@ test("reports an actionable failure when no extension transport is installed", a
     });
   } finally {
     harness.dispose();
+  }
+});
+
+test("reports distinct network, timeout, and rejected-request transport failures", async () => {
+  const cases = [
+    ["network", "Hacker News data request was blocked or could not reach the network. Please try again."],
+    ["timeout", "Hacker News data request timed out. Please try again."],
+    ["invalid_request", "Hacker News rejected the extension data request. Reload the page and try again."]
+  ] as const;
+
+  const harness = await importAndMountSite(() => import("../src/index"));
+  try {
+    for (const [code, message] of cases) {
+      setHackerNewsTransport({
+        async request() {
+          throw new HackerNewsTransportError(code);
+        }
+      });
+
+      assert.deepEqual(await harness.execute("hackernews_read_thread", { id: 123 }), {
+        status: "failed",
+        message
+      });
+    }
+  } finally {
+    harness.dispose();
+    setHackerNewsTransport(undefined);
   }
 });
