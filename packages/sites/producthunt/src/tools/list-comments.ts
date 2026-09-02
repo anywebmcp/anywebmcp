@@ -32,7 +32,7 @@ export const listCommentsTool: WebMcpTool<ListCommentsInput> = {
     additionalProperties: false
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
-  execute(input) {
-    return fromProductHuntResult(listComments(input));
+  async execute(input, options) {
+    return fromProductHuntResult(await listComments(input, options?.signal));
   }
 };

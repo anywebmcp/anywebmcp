@@ -12,7 +12,7 @@ export const readProductTool: WebMcpTool = {
     additionalProperties: false
   },
   annotations: { readOnlyHint: true, untrustedContentHint: true },
-  execute() {
-    return fromProductHuntResult(readProduct());
+  async execute(_input, options) {
+    return fromProductHuntResult(await readProduct(options?.signal));
   }
 };

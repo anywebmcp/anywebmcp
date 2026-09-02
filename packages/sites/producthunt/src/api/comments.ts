@@ -1,4 +1,4 @@
-import { canonicalUrl, clampInteger, cleanMultilineText, cleanText, parseCount } from "./shared";
+import { canonicalUrl, clampInteger, cleanMultilineText, cleanText, parseCount, waitForElement } from "./shared";
 
 export type ListCommentsInput = {
   offset?: number;
@@ -85,7 +85,18 @@ function pagination(root: HTMLElement) {
   };
 }
 
-export function listComments(input: ListCommentsInput = {}) {
+function expectsStreamedComments() {
+  const url = new URL(location.href);
+  if (url.searchParams.has("launch")) return true;
+  const header = document.querySelector<HTMLElement>('main [data-test="header"]');
+  return /launching today/i.test(cleanText(header?.textContent, 1_000));
+}
+
+export async function listComments(input: ListCommentsInput = {}, signal?: AbortSignal) {
+  if (!document.querySelector("#comments") && expectsStreamedComments()) {
+    await waitForElement("#comments", 1_500, signal);
+  }
+
   const root = document.querySelector<HTMLElement>("#comments");
   if (!root) {
     return {

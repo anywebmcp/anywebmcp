@@ -54,7 +54,7 @@ async function mountFixture(
       harness.dispose();
       for (const restoreGlobal of restore.reverse()) restoreGlobal();
     });
-    return harness;
+    return Object.assign(harness, { documentRoot });
   } catch (error) {
     for (const restoreGlobal of restore.reverse()) restoreGlobal();
     throw error;
@@ -71,7 +71,15 @@ test("registers all four read-only Product Hunt tools and lists homepage section
 
   const all = await harness.execute<{
     count: number;
-    launches: Array<{ rank: number; name: string; url: string; section: string; topics: Array<{ url: string }> }>;
+    totalMounted: number;
+    launches: Array<{
+      rank: number;
+      name: string;
+      url: string;
+      section: string;
+      commentsCount: number;
+      topics: Array<{ url: string }>;
+    }>;
   }>("producthunt_list_launches");
   assert.equal(all.status, "completed");
   if (all.status !== "completed") return;
@@ -79,8 +87,18 @@ test("registers all four read-only Product Hunt tools and lists homepage section
   assert.deepEqual(all.data.launches.map(launch => launch.name), ["Alpha", "Bravo", "Charlie"]);
   assert.deepEqual(all.data.launches.map(launch => launch.rank), [1, 2, 2]);
   assert.deepEqual(all.data.launches.map(launch => launch.section), ["today", "today", "yesterday"]);
-  assert.equal(all.data.launches[0].url, "https://www.producthunt.com/products/alpha?ref=homepage");
+  assert.equal(all.data.totalMounted, 3);
+  assert.equal(
+    all.data.launches[0].url,
+    "https://www.producthunt.com/products/alpha?ref=homepage&launch=alpha-launch"
+  );
   assert.equal(all.data.launches[0].topics[0].url, "https://www.producthunt.com/topics/productivity?ref=homepage");
+  assert.equal(
+    [...all.data.launches.filter(launch => launch.section === "today")]
+      .sort((left, right) => right.commentsCount - left.commentsCount)[0].name,
+    "Alpha"
+  );
+  assert.ok(!all.data.launches.some(launch => launch.name === "Wispr Flow"));
 
   const yesterday = await harness.execute<{ count: number; launches: Array<{ name: string }> }>(
     "producthunt_list_launches",
@@ -174,6 +192,123 @@ test("extracts the current product and featured launch", async t => {
     url: "https://www.producthunt.com/@alice",
     avatarUrl: "https://ph-files.imgix.net/alice.png"
   }]);
+});
+
+test("reads a current launch without a separate launch heading and lists its comments", async t => {
+  const harness = await mountFixture(
+    t,
+    "current-product.html",
+    "https://www.producthunt.com/products/loqua?launch=loqua-2"
+  );
+  const product = await harness.execute<{
+    product: {
+      featuredLaunch: {
+        name: string;
+        tagline: string;
+        status: string;
+        description: string;
+        commentsLoaded: number;
+      } | null;
+    };
+  }>("producthunt_read_product");
+  assert.equal(product.status, "completed");
+  if (product.status !== "completed") return;
+  assert.deepEqual(product.data.product.featuredLaunch, {
+    name: "Loqua",
+    tagline: "Speak naturally. Move from thoughts to done.",
+    status: "Launching today",
+    description: "Your thoughts should not have to slow down for a keyboard. Loqua turns spoken ideas into ready-to-use work.",
+    imageUrl: "https://ph-files.imgix.net/loqua.png",
+    pricing: "Free Options",
+    topics: [
+      { name: "Productivity", slug: "productivity", url: "https://www.producthunt.com/topics/productivity" },
+      {
+        name: "Artificial Intelligence",
+        slug: "artificial-intelligence",
+        url: "https://www.producthunt.com/topics/artificial-intelligence"
+      }
+    ],
+    team: [{
+      name: "Joshua Zhou",
+      handle: "joshua",
+      url: "https://www.producthunt.com/@joshua",
+      avatarUrl: "https://ph-files.imgix.net/joshua.png"
+    }],
+    rank: null,
+    rankPeriod: null,
+    rankedFor: null,
+    points: null,
+    commentsLoaded: 1
+  });
+
+  const comments = await harness.execute<{ count: number; comments: Array<{ id: string; text: string }> }>(
+    "producthunt_list_comments"
+  );
+  assert.equal(comments.status, "completed");
+  if (comments.status !== "completed") return;
+  assert.equal(comments.data.count, 1);
+  assert.equal(comments.data.comments[0].id, "501");
+});
+
+test("waits briefly for a requested launch and comments to finish streaming", async t => {
+  const harness = await mountFixture(
+    t,
+    "current-product.html",
+    "https://www.producthunt.com/products/loqua?launch=loqua-2"
+  );
+  const launch = harness.documentRoot.querySelector('[data-test="launch"]');
+  assert.ok(launch);
+  launch.remove();
+
+  const productPromise = harness.execute<{ product: { featuredLaunch: { name: string } | null } }>(
+    "producthunt_read_product"
+  );
+  const commentsPromise = harness.execute<{ count: number }>("producthunt_list_comments");
+  setTimeout(() => harness.documentRoot.querySelector("main")?.append(launch), 25);
+
+  const [product, comments] = await Promise.all([productPromise, commentsPromise]);
+  assert.equal(product.status, "completed");
+  if (product.status === "completed") assert.equal(product.data.product.featuredLaunch?.name, "Loqua");
+  assert.equal(comments.status, "completed");
+  if (comments.status === "completed") assert.equal(comments.data.count, 1);
+});
+
+test("returns a launch-specific URL for a multi-launch product", async t => {
+  const homepage = await mountFixture(t, "multi-launch-homepage.html", "https://www.producthunt.com/");
+  const listed = await homepage.execute<{ launches: Array<{ url: string }> }>(
+    "producthunt_list_launches",
+    { section: "today" }
+  );
+  assert.equal(listed.status, "completed");
+  if (listed.status !== "completed") return;
+  const launchUrl = "https://www.producthunt.com/products/cleanshot?launch=cleanshot-5-0-with-studio-mode";
+  assert.equal(listed.data.launches[0].url, launchUrl);
+
+  const generic = await mountFixture(
+    t,
+    "multi-launch-generic.html",
+    "https://www.producthunt.com/products/cleanshot"
+  );
+  const genericProduct = await generic.execute<{ product: { featuredLaunch: unknown } }>("producthunt_read_product");
+  assert.equal(genericProduct.status, "completed");
+  if (genericProduct.status !== "completed") return;
+  assert.equal(genericProduct.data.product.featuredLaunch, null);
+  assert.deepEqual(await generic.execute("producthunt_list_comments"), {
+    status: "failed",
+    message: "Open a Product Hunt product launch with comments before calling producthunt_list_comments."
+  });
+
+  const launch = await mountFixture(t, "multi-launch-current.html", launchUrl);
+  const launchProduct = await launch.execute<{
+    product: { featuredLaunch: { name: string; commentsLoaded: number } | null };
+  }>("producthunt_read_product");
+  assert.equal(launchProduct.status, "completed");
+  if (launchProduct.status !== "completed") return;
+  assert.equal(launchProduct.data.product.featuredLaunch?.name, "CleanShot 5.0 with Studio Mode");
+  assert.equal(launchProduct.data.product.featuredLaunch?.commentsLoaded, 1);
+  const comments = await launch.execute<{ count: number }>("producthunt_list_comments");
+  assert.equal(comments.status, "completed");
+  if (comments.status === "completed") assert.equal(comments.data.count, 1);
 });
 
 test("returns comments as a flat reply tree with canonical links", async t => {
