@@ -2,18 +2,22 @@
 
 This document owns the benchmark method and benchmark-file content. Cross-package architecture and safety requirements belong to the [site package standard](site-package-standard.md).
 
-Benchmark each tool against completing the same operation through the browser without WebMCP.
+Benchmark each site with one short, natural, repeatable request representing a real task for that site. The request may require multiple WebMCP tools.
 
-1. Define a representative operation and the expected successful result.
-2. Run it with and without WebMCP from equivalent starting states, using the same model and task instruction. Use safe operations or controlled test data.
-3. Run each approach at least three times, alternating which approach runs first to reduce caching and order bias.
-4. Measure elapsed time from the start of the request to successful completion and record the total token consumption of the agent run.
-5. Record every run, then report the median results. Include input/output token details when available.
+1. The request must remain useful on future dates. Do not hard-code products, posts, IDs, result limits, tool names, or testing instructions.
+2. Define the expected outcome and objective success criteria.
+3. Run the request in fresh Codex tasks with and without WebMCP. Use the same model, reasoning effort, starting URL, account state, and equivalent live data.
+4. Before measuring, verify that the site opens and the required WebMCP tools are available and executable.
+5. Run each approach at least three times, alternating their order.
+6. Measure from submitting the request to the final answer. Record input, output, and total tokens for the complete Codex run.
+7. Record successful and failed runs. Do not discard failures.
+8. Report individual results and medians in `packages/sites/<site>/BENCHMARKS.md`.
 
-Store results in `packages/sites/<site>/BENCHMARKS.md`. Include the date, model, test environment, operation details, number of runs, and individual measurements, followed by this summary table:
+Each benchmark file should contain only the request; date, model, environment, and success criteria; individual run measurements; the median comparison; and brief notes about failures or material live-data differences.
 
-| Tool | Operation | Without WebMCP time | Without WebMCP tokens | With WebMCP time | With WebMCP tokens |
-| --- | --- | ---: | ---: | ---: | ---: |
-| `tool_name` | Description | 0 s | 0 | 0 s | 0 |
+| Approach | Run | Time | Input tokens | Output tokens | Total tokens | Result |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| Without WebMCP | 1 | 0 s | 0 | 0 | 0 | Passed |
+| With WebMCP | 1 | 0 s | 0 | 0 | 0 | Passed |
 
-Update the file when tool behavior or the website changes materially. Never include credentials or private user data.
+Update the benchmark when tool behavior or the website changes materially. Never include credentials or private user data.
