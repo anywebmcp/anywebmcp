@@ -17,13 +17,39 @@ export type HackerNewsMessageSender = {
   tab?: { url?: string };
 };
 
+type HackerNewsTimeoutHandle = ReturnType<typeof globalThis.setTimeout>;
+type HackerNewsSetTimeout = (
+  handler: () => void,
+  timeout: number
+) => HackerNewsTimeoutHandle;
+type HackerNewsClearTimeout = (handle: HackerNewsTimeoutHandle) => void;
+
 export type HackerNewsBackgroundDependencies = {
   fetch: typeof fetch;
-  setTimeout?: typeof globalThis.setTimeout;
-  clearTimeout?: typeof globalThis.clearTimeout;
+  setTimeout?: HackerNewsSetTimeout;
+  clearTimeout?: HackerNewsClearTimeout;
+  reportError?(error: unknown): void;
   timeoutMs?: number;
   maxResponseBytes?: number;
 };
+
+export type HackerNewsWorkerScope = {
+  fetch: typeof fetch;
+  setTimeout: HackerNewsSetTimeout;
+  clearTimeout: HackerNewsClearTimeout;
+};
+
+export function createHackerNewsWorkerDependencies(
+  scope: HackerNewsWorkerScope,
+  reportError?: (error: unknown) => void
+): HackerNewsBackgroundDependencies {
+  return {
+    fetch: (input, init) => scope.fetch(input, init),
+    setTimeout: (handler, timeout) => scope.setTimeout(handler, timeout),
+    clearTimeout: handle => scope.clearTimeout(handle),
+    reportError
+  };
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -117,6 +143,17 @@ function responseIsExpected(request: HackerNewsBackgroundRequest, value: unknown
   return request.operation === "probe";
 }
 
+function reportBackgroundError(
+  dependencies: HackerNewsBackgroundDependencies,
+  error: unknown
+) {
+  try {
+    dependencies.reportError?.(error);
+  } catch {
+    // Diagnostics must not change the public transport result.
+  }
+}
+
 export async function handleHackerNewsBackgroundRequest(
   message: unknown,
   sender: HackerNewsMessageSender,
@@ -130,16 +167,19 @@ export async function handleHackerNewsBackgroundRequest(
   const url = requestUrl(message);
   if (!url) return { ok: false, code: "invalid_request" };
   const controller = new AbortController();
-  const setTimer = dependencies.setTimeout ?? globalThis.setTimeout;
-  const clearTimer = dependencies.clearTimeout ?? globalThis.clearTimeout;
-  const timer = setTimer.call(
-    globalThis,
-    () => controller.abort(),
-    dependencies.timeoutMs ?? HACKER_NEWS_REQUEST_TIMEOUT_MS
-  );
+  const fetchRequest = dependencies.fetch;
+  const setTimer = dependencies.setTimeout
+    ?? ((handler, timeout) => globalThis.setTimeout(handler, timeout));
+  const clearTimer = dependencies.clearTimeout
+    ?? (handle => globalThis.clearTimeout(handle));
+  let timer: HackerNewsTimeoutHandle | undefined;
 
   try {
-    const response = await dependencies.fetch.call(globalThis, url, {
+    timer = setTimer(
+      () => controller.abort(),
+      dependencies.timeoutMs ?? HACKER_NEWS_REQUEST_TIMEOUT_MS
+    );
+    const response = await fetchRequest(url, {
       method: "GET",
       headers: { accept: "application/json" },
       credentials: "omit",
@@ -160,8 +200,15 @@ export async function handleHackerNewsBackgroundRequest(
     return { ok: true, value };
   } catch (error) {
     if (controller.signal.aborted) return { ok: false, code: "timeout" };
+    reportBackgroundError(dependencies, error);
     return { ok: false, code: "network" };
   } finally {
-    clearTimer.call(globalThis, timer);
+    if (timer !== undefined) {
+      try {
+        clearTimer(timer);
+      } catch (error) {
+        reportBackgroundError(dependencies, error);
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { installHackerNewsBridge } from "../../../extension/src/hackernews-bridge";
 import {
+  createHackerNewsWorkerDependencies,
   handleHackerNewsBackgroundRequest,
   type HackerNewsBackgroundDependencies
 } from "../src/transport/background";
@@ -140,32 +141,89 @@ test("background transport returns bounded HTTP, malformed-response, and timeout
   }), { ok: false, code: "timeout" });
 });
 
-test("background transport invokes worker APIs with the worker global as their receiver", async () => {
+test("worker dependency adapters preserve the worker scope as the Web API receiver", async () => {
   const itemRequest = request("algoliaItem", { id: 123 });
   let fetchReceiver: unknown;
   let setTimeoutReceiver: unknown;
   let clearTimeoutReceiver: unknown;
-  const setTimeout = function (this: unknown) {
-    setTimeoutReceiver = this;
-    return 1;
-  } as unknown as typeof globalThis.setTimeout;
-  const clearTimeout = function (this: unknown) {
-    clearTimeoutReceiver = this;
-  } as unknown as typeof globalThis.clearTimeout;
-
-  const result = await handleHackerNewsBackgroundRequest(itemRequest, sender, {
-    setTimeout,
-    clearTimeout,
-    fetch: async function () {
+  const workerScope = {
+    fetch: async function (this: unknown) {
       fetchReceiver = this;
       return new Response(JSON.stringify({ id: 123, children: [] }));
+    },
+    setTimeout: function (this: unknown) {
+      setTimeoutReceiver = this;
+      return 1;
+    },
+    clearTimeout: function (this: unknown) {
+      clearTimeoutReceiver = this;
     }
-  });
+  } as unknown as typeof globalThis;
 
-  assert.equal(fetchReceiver, globalThis);
-  assert.equal(setTimeoutReceiver, globalThis);
-  assert.equal(clearTimeoutReceiver, globalThis);
+  const result = await handleHackerNewsBackgroundRequest(
+    itemRequest,
+    sender,
+    createHackerNewsWorkerDependencies(workerScope)
+  );
+
+  assert.equal(fetchReceiver, workerScope);
+  assert.equal(setTimeoutReceiver, workerScope);
+  assert.equal(clearTimeoutReceiver, workerScope);
   assert.deepEqual(result, { ok: true, value: { id: 123, children: [] } });
+});
+
+test("background transport reports the original network exception without exposing it", async () => {
+  const privateError = new TypeError("private worker detail");
+  let reported: unknown;
+  const result = await handleHackerNewsBackgroundRequest(
+    request("algoliaItem", { id: 123 }),
+    sender,
+    {
+      fetch: async () => { throw privateError; },
+      reportError(error) {
+        reported = error;
+      }
+    }
+  );
+
+  assert.equal(reported, privateError);
+  assert.deepEqual(result, { ok: false, code: "network" });
+});
+
+test("worker timer failures remain bounded and observable", async () => {
+  const errors: unknown[] = [];
+  const setupError = new TypeError("setTimeout receiver failure");
+  const setupResult = await handleHackerNewsBackgroundRequest(
+    request("algoliaItem", { id: 123 }),
+    sender,
+    {
+      fetch: async () => new Response(JSON.stringify({ id: 123, children: [] })),
+      setTimeout: () => { throw setupError; },
+      reportError(error) {
+        errors.push(error);
+      }
+    }
+  );
+  assert.deepEqual(setupResult, { ok: false, code: "network" });
+
+  const cleanupError = new TypeError("clearTimeout receiver failure");
+  const cleanupResult = await handleHackerNewsBackgroundRequest(
+    request("algoliaItem", { id: 123 }),
+    sender,
+    {
+      fetch: async () => new Response(JSON.stringify({ id: 123, children: [] })),
+      setTimeout: (() => 1) as unknown as NonNullable<
+        HackerNewsBackgroundDependencies["setTimeout"]
+      >,
+      clearTimeout: () => { throw cleanupError; },
+      reportError(error) {
+        errors.push(error);
+      }
+    }
+  );
+
+  assert.deepEqual(cleanupResult, { ok: true, value: { id: 123, children: [] } });
+  assert.deepEqual(errors, [setupError, cleanupError]);
 });
 
 type Listener = (event: MessageEvent) => void;

@@ -10,7 +10,7 @@ The adapter reads public data from the official [Hacker News Firebase API](https
 
 The bridge is not a generic fetch proxy: page scripts cannot provide URLs, headers, credentials, or request methods. Unknown operations, extra parameters, non-Hacker-News senders, oversized responses, invalid data, and expired requests are rejected. Requests are bounded to 20 seconds and 20 MiB, Algolia search pages return at most 100 hits, and the tools retain their existing input and result limits. Transport failures distinguish missing extension wiring, rejected requests, blocked or unreachable network requests, timeouts, HTTP failures, and malformed responses without exposing private browser diagnostics.
 
-The adapter never reads cookies, requires no credentials, and does not vote, favorite, reply, or submit. Node tests and the live-smoke harness inject an equivalent direct-fetch transport; the native browser entrypoint always installs the extension-mediated transport.
+The adapter never reads cookies, requires no credentials, and does not vote, favorite, reply, or submit. Node tests and the API live-smoke harness inject an equivalent direct-fetch transport; the native browser entrypoint always installs the extension-mediated transport. The background worker wraps `fetch`, `setTimeout`, and `clearTimeout` at the worker scope so Chromium receives the native Web API receiver it requires.
 
 ## Interpretation boundaries
 
@@ -30,10 +30,10 @@ npm test -w @anywebmcp/site-hackernews
 
 The offline suite also mounts the package through the shared WebMCP contract harness and uses deterministic API fixtures for successful reads, HTTP failures, malformed responses, missing items, operation and parameter validation, timeout handling, transport availability, and concurrent request/response correlation across the page bridge.
 
-Run the JavaScript WebMCP live smoke harness with:
+Run the JavaScript WebMCP API live-smoke harness with:
 
 ```sh
 npm run test:live -w @anywebmcp/site-hackernews
 ```
 
-The live harness executes the extension's real Hacker News entrypoint, captures tools registered through `document.modelContext.registerTool`, invokes every registered tool through its public `execute` contract, validates the JSON result shapes, and reads current data from the public Hacker News APIs.
+The live harness executes the extension's real Hacker News entrypoint, captures tools registered through `document.modelContext.registerTool`, invokes every registered tool through its public `execute` contract, validates the JSON result shapes, and reads current data from the public Hacker News APIs. It injects the direct-fetch transport, so it does not verify the content-script bridge or background worker. Verify that browser-only path separately by opening `https://news.ycombinator.com/` with the built extension and completing a read-only call to each registered tool before benchmarking.
